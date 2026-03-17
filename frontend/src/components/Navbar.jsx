@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useCart } from "../context/CartContext";
-import CartSidebar from "./CartSidebar";
 import "./Navbar.css";
 
 const NAV_COLOR = "#EE7C2B";
@@ -22,10 +20,8 @@ const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [cartOpen, setCartOpen] = useState(false);
     const lastScrollY = useRef(0);
     const location = useLocation();
-    const { itemCount } = useCart();
 
     // Hide on scroll down, show on scroll up
     useEffect(() => {
@@ -91,8 +87,8 @@ const Navbar = () => {
                                         key={link.path}
                                         to={link.path}
                                         className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${isActive(link.path)
-                                                ? "text-primary"
-                                                : "text-gray-300 hover:text-white"
+                                            ? "text-primary"
+                                            : "text-gray-300 hover:text-white"
                                             }`}
                                     >
                                         {link.name}
@@ -114,21 +110,7 @@ const Navbar = () => {
                         {/* Auth + Cart — Right */}
                         <div className="hidden lg:flex items-center space-x-4 ml-auto">
 
-                            {/* Cart Button — no scale, color transition only */}
-                            <button
-                                onClick={() => setCartOpen(true)}
-                                className="relative p-2 text-gray-300 hover:text-white transition-colors duration-300"
-                            >
-                                <span className="material-icons text-2xl">shopping_bag</span>
-                                {itemCount > 0 && (
-                                    <span
-                                        className="absolute -top-1 -right-1 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-dark"
-                                        style={{ background: NAV_COLOR }}
-                                    >
-                                        {itemCount}
-                                    </span>
-                                )}
-                            </button>
+
 
                             {/* Login */}
                             <Link
@@ -153,20 +135,7 @@ const Navbar = () => {
 
                         {/* Mobile — Cart + Hamburger */}
                         <div className="lg:hidden flex items-center gap-4">
-                            <button
-                                onClick={() => setCartOpen(true)}
-                                className="relative p-2 text-gray-300 hover:text-white transition-colors duration-300"
-                            >
-                                <span className="material-icons text-2xl">shopping_bag</span>
-                                {itemCount > 0 && (
-                                    <span
-                                        className="absolute -top-1 -right-1 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full"
-                                        style={{ background: NAV_COLOR }}
-                                    >
-                                        {itemCount}
-                                    </span>
-                                )}
-                            </button>
+
 
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -201,8 +170,8 @@ const Navbar = () => {
                                         key={link.path}
                                         to={link.path}
                                         className={`block px-5 py-3 rounded-xl font-medium border transition-colors duration-300 ${isActive(link.path)
-                                                ? "border-primary/50 bg-primary/10 text-primary"
-                                                : "border-transparent text-gray-300 hover:bg-white/5 hover:text-white"
+                                            ? "border-primary/50 bg-primary/10 text-primary"
+                                            : "border-transparent text-gray-300 hover:bg-white/5 hover:text-white"
                                             }`}
                                     >
                                         {link.name}
@@ -231,8 +200,6 @@ const Navbar = () => {
                     )}
                 </AnimatePresence>
             </motion.nav>
-
-            <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
         </>
     );
 };

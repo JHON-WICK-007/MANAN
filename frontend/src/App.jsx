@@ -9,6 +9,7 @@ import Table from "./pages/Table/Table";
 import Cart from "./pages/Cart/Cart";
 import Profile from "./pages/Profile/Profile";
 import OrderStatus from "./pages/OrderStatus/OrderStatus";
+import Checkout from "./pages/Checkout/Checkout";
 import AboutContact from "./pages/AboutContact/AboutContact";
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
         <CartProvider>
             <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
                 <Navbar />
-                <main className="flex-grow pt-20">
+                <main className="flex-grow">
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/menu" element={<Menu />} />
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/register" element={<Auth />} />
                         <Route path="/table" element={<Table />} />
                         <Route path="/cart" element={<Cart />} />
+                        <Route path="/checkout" element={<Checkout />} />
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/order-status" element={<OrderStatus />} />
                         <Route path="/about" element={<AboutContact />} />

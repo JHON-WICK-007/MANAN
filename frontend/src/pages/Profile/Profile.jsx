@@ -42,7 +42,7 @@ const Profile = () => {
     if (!user) return null;
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen pt-20">
             <div className="max-w-5xl mx-auto px-6 md:px-8 py-12">
                 {/* Profile Card */}
                 <div className="glass rounded-2xl p-8 mb-10">

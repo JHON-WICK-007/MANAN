@@ -15,6 +15,11 @@
         font-family: 'Be Vietnam Pro', sans-serif;
         overflow-x: hidden;
     }
+
+    /* Reset default margins for headings and paragraphs */
+    h1, h2, h3, h4, h5, h6, p {
+        margin: 0;
+    }
 }
 
 @layer components {
@@ -40,7 +45,16 @@
     }
 
     .btn-primary {
-        @apply bg-primary hover:bg-primary-dark text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20;
+        @apply bg-primary text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg shadow-primary/20 border-2 border-primary;
+    }
+
+    .btn-primary:hover {
+        @apply bg-primary-dark shadow-lg shadow-primary/30;
+        transform: translateY(-1px);
+    }
+
+    .btn-primary:active {
+        @apply bg-primary shadow-md shadow-primary/20;
     }
 
     .btn-outline {
@@ -49,6 +63,17 @@
 
     .input-dark {
         @apply w-full px-4 py-4 bg-white/5 border border-stone-700 rounded-lg focus:ring-0 focus:border-primary transition-all outline-none text-white placeholder:text-stone-500;
+    }
+
+    /* Remove browser default spinner controls for number inputs */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
     }
 
     .card-dark {
@@ -61,6 +86,192 @@
 
     .section-title {
         @apply text-4xl md:text-5xl font-bold text-white leading-tight;
+    }
+
+    /* Fixed-height quantity counter - prevents layout shift */
+    .quantity-counter {
+        width: 3rem;
+        height: 2rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-variant-numeric: tabular-nums;
+        background: transparent;
+        border: none;
+        outline: none;
+        text-align: center;
+        padding: 0;
+        flex-shrink: 0;
+    }
+
+    .quantity-selector {
+        display: inline-flex;
+        align-items: center;
+        width: 7.5rem;
+        flex-shrink: 0;
+    }
+
+    /* CART ITEM FIXED HEIGHT - SIDEBAR VERSION */
+    .cart-item-sidebar {
+        @apply flex gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/5;
+        height: 120px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .cart-item-sidebar-image {
+        @apply w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-dark-card;
+    }
+
+    .cart-item-sidebar-image img {
+        @apply w-full h-full object-cover;
+    }
+
+    .cart-item-sidebar-content {
+        @apply flex-grow;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .cart-item-sidebar-spacer {
+        flex-grow: 1;
+    }
+
+    .cart-item-sidebar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
+        flex-shrink: 0;
+        width: 100%;
+    }
+
+    .cart-item-sidebar-title {
+        @apply text-white font-medium text-sm;
+        flex: 1;
+        min-width: 0;
+        line-height: 1.4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cart-item-sidebar-price {
+        @apply text-primary font-semibold text-sm;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
+    .cart-item-sidebar-unit {
+        @apply text-xs text-white/40;
+        margin-top: 6px;
+        line-height: 1.4;
+        height: 1.4em;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .cart-item-sidebar-controls {
+        @apply flex justify-between items-center gap-3;
+        flex-shrink: 0;
+        height: fit-content;
+        width: 100%;
+    }
+
+    /* CART ITEM FIXED HEIGHT - FULL PAGE VERSION */
+    .cart-item-fullpage {
+        @apply flex gap-6 p-5 rounded-2xl bg-white/[0.03] border border-white/5 transition-all;
+        height: 160px;
+        align-items: center;
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 0px transparent;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .cart-item-fullpage:hover {
+        border-color: rgba(238, 124, 43, 0.3);
+        box-shadow: inset 0 0 0 1px rgba(238, 124, 43, 0.3);
+    }
+
+    .cart-item-fullpage-image {
+        @apply w-32 h-32 rounded-xl overflow-hidden flex-shrink-0 bg-dark-card;
+    }
+
+    .cart-item-fullpage-image img {
+        @apply w-full h-full object-cover;
+    }
+
+    .cart-item-fullpage-content {
+        @apply flex-grow;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .cart-item-fullpage-spacer {
+        flex-grow: 1;
+    }
+
+    .cart-item-fullpage-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+        width: 100%;
+    }
+
+    .cart-item-fullpage-title {
+        @apply text-lg font-bold text-white;
+        flex: 1;
+        min-width: 0;
+        line-height: 1.3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .cart-item-fullpage-price {
+        @apply text-primary font-bold text-lg;
+        flex-shrink: 0;
+        white-space: nowrap;
+        margin-left: auto;
+    }
+
+    .cart-item-fullpage-unit {
+        @apply text-sm text-white/40;
+        margin-top: 8px;
+        line-height: 1.4;
+        height: 1.4em;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .cart-item-fullpage-controls {
+        @apply flex justify-between items-center;
+        flex-shrink: 0;
+        height: fit-content;
+        width: 100%;
+    }
+
+    /* Delete button styling - professional red destructive action */
+    .cart-item-delete-btn {
+        @apply flex-shrink-0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #ef4444;
+        background: none;
+        border: none;
+        padding: 0;
+        transition: color 0.2s ease;
+    }
+
+    .cart-item-delete-btn:hover {
+        color: #f87171;
     }
 }
 
@@ -77,6 +288,17 @@
 ::-webkit-scrollbar-thumb {
     background: #ee7c2b;
     border-radius: 10px;
+}
+
+/* Fallback image fade-in */
+@keyframes fallbackFadeIn {
+    from { opacity: 0; transform: scale(0.99); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes ambientGlow {
+    0%, 100% { opacity: 0.5; }
+    50%      { opacity: 1; }
 }
 
 .hide-scrollbar::-webkit-scrollbar {

@@ -36,7 +36,7 @@ const Auth = () => {
     };
 
     return (
-        <div className="min-h-screen flex">
+        <div className="min-h-screen pt-20 flex">
             {/* Left: Atmospheric Image */}
             <div className="hidden lg:block lg:w-7/12 relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-r from-dark/20 to-dark/80 z-10"></div>

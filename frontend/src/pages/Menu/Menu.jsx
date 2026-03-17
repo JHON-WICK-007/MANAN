@@ -39,7 +39,7 @@ const Menu = () => {
     );
 
     return (
-        <main className="min-h-screen">
+        <main className="min-h-screen pt-20">
             <div className="max-w-7xl mx-auto px-6 md:px-8 py-12">
                 {/* Title */}
                 <div className="mb-12 text-center">
@@ -51,11 +51,15 @@ const Menu = () => {
                 <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
                     <div className="flex flex-wrap justify-center gap-3">
                         {categories.map((cat) => (
-                            <button key={cat} onClick={() => setActiveCategory(cat)}
-                                className={`px-6 py-2 rounded-full font-medium transition-all ${activeCategory === cat
-                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "glass-light hover:bg-primary/20"
-                                    }`}>
+                            <button 
+                                key={cat} 
+                                onClick={() => setActiveCategory(cat)}
+                                className={`inline-flex items-center justify-center px-6 py-2 h-10 rounded-full font-medium text-sm transition-colors duration-200 box-border border-2 ${
+                                    activeCategory === cat
+                                        ? "bg-primary text-white border-primary"
+                                        : "bg-white/5 text-stone-300 border-transparent hover:text-white hover:bg-white/10"
+                                }`}
+                            >
                                 {cat}
                             </button>
                         ))}
@@ -71,8 +75,8 @@ const Menu = () => {
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {filtered.map((item) => (
-                        <div key={item._id} className="group card-dark">
-                            <div className="aspect-[4/3] overflow-hidden relative">
+                        <div key={item._id} className="group card-dark flex flex-col">
+                            <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
                                 {item.image && (
                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 )}
@@ -84,9 +88,10 @@ const Menu = () => {
                                     ₹{item.price?.toFixed(2)}
                                 </div>
                             </div>
-                            <div className="p-6">
+                            <div className="p-6 flex flex-col flex-grow">
                                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">{item.name}</h3>
                                 <p className="text-stone-400 text-sm mb-6 leading-relaxed">{item.description}</p>
+                                <div className="flex-grow"></div>
                                 <button onClick={() => addItem(item)}
                                     className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
                                     <span className="material-icons text-xl">add</span>

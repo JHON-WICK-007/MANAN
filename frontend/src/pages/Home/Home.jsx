@@ -95,6 +95,7 @@ const TiltCard = ({ children, className }) => {
 const Home = () => {
     const [specials, setSpecials] = useState([]);
     const [hoveredBtn, setHoveredBtn] = useState(null);
+    const [heroImgError, setHeroImgError] = useState(false);
     const { addItem } = useCart();
 
     useEffect(() => {
@@ -240,8 +241,100 @@ const Home = () => {
                 <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 items-center">
                     <div className="relative order-2 md:order-1">
                         <div className="relative z-10 rounded-2xl overflow-hidden">
-                            <img src="/res.jpg" alt="Restaurant exterior"
-                                className="w-full h-[600px] object-cover" />
+                            {heroImgError ? (
+                                <div
+                                    className="relative w-full h-[600px] flex flex-col items-center justify-center rounded-2xl animate-[fallbackFadeIn_0.5s_ease-out_forwards]"
+                                    style={{
+                                        background: "radial-gradient(ellipse at 50% 40%, rgba(60,42,22,0.7) 0%, rgba(20,14,8,0.95) 55%, #0a0705 100%)",
+                                    }}
+                                >
+                                    {/* Ambient amber vignette */}
+                                    <div
+                                        className="absolute inset-0 rounded-2xl animate-[ambientGlow_4s_ease-in-out_infinite]"
+                                        style={{
+                                            background: "radial-gradient(ellipse at 50% 45%, rgba(238,124,43,0.06) 0%, transparent 65%)",
+                                        }}
+                                    />
+                                    {/* Subtle grain texture */}
+                                    <div
+                                        className="absolute inset-0 rounded-2xl opacity-[0.03] pointer-events-none"
+                                        style={{
+                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                            backgroundSize: "128px 128px",
+                                        }}
+                                    />
+                                    {/* Glass overlay */}
+                                    <div
+                                        className="absolute inset-0 rounded-2xl"
+                                        style={{
+                                            background: "linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 40%)",
+                                            boxShadow: "inset 0 0 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+                                            border: "1px solid rgba(238,124,43,0.1)",
+                                        }}
+                                    />
+                                    {/* Content */}
+                                    <div className="relative z-10 flex flex-col items-center gap-5">
+                                        {/* SVG plate icon */}
+                                        <div
+                                            className="w-20 h-20 flex items-center justify-center"
+                                            style={{
+                                                filter: "drop-shadow(0 0 20px rgba(217,165,90,0.12))",
+                                            }}
+                                        >
+                                            <svg
+                                                width="52"
+                                                height="52"
+                                                viewBox="0 0 64 64"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                {/* Plate outer ring */}
+                                                <circle cx="32" cy="36" r="24" stroke="#c4935a" strokeWidth="1.2" opacity="0.45" />
+                                                {/* Plate inner ring */}
+                                                <circle cx="32" cy="36" r="16" stroke="#c4935a" strokeWidth="0.8" opacity="0.25" />
+                                                {/* Plate center dot */}
+                                                <circle cx="32" cy="36" r="2" fill="#c4935a" opacity="0.3" />
+                                                {/* Fork left */}
+                                                <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
+                                                    <line x1="8" y1="14" x2="8" y2="50" />
+                                                    <line x1="8" y1="14" x2="8" y2="24" />
+                                                    <line x1="5" y1="14" x2="5" y2="22" />
+                                                    <line x1="11" y1="14" x2="11" y2="22" />
+                                                </g>
+                                                {/* Knife right */}
+                                                <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
+                                                    <line x1="56" y1="14" x2="56" y2="50" />
+                                                    <path d="M56 14 C59 16, 59 22, 56 24" />
+                                                </g>
+                                            </svg>
+                                        </div>
+                                        {/* Thin decorative line */}
+                                        <div
+                                            className="w-10 h-px"
+                                            style={{
+                                                background: "linear-gradient(90deg, transparent, rgba(196,147,90,0.3), transparent)",
+                                            }}
+                                        />
+                                        {/* Label */}
+                                        <span
+                                            className="text-[10px] font-medium uppercase"
+                                            style={{
+                                                letterSpacing: "0.35em",
+                                                color: "rgba(168,148,128,0.55)",
+                                            }}
+                                        >
+                                            Visual Coming Soon
+                                        </span>
+                                    </div>
+                                </div>
+                            ) : (
+                                <img
+                                    src="/res.jpg"
+                                    alt="Restaurant exterior"
+                                    className="w-full h-[600px] object-cover"
+                                    onError={() => setHeroImgError(true)}
+                                />
+                            )}
                         </div>
                         <div className="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-primary/40 rounded-tl-2xl"></div>
                         <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r-2 border-b-2 border-primary/40 rounded-br-2xl"></div>
