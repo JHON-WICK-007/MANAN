@@ -21,6 +21,7 @@ footer a {
     border: 2px solid rgba(238, 124, 43, 0.4);
     border-radius: 12px;
     color: white;
+    caret-color: white;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -41,10 +42,14 @@ footer a {
 /* Remove autofill background */
 .footer-newsletter-input:-webkit-autofill,
 .footer-newsletter-input:-webkit-autofill:hover,
-.footer-newsletter-input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 1000px #1a1207 inset !important;
+.footer-newsletter-input:-webkit-autofill:focus,
+.footer-newsletter-input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1a1207 inset !important;
     -webkit-text-fill-color: white !important;
-    border: 2px solid #ee7c2b !important;
+    transition: background-color 5000s ease-in-out 0s;
+    font-size: 16px !important;
+    line-height: 1.5rem !important;
+    font-family: inherit !important;
 }
 
 /* Subscribe Button */
@@ -57,27 +62,35 @@ footer a {
     background: #d46a1f;
 }
 
-/* Success Message Animation */
-@keyframes footerSlideUpFade {
+/* Modal Animation */
+@keyframes modalScaleFade {
     0% {
+        transform: scale(0.95);
         opacity: 0;
-        transform: translateY(10px);
-    }
-
-    20%,
-    80% {
-        opacity: 1;
-        transform: translateY(0);
     }
 
     100% {
-        opacity: 0;
-        transform: translateY(-10px);
+        transform: scale(1);
+        opacity: 1;
     }
 }
 
-.footer-subscribe-success {
-    animation: footerSlideUpFade 3s ease-out;
+@keyframes modalBackdropFade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.modal-backdrop-animate {
+    animation: modalBackdropFade 0.3s ease-out forwards;
+}
+
+.modal-content-animate {
+    animation: modalScaleFade 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Text Selection */

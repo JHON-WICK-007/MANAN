@@ -13,7 +13,6 @@ const Table = () => {
     const [bookingRef, setBookingRef] = useState("");
     const [isEditingGuests, setIsEditingGuests] = useState(false);
     const [guestInput, setGuestInput] = useState("");
-    const [showGuestErrorModal, setShowGuestErrorModal] = useState(false);
 
     // Auto-focus refs
     const timeSection = useRef(null);
@@ -95,7 +94,7 @@ const Table = () => {
 
     const handleReserve = async () => {
         if (!selectedDate || !selectedTime || !guests) return;
-
+        
         // Validate that selected date is not in the past
         if (isDateInPast(year, month, selectedDate)) return;
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
@@ -165,9 +164,9 @@ const Table = () => {
                                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
                                     const dayIsPast = isDateInPast(year, month, day);
                                     return (
-                                        <button
-                                            key={day}
-                                            disabled={dayIsPast}
+                                        <button 
+                                            key={day} 
+                                            disabled={dayIsPast} 
                                             onClick={() => {
                                                 if (!dayIsPast) {
                                                     // Only update the date - preserve time and guests
@@ -192,8 +191,8 @@ const Table = () => {
                             <div ref={guestSection}>
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-500 mb-4">Number of Guests</h3>
                                 <div className="flex items-center space-x-4">
-                                    <button
-                                        disabled={!selectedTime || !guests}
+                                    <button 
+                                        disabled={!selectedTime || !guests} 
                                         onClick={() => {
                                             // Decrement: if guests is 1, reset to null (show "Select")
                                             // Otherwise decrease by 1
@@ -208,68 +207,31 @@ const Table = () => {
                                     >
                                         <span className="material-icons">remove</span>
                                     </button>
-
+                                    
                                     {isEditingGuests ? (
-                                        <input
+                                        <input 
                                             ref={guestInputRef}
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            onChange={(e) => {
-                                                setGuestInput(e.target.value);
-                                            }}
+                                            type="number" 
+                                            min="1" 
+                                            max="100" 
+                                            value={guestInput} 
+                                            onChange={(e) => setGuestInput(e.target.value)}
                                             onBlur={() => {
                                                 const num = parseInt(guestInput, 10);
-                                                if (!isNaN(num)) {
-                                                    if (num > 100) {
-                                                        setShowGuestErrorModal(true);
-                                                        setGuests(100);
-                                                        setGuestInput("100");
-                                                        setIsEditingGuests(false);
-                                                    } else if (num >= 1) {
-                                                        setGuests(num);
-                                                        setIsEditingGuests(false);
-                                                        setGuestInput("");
-                                                    } else {
-                                                        setGuests(1);
-                                                        setIsEditingGuests(false);
-                                                        setGuestInput("");
-                                                    }
-                                                } else if (guestInput !== "") {
-                                                    setGuests(1);
-                                                    setIsEditingGuests(false);
-                                                    setGuestInput("");
-                                                } else {
-                                                    setIsEditingGuests(false);
-                                                    setGuestInput("");
+                                                if (guestInput && !isNaN(num) && num >= 1 && num <= 100) {
+                                                    setGuests(num);
                                                 }
+                                                setIsEditingGuests(false);
+                                                setGuestInput("");
                                             }}
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") {
                                                     const num = parseInt(guestInput, 10);
-                                                    if (!isNaN(num)) {
-                                                        if (num > 100) {
-                                                            setShowGuestErrorModal(true);
-                                                            setGuests(100);
-                                                            setGuestInput("100");
-                                                            setIsEditingGuests(false);
-                                                        } else if (num >= 1) {
-                                                            setGuests(num);
-                                                            setIsEditingGuests(false);
-                                                            setGuestInput("");
-                                                        } else {
-                                                            setGuests(1);
-                                                            setIsEditingGuests(false);
-                                                            setGuestInput("");
-                                                        }
-                                                    } else if (guestInput !== "") {
-                                                        setGuests(1);
-                                                        setIsEditingGuests(false);
-                                                        setGuestInput("");
-                                                    } else {
-                                                        setIsEditingGuests(false);
-                                                        setGuestInput("");
+                                                    if (guestInput && !isNaN(num) && num >= 1 && num <= 100) {
+                                                        setGuests(num);
                                                     }
+                                                    setIsEditingGuests(false);
+                                                    setGuestInput("");
                                                 } else if (e.key === "Escape") {
                                                     setIsEditingGuests(false);
                                                     setGuestInput("");
@@ -279,7 +241,7 @@ const Table = () => {
                                             placeholder="Enter guests"
                                         />
                                     ) : (
-                                        <div
+                                        <div 
                                             onClick={() => {
                                                 setIsEditingGuests(true);
                                                 setGuestInput(guests ? String(guests) : "");
@@ -289,9 +251,9 @@ const Table = () => {
                                             {guests ? String(guests) : "Select"}
                                         </div>
                                     )}
-
-                                    <button
-                                        disabled={!selectedTime}
+                                    
+                                    <button 
+                                        disabled={!selectedTime} 
                                         onClick={() => {
                                             // Increment: if guests is null, start at 1
                                             // Otherwise increment by 1, but cap at 100
@@ -316,15 +278,16 @@ const Table = () => {
                                     {timeSlots.map((t) => {
                                         const isTimePast = isTimeInPastForToday(t);
                                         return (
-                                            <button
-                                                key={t}
+                                            <button 
+                                                key={t} 
                                                 disabled={!selectedDate || isTimePast}
                                                 onClick={() => {
                                                     // Only update time - preserve guests
                                                     setSelectedTime(t);
                                                 }}
-                                                className={`py-2 text-sm rounded border transition-all ${selectedTime === t ? "border-primary bg-primary/20 text-white" : "border-white/10 bg-white/5 hover:border-primary"
-                                                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:bg-white/5`}
+                                                className={`py-2 text-sm rounded border transition-all ${
+                                                    selectedTime === t ? "border-primary bg-primary/20 text-white" : "border-white/10 bg-white/5 hover:border-primary"
+                                                } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:bg-white/5`}
                                                 title={isTimePast && bookingStep >= 1 ? "Time already passed" : ""}
                                             >
                                                 {t}
@@ -336,43 +299,49 @@ const Table = () => {
 
                             <div>
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-500 mb-4">Special Requests</h3>
-                                <textarea
-                                    value={specialReq}
-                                    onChange={(e) => setSpecialReq(e.target.value)}
-                                    rows={3}
+                                <textarea 
+                                    value={specialReq} 
+                                    onChange={(e) => setSpecialReq(e.target.value)} 
+                                    rows={3} 
                                     placeholder="Any dietary needs or preferences..."
-                                    className="input-dark resize-none text-sm"
+                                    className="input-dark resize-none text-sm" 
                                 />
                             </div>
 
                             {/* Reservation Summary */}
                             {bookingStep >= 1 && (
-                                <div className="px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25" style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: '140px 12px 80px 12px 100px',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    fontVariantNumeric: 'tabular-nums'
-                                }}>
-                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap" style={{ visibility: selectedDate ? 'visible' : 'hidden' }}>
-                                        <span className="material-icons text-primary text-lg">event</span>
-                                        <span className="text-white text-sm">{formatSelectedDate() || '\u00A0'}</span>
-                                    </div>
-                                    <span className="text-primary/60 text-center" style={{ visibility: selectedDate && (selectedTime || guests) ? 'visible' : 'hidden' }}>•</span>
-                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap" style={{ visibility: selectedTime ? 'visible' : 'hidden' }}>
-                                        <span className="material-icons text-primary text-lg">schedule</span>
-                                        <span className="text-white text-sm">{selectedTime || '\u00A0'}</span>
-                                    </div>
-                                    <span className="text-primary/60 text-center" style={{ visibility: selectedTime && guests ? 'visible' : 'hidden' }}>•</span>
-                                    <div className="flex items-center justify-center gap-2 whitespace-nowrap" style={{ visibility: guests ? 'visible' : 'hidden' }}>
-                                        <span className="material-icons text-primary text-lg">group</span>
-                                        <span className="text-white text-sm">{guests ? `${guests} guests` : '\u00A0'}</span>
-                                    </div>
+                                <div className="flex items-center justify-center px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25 gap-2">
+                                    {selectedDate && (
+                                        <>
+                                            <div className="flex items-center gap-2 whitespace-nowrap">
+                                                <span className="material-icons text-primary text-lg">event</span>
+                                                <span className="text-white text-sm">{formatSelectedDate()}</span>
+                                            </div>
+                                            {(selectedTime || guests) && <span className="text-primary/60">•</span>}
+                                        </>
+                                    )}
+                                    
+                                    {selectedTime && (
+                                        <>
+                                            <div className="flex items-center gap-2 whitespace-nowrap">
+                                                <span className="material-icons text-primary text-lg">schedule</span>
+                                                <span className="text-white text-sm">{selectedTime}</span>
+                                            </div>
+                                            {guests && <span className="text-primary/60">•</span>}
+                                        </>
+                                    )}
+                                    
+                                    {guests && (
+                                        <div className="flex items-center gap-2 whitespace-nowrap">
+                                            <span className="material-icons text-primary text-lg">group</span>
+                                            <span className="text-white text-sm">{guests} guests</span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
-                            <button
-                                onClick={handleReserve}
+                            <button 
+                                onClick={handleReserve} 
                                 disabled={!selectedDate || !selectedTime || !guests || guests === 0}
                                 className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                             >
@@ -402,45 +371,6 @@ const Table = () => {
                         <button onClick={() => setShowModal(false)} className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold transition-colors">
                             Back to Homepage
                         </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Guest Limit Error Modal */}
-            {showGuestErrorModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
-                    <div
-                        className="relative w-full max-w-sm rounded-[24px] p-8 text-center"
-                        style={{
-                            background: '#1A1412',
-                            border: '1px solid rgba(238, 124, 43, 0.15)',
-                            boxShadow: '0 0 80px rgba(238, 124, 43, 0.08), inset 0 1px 0 rgba(255,255,255,0.03)',
-                            fontFamily: '"Outfit", "Plus Jakarta Sans", "Inter", -apple-system, sans-serif'
-                        }}
-                    >
-                        {/* Subtle red glow perfectly centered behind the icon */}
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-red-500/10 rounded-full blur-[40px] pointer-events-none"></div>
-
-                        {/* Icon */}
-                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10" style={{ background: 'rgba(239, 68, 68, 0.08)' }}>
-                            <span className="material-icons text-3xl" style={{ color: '#ef4444' }}>error_outline</span>
-                        </div>
-
-                        <h2 className="text-2xl font-bold text-white mb-3" style={{ letterSpacing: '-0.02em' }}>Limit Exceeded</h2>
-
-                        <p className="text-stone-400 text-[15px] mb-8 leading-relaxed max-w-[280px] mx-auto">
-                            We can only accommodate a maximum of <strong className="text-white font-semibold">100 guests</strong> per single online reservation.
-                        </p>
-
-                        <span
-                            onClick={() => setShowGuestErrorModal(false)}
-                            className="cursor-pointer text-lg font-bold mt-4 inline-block"
-                            style={{ color: '#ef4444', transition: 'color 0.2s ease' }}
-                            onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
-                            onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
-                        >
-                            Got it!
-                        </span>
                     </div>
                 </div>
             )}

@@ -343,7 +343,7 @@ const Home = () => {
 
                     <div className="order-1 md:order-2">
                         <h2 className="section-label">Our Heritage</h2>
-                        <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">Crafting Memories Since 1984</h3>
+                        <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">Crafting Memories Since <span className="text-primary">1984</span></h3>
                         <p className="text-lg text-stone-400 font-light leading-relaxed mb-8">
                             Born from a passion for authentic flavors and the warmth of shared moments, Lumière has redefined fine dining for four decades.
                             We believe that a meal is more than just sustenance; it is a narrative told through textures, aromas, and visual artistry.
