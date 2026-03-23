@@ -51,38 +51,55 @@ const Menu = () => {
                 <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
                     <div className="flex flex-wrap justify-center gap-3">
                         {categories.map((cat) => (
-                            <button 
-                                key={cat} 
+                            <button
+                                key={cat}
                                 onClick={() => setActiveCategory(cat)}
-                                className={`inline-flex items-center justify-center px-6 py-2 h-10 rounded-full font-medium text-sm transition-colors duration-200 box-border border-2 ${
-                                    activeCategory === cat
-                                        ? "bg-primary text-white border-primary"
-                                        : "bg-white/5 text-stone-300 border-transparent hover:text-white hover:bg-white/10"
-                                }`}
+                                className={`inline-flex items-center justify-center px-6 py-2 h-10 rounded-full font-medium text-sm transition-colors duration-200 box-border border-2 ${activeCategory === cat
+                                    ? "bg-primary text-white border-primary"
+                                    : "bg-white/5 text-stone-300 border-transparent hover:text-white hover:bg-white/10"
+                                    }`}
                             >
                                 {cat}
                             </button>
                         ))}
                     </div>
                     <div className="relative w-full lg:w-96">
-                        <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-stone-500">search</span>
-                        <input value={search} onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-white placeholder:text-stone-500 transition-all"
-                            placeholder="Search for your favorite dish..." />
+                        <span className={`material-icons absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${search ? 'text-primary' : 'text-stone-500'}`}>search</span>
+                        <input
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-full pl-12 pr-10 py-3.5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary/60 focus:bg-white/8 focus:shadow-[0_0_0_3px_rgba(238,124,43,0.12)] text-white placeholder:text-stone-500 transition-all duration-300"
+                            placeholder="Search for your favorite dish..."
+                        />
+                        {search && (
+                            <button
+                                onClick={() => setSearch("")}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-stone-500 hover:text-white transition-colors duration-200"
+                            >
+                                <span className="material-icons text-[18px]">close</span>
+                            </button>
+                        )}
                     </div>
                 </div>
 
                 {/* Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
                     {filtered.map((item) => (
-                        <div key={item._id} className="group card-dark flex flex-col">
+                        <div key={item._id} className="group card-dark flex flex-col h-full">
                             <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
                                 {item.image && (
                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 )}
-                                <div className="absolute top-4 left-4 glass px-3 py-1 rounded-full flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${item.isVeg ? "bg-green-500" : "bg-red-500"}`}></div>
-                                    <span className="text-[10px] font-bold tracking-widest uppercase">{item.isVeg ? "Veg" : "Non-Veg"}</span>
+                                <div className="absolute top-4 left-2 flex items-center justify-center z-10" aria-label={item.isVeg ? "Vegetarian" : "Non-Vegetarian"}>
+                                    {item.isVeg ? (
+                                        <div className="w-6 h-6 border-[3px] border-green-500 flex items-center justify-center rounded-sm backdrop-blur-sm bg-black/30">
+                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                        </div>
+                                    ) : (
+                                        <div className="w-6 h-6 border-[3px] border-red-500 flex items-center justify-center rounded-sm backdrop-blur-sm bg-black/30">
+                                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="absolute top-4 right-4 glass-light px-4 py-2 rounded-xl text-primary font-bold">
                                     ₹{item.price?.toFixed(2)}
@@ -90,12 +107,11 @@ const Menu = () => {
                             </div>
                             <div className="p-6 flex flex-col flex-grow">
                                 <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">{item.name}</h3>
-                                <p className="text-stone-400 text-sm mb-6 leading-relaxed">{item.description}</p>
+                                <p className="text-stone-400 text-sm leading-relaxed mb-6 min-h-[72px]">{item.description}</p>
                                 <div className="flex-grow"></div>
                                 <button onClick={() => addItem(item)}
-                                    className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-all">
-                                    <span className="material-icons text-xl">add</span>
-                                    ADD TO CART
+                                    className="w-full py-3 border border-white/20 rounded-lg text-white font-medium hover:bg-primary hover:border-primary transition-all">
+                                    Add to Cart
                                 </button>
                             </div>
                         </div>

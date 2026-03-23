@@ -10,6 +10,7 @@ const Table = () => {
     const [bookingStep, setBookingStep] = useState(0); // 0 = nothing, 1 = date, 2 = time, 3 = guests
     const [specialReq, setSpecialReq] = useState("");
     const [showModal, setShowModal] = useState(false);
+    const [showGuestLimitModal, setShowGuestLimitModal] = useState(false);
     const [bookingRef, setBookingRef] = useState("");
     const [isEditingGuests, setIsEditingGuests] = useState(false);
     const [guestInput, setGuestInput] = useState("");
@@ -120,9 +121,9 @@ const Table = () => {
             <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(238,124,43,0.15)_0%,rgba(238,124,43,0)_70%)] -z-10"></div>
             <div className="absolute bottom-[-100px] right-0 w-[400px] h-[400px] bg-[radial-gradient(circle,rgba(238,124,43,0.15)_0%,rgba(238,124,43,0)_70%)] -z-10"></div>
 
-            <div className="max-w-5xl mx-auto px-6 md:px-8 pt-16 pb-12">
+            <div className="max-w-5xl mx-auto px-6 md:px-8 py-12">
                 <div className="text-center mb-10">
-                    <h1 className="text-4xl md:text-5xl font-bold text-primary mb-4">Book Your Table</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Book Your <span className="text-primary">Table</span></h1>
                     <p className="text-stone-400 max-w-lg mx-auto">Experience culinary excellence. Secure your evening with us in just a few simple steps.</p>
                 </div>
 
@@ -169,8 +170,10 @@ const Table = () => {
                                             disabled={dayIsPast} 
                                             onClick={() => {
                                                 if (!dayIsPast) {
-                                                    // Only update the date - preserve time and guests
                                                     setSelectedDate(day);
+                                                    setSelectedTime(null);
+                                                    setGuests(null);
+                                                    setIsEditingGuests(false);
                                                 }
                                             }}
                                             className={`aspect-square flex items-center justify-center rounded-xl transition-colors text-sm ${dayIsPast ? "text-stone-600 cursor-not-allowed" :
@@ -218,8 +221,13 @@ const Table = () => {
                                             onChange={(e) => setGuestInput(e.target.value)}
                                             onBlur={() => {
                                                 const num = parseInt(guestInput, 10);
-                                                if (guestInput && !isNaN(num) && num >= 1 && num <= 100) {
-                                                    setGuests(num);
+                                                if (guestInput && !isNaN(num)) {
+                                                    if (num > 100) {
+                                                        setGuests(100);
+                                                        setShowGuestLimitModal(true);
+                                                    } else if (num >= 1) {
+                                                        setGuests(num);
+                                                    }
                                                 }
                                                 setIsEditingGuests(false);
                                                 setGuestInput("");
@@ -227,8 +235,13 @@ const Table = () => {
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") {
                                                     const num = parseInt(guestInput, 10);
-                                                    if (guestInput && !isNaN(num) && num >= 1 && num <= 100) {
-                                                        setGuests(num);
+                                                    if (guestInput && !isNaN(num)) {
+                                                        if (num > 100) {
+                                                            setGuests(100);
+                                                            setShowGuestLimitModal(true);
+                                                        } else if (num >= 1) {
+                                                            setGuests(num);
+                                                        }
                                                     }
                                                     setIsEditingGuests(false);
                                                     setGuestInput("");
@@ -243,23 +256,28 @@ const Table = () => {
                                     ) : (
                                         <div 
                                             onClick={() => {
+                                                if (!selectedTime) return;
                                                 setIsEditingGuests(true);
                                                 setGuestInput(guests ? String(guests) : "");
                                             }}
-                                            className="flex-1 text-center py-2 text-2xl font-bold text-white border-b-2 border-primary/30 cursor-pointer hover:border-primary/60 transition-colors"
+                                            className={`flex-1 text-center py-2 text-2xl font-bold border-b-2 transition-colors ${
+                                                selectedTime 
+                                                    ? 'text-white border-primary/30 cursor-pointer hover:border-primary/60' 
+                                                    : 'text-stone-500 border-stone-800 cursor-not-allowed opacity-50'
+                                            }`}
                                         >
-                                            {guests ? String(guests) : "Select"}
+                                            {guests ? String(guests) : (!selectedTime ? "Select first" : "Select")}
                                         </div>
                                     )}
                                     
                                     <button 
                                         disabled={!selectedTime} 
                                         onClick={() => {
-                                            // Increment: if guests is null, start at 1
-                                            // Otherwise increment by 1, but cap at 100
                                             if (guests === null) {
                                                 setGuests(1);
-                                            } else if (guests < 100) {
+                                            } else if (guests >= 100) {
+                                                setShowGuestLimitModal(true);
+                                            } else {
                                                 setGuests(guests + 1);
                                             }
                                             setIsEditingGuests(false);
@@ -282,8 +300,9 @@ const Table = () => {
                                                 key={t} 
                                                 disabled={!selectedDate || isTimePast}
                                                 onClick={() => {
-                                                    // Only update time - preserve guests
                                                     setSelectedTime(t);
+                                                    setGuests(null);
+                                                    setIsEditingGuests(false);
                                                 }}
                                                 className={`py-2 text-sm rounded border transition-all ${
                                                     selectedTime === t ? "border-primary bg-primary/20 text-white" : "border-white/10 bg-white/5 hover:border-primary"
@@ -309,34 +328,22 @@ const Table = () => {
                             </div>
 
                             {/* Reservation Summary */}
-                            {bookingStep >= 1 && (
-                                <div className="flex items-center justify-center px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25 gap-2">
-                                    {selectedDate && (
-                                        <>
-                                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                                <span className="material-icons text-primary text-lg">event</span>
-                                                <span className="text-white text-sm">{formatSelectedDate()}</span>
-                                            </div>
-                                            {(selectedTime || guests) && <span className="text-primary/60">•</span>}
-                                        </>
-                                    )}
-                                    
-                                    {selectedTime && (
-                                        <>
-                                            <div className="flex items-center gap-2 whitespace-nowrap">
-                                                <span className="material-icons text-primary text-lg">schedule</span>
-                                                <span className="text-white text-sm">{selectedTime}</span>
-                                            </div>
-                                            {guests && <span className="text-primary/60">•</span>}
-                                        </>
-                                    )}
-                                    
-                                    {guests && (
-                                        <div className="flex items-center gap-2 whitespace-nowrap">
-                                            <span className="material-icons text-primary text-lg">group</span>
-                                            <span className="text-white text-sm">{guests} guests</span>
-                                        </div>
-                                    )}
+                            {selectedDate && selectedTime && guests && (
+                                <div className="flex items-center justify-center px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25 gap-1.5 whitespace-nowrap overflow-hidden">
+                                    <div className="flex items-center gap-1">
+                                        <span className="material-icons text-primary text-lg">event</span>
+                                        <span className="text-white text-sm">{formatSelectedDate()}</span>
+                                    </div>
+                                    <span className="text-primary/60">•</span>
+                                    <div className="flex items-center gap-1">
+                                        <span className="material-icons text-primary text-lg">schedule</span>
+                                        <span className="text-white text-sm">{selectedTime}</span>
+                                    </div>
+                                    <span className="text-primary/60">•</span>
+                                    <div className="flex items-center gap-1">
+                                        <span className="material-icons text-primary text-lg">group</span>
+                                        <span className="text-white text-sm">{guests} Guests</span>
+                                    </div>
                                 </div>
                             )}
 
@@ -371,6 +378,42 @@ const Table = () => {
                         <button onClick={() => setShowModal(false)} className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold transition-colors">
                             Back to Homepage
                         </button>
+                    </div>
+                </div>
+            )}
+            {/* Guest Limit Error Modal */}
+            {showGuestLimitModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">
+                    <div
+                        className="relative w-full max-w-sm rounded-[24px] p-8 text-center"
+                        style={{
+                            background: '#1A1412',
+                            border: '1px solid rgba(238, 124, 43, 0.15)',
+                            boxShadow: '0 0 80px rgba(238, 124, 43, 0.08), inset 0 1px 0 rgba(255,255,255,0.03)',
+                            fontFamily: '"Outfit", "Plus Jakarta Sans", "Inter", -apple-system, sans-serif'
+                        }}
+                    >
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-48 bg-red-500/10 rounded-full blur-[40px] pointer-events-none"></div>
+
+                        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 relative z-10" style={{ background: 'rgba(239, 68, 68, 0.08)' }}>
+                            <span className="material-icons text-3xl" style={{ color: '#ef4444' }}>error_outline</span>
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-white mb-3" style={{ letterSpacing: '-0.02em' }}>Limit Exceeded</h2>
+
+                        <p className="text-stone-400 text-[15px] mb-8 leading-relaxed max-w-[280px] mx-auto">
+                            We can only accommodate a maximum of <strong className="text-white font-semibold">100 guests</strong> per online booking.
+                        </p>
+
+                        <span
+                            onClick={() => setShowGuestLimitModal(false)}
+                            className="cursor-pointer text-lg font-bold mt-4 inline-block"
+                            style={{ color: '#ef4444', transition: 'color 0.2s ease' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
+                        >
+                            Got it!
+                        </span>
                     </div>
                 </div>
             )}

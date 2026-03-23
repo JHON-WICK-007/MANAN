@@ -199,8 +199,8 @@ const Footer = () => {
                                         className="flex items-center gap-4 group w-full min-w-0"
                                         aria-label={item.label}
                                     >
-                                        <div className="flex-shrink-0 w-11 h-11 border border-transparent rounded-xl glass-light flex items-center justify-center transition-colors duration-300 group-hover:border-primary/30">
-                                            <span className="material-icons text-lg text-primary">
+                                        <div className="flex-shrink-0 w-11 h-11 border border-transparent rounded-xl glass-light flex items-center justify-center transition-all duration-300 group-hover:text-primary group-hover:border-primary/50 group-hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)]">
+                                            <span className="material-icons text-lg text-primary transition-colors duration-300">
                                                 {item.icon}
                                             </span>
                                         </div>

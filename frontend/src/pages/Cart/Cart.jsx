@@ -69,7 +69,7 @@ const Cart = () => {
         return (
             <main className="min-h-screen pt-20 flex flex-col items-center justify-center text-center px-4">
                 <span className="material-icons text-8xl text-stone-600 mb-6">shopping_bag</span>
-                <h1 className="text-3xl font-bold text-white mb-4">Your Cart is Empty</h1>
+                <h1 className="text-3xl font-bold text-white mb-4">Your <span className="text-primary">Cart</span> is Empty</h1>
                 <p className="text-stone-400 mb-8 max-w-md">Looks like you haven't added anything yet. Explore our menu and discover culinary perfection.</p>
                 <Link to="/menu" className="btn-primary">Browse Menu</Link>
             </main>
@@ -79,7 +79,7 @@ const Cart = () => {
     return (
         <main className="min-h-screen pt-20">
             <div className="max-w-7xl mx-auto px-6 md:px-8 py-12">
-                <h1 className="text-4xl font-bold text-primary mb-2">Your Cart</h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Your <span className="text-primary">Cart</span></h1>
                 <p className="text-stone-400 mb-10">{items.length} {items.length === 1 ? "item" : "items"} in your cart</p>
 
                 <div className="grid lg:grid-cols-3 gap-10">
@@ -101,7 +101,7 @@ const Cart = () => {
                                         <div className="flex items-center bg-white/5 rounded-lg p-1 border border-white/10" style={{ width: '120px', flexShrink: 0 }}>
                                             <button onClick={() => updateQuantity(item._id, item.quantity - 1)}
                                                 className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-primary/20 text-white/70 hover:text-primary transition-all" style={{ flexShrink: 0 }}>
-                                                <span className="material-icons text-sm">remove</span>
+                                                <span className="material-icons text-base font-bold">remove</span>
                                             </button>
                                             <input
                                                 type="number"
@@ -122,7 +122,7 @@ const Cart = () => {
                                                 }
                                             }}
                                                 className="w-8 h-8 flex items-center justify-center rounded-md bg-primary text-white" style={{ flexShrink: 0 }}>
-                                                <span className="material-icons text-sm">add</span>
+                                                <span className="material-icons text-base font-bold">add</span>
                                             </button>
                                         </div>
                                         <button onClick={() => removeItem(item._id)} className="cart-item-delete-btn">

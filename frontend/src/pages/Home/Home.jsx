@@ -209,7 +209,7 @@ const Home = () => {
                 <div className="max-w-7xl mx-auto mb-6">
                     <div className="max-w-xl">
                         <h2 className="section-label">Seasonal Curation</h2>
-                        <h3 className="section-title">Chef's Signature Specials</h3>
+                        <h3 className="section-title">Chef's <span className="text-primary">Signature</span> Specials</h3>
                     </div>
                 </div>
 
@@ -361,9 +361,8 @@ const Home = () => {
                                 <p className="text-stone-500 uppercase text-xs tracking-widest font-bold">Michelin Stars</p>
                             </div>
                         </div>
-                        <Link to="/menu" className="inline-flex items-center gap-2 text-primary font-bold group">
-                            <span>Explore Our Philosophy</span>
-                            <span className="material-icons transition-transform group-hover:translate-x-2">east</span>
+                        <Link to="/menu" className="inline-flex items-center gap-2 text-white hover:text-primary transition-colors duration-300 font-bold group">
+                            <span>Explore Our <span className="text-primary">Philosophy</span></span>
                         </Link>
                     </div>
                 </div>

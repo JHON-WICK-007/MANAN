@@ -83,7 +83,7 @@ const Checkout = () => {
                         <span className="material-icons text-white/60">arrow_back</span>
                     </Link>
                     <div>
-                        <h1 className="text-3xl font-bold text-primary">Checkout</h1>
+                        <h1 className="text-4xl md:text-5xl font-bold text-primary">Checkout</h1>
                         <p className="text-stone-500 text-sm">Secure payment</p>
                     </div>
                 </div>
@@ -165,14 +165,14 @@ const Checkout = () => {
                                     <button
                                         key={pm.id}
                                         onClick={() => setMethod(pm.id)}
-                                        className={`flex items-center gap-3 p-4 rounded-xl border transition-all ${method === pm.id
+                                        className={`group flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 ${method === pm.id
                                             ? "border-primary bg-primary/[0.08] shadow-[inset_0_0_0_1px_rgba(238,124,43,0.3)]"
-                                            : "border-white/5 bg-white/[0.02] hover:border-white/15"
-                                        }`}
+                                            : "border-white/5 bg-white/[0.02] hover:border-primary hover:shadow-[0_0_15px_rgba(238,124,43,0.5)]"
+                                            }`}
                                     >
-                                        <span className={`material-icons text-xl ${method === pm.id ? "text-primary" : "text-white/40"}`}>{pm.icon}</span>
+                                        <span className={`material-icons text-xl transition-colors duration-300 ${method === pm.id ? "text-primary" : "text-white/40 group-hover:text-primary"}`}>{pm.icon}</span>
                                         <div className="text-left">
-                                            <p className={`text-sm font-semibold ${method === pm.id ? "text-white" : "text-white/70"}`}>{pm.label}</p>
+                                            <p className={`text-sm font-semibold transition-colors duration-300 ${method === pm.id ? "text-white" : "text-white/70 group-hover:text-white"}`}>{pm.label}</p>
                                             <p className="text-[11px] text-white/30">{pm.desc}</p>
                                         </div>
                                     </button>
@@ -229,7 +229,7 @@ const Checkout = () => {
                                                 type="password"
                                                 value={cardCvv}
                                                 onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 4))}
-                                                placeholder="&bull;&bull;&bull;"
+                                                placeholder="&bull;&bull;&bull;&bull;"
                                                 maxLength={4}
                                                 className="input-dark"
                                             />

@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "./context/CartContext";
+import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home/Home";
@@ -15,6 +16,7 @@ import AboutContact from "./pages/AboutContact/AboutContact";
 function App() {
     return (
         <CartProvider>
+            <ScrollToTop />
             <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
                 <Navbar />
                 <main className="flex-grow">
