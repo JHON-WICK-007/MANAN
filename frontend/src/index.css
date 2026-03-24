@@ -17,7 +17,13 @@
     }
 
     /* Reset default margins for headings and paragraphs */
-    h1, h2, h3, h4, h5, h6, p {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6,
+    p {
         margin: 0;
     }
 }
@@ -67,11 +73,74 @@
 
     /* Prevent browser autofill from ruining dark mode inputs */
     .input-dark:-webkit-autofill,
-    .input-dark:-webkit-autofill:hover, 
-    .input-dark:-webkit-autofill:focus, 
+    .input-dark:-webkit-autofill:hover,
+    .input-dark:-webkit-autofill:focus,
     .input-dark:-webkit-autofill:active {
         transition: background-color 5000s ease-in-out 0s;
         -webkit-text-fill-color: white !important;
+    }
+
+    /* Global autofill override — covers ALL inputs (profile form, etc.) */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 1000px rgba(20, 12, 6, 0.95) inset !important;
+        box-shadow: 0 0 0 1000px rgba(20, 12, 6, 0.95) inset !important;
+        -webkit-text-fill-color: white !important;
+        caret-color: white;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Profile form field inputs — zero-ghosting dark theme focus */
+    .field-input {
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        outline: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: rgba(0, 0, 0, 0.2) !important;
+        transition: all 0.2s ease, background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s !important;
+    }
+
+    .field-input:hover {
+        background: rgba(0, 0, 0, 0.25) !important;
+    }
+
+    .field-input:focus {
+        outline: none !important;
+        border: none !important;
+        /* Use box-shadow ONLY for the theme ring, preventing any double-line effect */
+        box-shadow: 0 0 0 1px rgba(238, 124, 43, 0.5), 0 0 0 4px rgba(238, 124, 43, 0.1) !important;
+        background: rgba(0, 0, 0, 0.3) !important;
+    }
+
+    /* Base autofill override: apply transparent transition hack */
+    .field-input:-webkit-autofill,
+    .field-input:-webkit-autofill:hover,
+    .field-input:-webkit-autofill:focus,
+    .field-input:-webkit-autofill:active {
+        transition: background-color 5000s ease-in-out 0s, color 5000s ease-in-out 0s, box-shadow 0.2s ease !important;
+        -webkit-text-fill-color: white !important;
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        border: none !important;
+        outline: none !important;
+    }
+
+    /* When idle, ensure no native inset shadow */
+    .field-input:-webkit-autofill {
+        box-shadow: none !important;
+    }
+
+    /* Simulate the 0.25 hover background using a very subtle 5% inset shadow */
+    .field-input:-webkit-autofill:hover {
+        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.05) inset !important;
+    }
+
+    /* Restore the exact precise orange focus ring, plus a 10% inset to simulate the 0.3 focus background */
+    .field-input:-webkit-autofill:focus,
+    .field-input:-webkit-autofill:active {
+        box-shadow: 0 0 0 1000px rgba(0, 0, 0, 0.1) inset, 0 0 0 1px rgba(238, 124, 43, 0.5), 0 0 0 4px rgba(238, 124, 43, 0.1) !important;
     }
 
     /* Remove browser default spinner controls for number inputs */
@@ -301,13 +370,27 @@
 
 /* Fallback image fade-in */
 @keyframes fallbackFadeIn {
-    from { opacity: 0; transform: scale(0.99); }
-    to   { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 @keyframes ambientGlow {
-    0%, 100% { opacity: 0.5; }
-    50%      { opacity: 1; }
+
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
 }
 
 .hide-scrollbar::-webkit-scrollbar {

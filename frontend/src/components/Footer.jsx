@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Footer.css";
 
@@ -102,8 +102,21 @@ const Footer = () => {
         setSubscribeStatus("");
     };
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+    const [isAtTop, setIsAtTop] = useState(true);
+
+    useEffect(() => {
+        const handleScroll = () => setIsAtTop(window.scrollY < 50);
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    const handleScrollBtn = (e) => {
+        if (isAtTop) {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        e.currentTarget.blur();
     };
 
     return (
@@ -336,11 +349,50 @@ const Footer = () => {
 
             {/* Back to Top Button */}
             <button
-                onClick={scrollToTop}
-                className="fixed bottom-8 right-8 w-14 h-14 rounded-2xl bg-primary flex items-center justify-center text-white z-50 animate-float hover:shadow-[0_0_30px_-5px_rgba(238,124,43,0.5)] transition-shadow duration-300"
-                aria-label="Back to top"
+                onClick={handleScrollBtn}
+                className="fixed bottom-8 right-8 z-50 group"
+                aria-label={isAtTop ? 'Scroll to bottom' : 'Back to top'}
+                style={{ outline: 'none', border: 'none', background: 'none', padding: 0 }}
             >
-                <span className="material-icons text-xl">arrow_upward</span>
+                {/* Pulsing ring */}
+                <span
+                    className="absolute inset-0 rounded-2xl animate-ping"
+                    style={{
+                        background: 'rgba(238,124,43,0.25)',
+                        animationDuration: '2s',
+                    }}
+                />
+                {/* Main button */}
+                <span
+                    className="relative flex items-center justify-center w-10 h-10 rounded-2xl"
+                    style={{
+                        background: 'linear-gradient(135deg, rgba(238,124,43,0.9) 0%, rgba(217,110,31,0.95) 100%)',
+                        backdropFilter: 'blur(12px)',
+                        WebkitBackdropFilter: 'blur(12px)',
+                        boxShadow: '0 0 0 1px rgba(238,124,43,0.4), 0 8px 24px -4px rgba(238,124,43,0.5)',
+                        transition: 'all 0.25s ease',
+                    }}
+                    onMouseEnter={e => {
+                        e.currentTarget.style.boxShadow = '0 0 0 1px rgba(238,124,43,0.7), 0 0 40px -4px rgba(238,124,43,0.8), 0 12px 32px -4px rgba(0,0,0,0.4)';
+                        e.currentTarget.style.transform = 'scale(1.08)';
+                    }}
+                    onMouseLeave={e => {
+                        e.currentTarget.style.boxShadow = '0 0 0 1px rgba(238,124,43,0.4), 0 8px 24px -4px rgba(238,124,43,0.5)';
+                        e.currentTarget.style.transform = 'scale(1)';
+                    }}
+                >
+                    <span
+                        className="material-icons text-white text-2xl"
+                        style={{
+                            lineHeight: 1,
+                            display: 'block',
+                            transform: isAtTop ? 'rotate(180deg)' : 'rotate(0deg)',
+                            transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+                        }}
+                    >
+                        keyboard_arrow_up
+                    </span>
+                </span>
             </button>
         </footer>
     );

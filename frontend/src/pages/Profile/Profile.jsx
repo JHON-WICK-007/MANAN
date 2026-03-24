@@ -69,7 +69,7 @@ const Profile = () => {
     const [editForm, setEditForm] = useState({
         firstName: "",
         lastName: "",
-        email: "",
+        userEmailText: "",
         phone: "",
         address: ""
     });
@@ -166,7 +166,7 @@ const Profile = () => {
     return (
         <main className="min-h-screen pt-28 px-4 max-w-[1100px] mx-auto space-y-12 mb-20 font-display">
             {/* SECTION 1: PROFILE HEADER CARD */}
-            <section className="glass rounded-xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_0_15px_rgba(238,124,43,0.15)] relative">
+            <section className="glass rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_0_15px_rgba(238,124,43,0.15)] relative">
                 <div className="absolute top-6 right-6">
                     <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors font-bold uppercase tracking-widest">
                         <span className="material-icons text-lg">logout</span>
@@ -213,7 +213,7 @@ const Profile = () => {
             </section>
 
             {/* SECTION 2: TAB NAVIGATION */}
-            <section className="flex p-1.5 glass rounded-2xl w-full" style={{ gap: '4px' }}>
+            <section className="flex p-1.5 glass rounded-3xl w-full" style={{ gap: '4px' }}>
                 {[
                     { name: "Profile", icon: "person" },
                     { name: "Order History", icon: "receipt_long" },
@@ -255,7 +255,7 @@ const Profile = () => {
             {activeTab === "Profile" && (
                 <section className="space-y-12 animate-fade-in">
                     {/* SECTION 3: PERSONAL INFO */}
-                    <div className="glass rounded-xl p-6 sm:p-10">
+                    <div className="glass rounded-3xl p-6 sm:p-10 border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] focus-within:border-primary/40 focus-within:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300">
                         {/* Fixed-height header row — NEVER changes size */}
                         <div style={{ height: '56px' }} className="flex items-center justify-between mb-10">
                             <h2 style={{ fontSize: '24px', lineHeight: '32px' }} className="text-primary font-bold">Personal Information</h2>
@@ -266,7 +266,7 @@ const Profile = () => {
                                 <button
                                     onClick={handleEditClick}
                                     style={{ height: '40px', padding: '0 18px' }}
-                                    className={`inline-flex items-center gap-2 text-sm font-medium text-stone-400 border border-white/10 rounded-xl transition-all duration-300 absolute right-0
+                                    className={`inline-flex items-center gap-2 text-sm font-medium text-stone-400 border border-white/10 rounded-3xl transition-all duration-300 absolute right-0
                                         hover:text-primary hover:border-primary/50 hover:bg-primary/10 hover:shadow-[0_0_12px_rgba(238,124,43,0.25)]
                                         ${isEditing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                                 >
@@ -282,14 +282,14 @@ const Profile = () => {
                                     <button
                                         onClick={handleCancelEdit}
                                         style={{ height: '40px', padding: '0 18px' }}
-                                        className="inline-flex items-center text-sm font-medium text-stone-300 border border-white/10 rounded-xl hover:text-white hover:border-white/30 hover:bg-white/15 transition-colors"
+                                        className="inline-flex items-center text-sm font-medium text-stone-300 border border-white/10 rounded-3xl hover:text-white hover:border-white/30 hover:bg-white/15 transition-colors"
                                     >
                                         Cancel
                                     </button>
                                     <button
-                                        onClick={handleSaveEdit}
+                                        onClick={(e) => { handleSaveEdit(); e.currentTarget.blur(); }}
                                         style={{ height: '40px', padding: '0 20px' }}
-                                        className="inline-flex items-center text-sm font-bold bg-primary text-white rounded-xl shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
+                                        className="inline-flex items-center text-sm font-bold bg-primary text-white rounded-3xl shadow-lg shadow-primary/20 hover:opacity-90 transition-opacity"
                                     >
                                         Save
                                     </button>
@@ -300,11 +300,12 @@ const Profile = () => {
                             {[
                                 { label: 'First Name', value: user.name.split(' ')[0], key: 'firstName', type: 'text' },
                                 { label: 'Last Name', value: user.name.split(' ').slice(1).join(' ') || '-', key: 'lastName', type: 'text' },
-                                { label: 'Email Address', value: user.email, key: 'email', type: 'email' },
+                                { label: 'Email Address', value: user.email, key: 'email', type: 'text' },
                                 { label: 'Phone Number', value: user.phone || '+91 98765 43210', key: 'phone', type: 'tel' },
-                            ].map(({ label, value, key, type }) => (
-                                <div key={key} className="flex flex-col" style={{ gap: '8px' }}>
-                                    <label style={{ fontSize: '10px', lineHeight: '14px', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }} className="text-stone-400">
+                                { label: 'Address', value: user.address || '123 Main Street, Bandra West, Mumbai - 400050', key: 'address', type: 'text', className: 'md:col-span-2' },
+                            ].map(({ label, value, key, type, className }) => (
+                                <div key={key} className={`flex flex-col ${className || ''}`} style={{ gap: '8px' }}>
+                                    <label style={{ fontSize: '10px', lineHeight: '14px', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700, color: 'white' }}>
                                         {label}
                                     </label>
                                     <div style={{ position: 'relative', width: '100%', height: '52px' }}>
@@ -316,7 +317,7 @@ const Profile = () => {
                                             fontSize: '16px', lineHeight: '24px',
                                             padding: '0 16px',
                                             fontFamily: 'inherit', fontWeight: 400,
-                                            color: 'white', background: 'transparent',
+                                            color: 'rgb(161,161,170)', background: 'transparent',
                                             transition: 'opacity 0.25s',
                                             opacity: isEditing ? 0 : 1,
                                             pointerEvents: isEditing ? 'none' : 'auto',
@@ -326,7 +327,9 @@ const Profile = () => {
                                         {/* Edit input — identical geometry to view text */}
                                         <input
                                             type={type}
-                                            value={editForm[key]}
+                                            value={editForm[key] || ''}
+                                            autoComplete="new-password"
+                                            name={key}
                                             onChange={(e) => setEditForm({ ...editForm, [key]: e.target.value })}
                                             style={{
                                                 position: 'absolute', top: 0, left: 0,
@@ -334,90 +337,52 @@ const Profile = () => {
                                                 fontSize: '16px', lineHeight: '24px',
                                                 padding: '0 16px',
                                                 fontFamily: 'inherit', fontWeight: 400,
-                                                color: 'white', background: 'rgba(0,0,0,0.2)',
-                                                border: '1px solid rgba(255,255,255,0.08)',
+                                                color: 'white',
+                                                border: 'none',
                                                 borderRadius: '12px',
-                                                outline: 'none', boxSizing: 'border-box',
-                                                transition: 'opacity 0.25s',
+                                                boxSizing: 'border-box',
+                                                transition: 'opacity 0.2s ease',
                                                 opacity: isEditing ? 1 : 0,
                                                 pointerEvents: isEditing ? 'auto' : 'none',
                                             }}
-                                            className="focus:shadow-[0_0_0_3px_rgba(238,124,43,0.15)]"
+                                            className="field-input"
                                         />
                                     </div>
                                 </div>
                             ))}
 
-                            {/* Address — full width */}
-                            <div className="md:col-span-2 flex flex-col" style={{ gap: '8px' }}>
-                                <label style={{ fontSize: '10px', lineHeight: '14px', letterSpacing: '0.1em', textTransform: 'uppercase', fontWeight: 700 }} className="text-stone-400">
-                                    Address
-                                </label>
-                                <div style={{ position: 'relative', width: '100%', height: '52px' }}>
-                                    <p style={{
-                                        position: 'absolute', top: 0, left: 0,
-                                        width: '100%', height: '52px',
-                                        display: 'flex', alignItems: 'center',
-                                        fontSize: '16px', lineHeight: '24px',
-                                        padding: '0 16px',
-                                        fontFamily: 'inherit', fontWeight: 400,
-                                        color: 'white', background: 'transparent',
-                                        transition: 'opacity 0.25s',
-                                        opacity: isEditing ? 0 : 1,
-                                        pointerEvents: isEditing ? 'none' : 'auto',
-                                    }}>
-                                        {user.address || '123 Main Street, Bandra West, Mumbai - 400050'}
-                                    </p>
-                                    <input
-                                        type="text"
-                                        value={editForm.address}
-                                        onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                                        style={{
-                                            position: 'absolute', top: 0, left: 0,
-                                            width: '100%', height: '52px',
-                                            fontSize: '16px', lineHeight: '24px',
-                                            padding: '0 16px',
-                                            fontFamily: 'inherit', fontWeight: 400,
-                                            color: 'white', background: 'rgba(0,0,0,0.2)',
-                                            border: '1px solid rgba(255,255,255,0.08)',
-                                            borderRadius: '12px',
-                                            outline: 'none', boxSizing: 'border-box',
-                                            transition: 'opacity 0.25s',
-                                            opacity: isEditing ? 1 : 0,
-                                            pointerEvents: isEditing ? 'auto' : 'none',
-                                        }}
-                                        className="focus:shadow-[0_0_0_3px_rgba(238,124,43,0.15)]"
-                                    />
-                                </div>
-                            </div>
+
                         </div>
                     </div>
 
                     {/* SECTION 4: DINING PREFERENCES */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Dietary Card */}
-                        <div className="glass p-6 rounded-xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
-                            <div className="flex items-start justify-between mb-4">
-                                <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">eco</span>
+                    <div className="glass rounded-3xl p-6 sm:p-8 border border-white/5 transition-all duration-300">
+                        <h2 className="text-xl text-primary font-bold mb-6">Dining Preferences</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Dietary Card */}
+                            <div className="glass p-6 rounded-3xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                <div className="flex items-start justify-between mb-4">
+                                    <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">eco</span>
+                                </div>
+                                <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Dietary</h3>
+                                <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">Vegetarian</p>
                             </div>
-                            <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Dietary</h3>
-                            <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">Vegetarian</p>
-                        </div>
-                        {/* Spice Card */}
-                        <div className="glass p-6 rounded-xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
-                            <div className="flex items-start justify-between mb-4">
-                                <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">local_fire_department</span>
+                            {/* Spice Card */}
+                            <div className="glass p-6 rounded-3xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                <div className="flex items-start justify-between mb-4">
+                                    <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">local_fire_department</span>
+                                </div>
+                                <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Spice Level</h3>
+                                <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">Medium</p>
                             </div>
-                            <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Spice Level</h3>
-                            <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">Medium</p>
-                        </div>
-                        {/* Table Card */}
-                        <div className="glass p-6 rounded-xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
-                            <div className="flex items-start justify-between mb-4">
-                                <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">table_restaurant</span>
+                            {/* Table Card */}
+                            <div className="glass p-6 rounded-3xl border border-white/5 hover:border-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                <div className="flex items-start justify-between mb-4">
+                                    <span className="material-icons text-primary group-hover:scale-125 transition-transform duration-300">table_restaurant</span>
+                                </div>
+                                <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Favorite Table</h3>
+                                <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">T-12 (Corner View)</p>
                             </div>
-                            <h3 className="text-[10px] uppercase tracking-widest text-stone-400 mb-1 font-bold">Favorite Table</h3>
-                            <p className="text-xl text-white font-bold group-hover:text-primary transition-colors duration-300">T-12 (Corner View)</p>
                         </div>
                     </div>
 
@@ -427,7 +392,7 @@ const Profile = () => {
                         {DUMMY_RESERVATIONS.length > 0 ? (
                             <div className="space-y-4">
                                 {DUMMY_RESERVATIONS.slice(0, 2).map((res) => (
-                                    <div key={res.id} className="glass rounded-xl overflow-hidden border-l-2 border-l-primary/60 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                    <div key={res.id} className="glass rounded-3xl overflow-hidden border-l-2 border-l-primary/60 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
                                         <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
                                             <div className="space-y-4 flex-1">
                                                 <div className="flex flex-wrap items-center gap-4">
@@ -447,7 +412,7 @@ const Profile = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col justify-between items-start md:items-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0">
+                                            <div className="flex flex-col justify-center items-start md:items-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0">
                                                 <div className="flex gap-4">
                                                     <button
                                                         onMouseEnter={() => setHoveredDetail(res.id)}
@@ -510,7 +475,7 @@ const Profile = () => {
                                 ))}
                             </div>
                         ) : (
-                            <div className="glass rounded-xl border border-white/5 border-dashed py-10">
+                            <div className="glass rounded-3xl border border-white/5 border-dashed py-10">
                                 <EmptyReservationsState />
                             </div>
                         )}
@@ -522,7 +487,7 @@ const Profile = () => {
             {activeTab === "Settings" && (
                 <section className="space-y-12 animate-fade-in">
                     {/* SECTION 6: SETTINGS */}
-                    <div className="glass rounded-xl p-6 sm:p-10">
+                    <div className="glass rounded-3xl p-6 sm:p-10">
                         <h2 className="text-2xl text-white mb-10 font-bold">Notification Settings</h2>
                         <div className="space-y-8">
                             <div className="flex items-center justify-between py-2 border-b border-white/5 pb-6">
@@ -559,7 +524,7 @@ const Profile = () => {
                     </div>
 
                     {/* SECTION 7: DANGER ZONE */}
-                    <div className="border border-red-500/20 rounded-xl p-6 sm:p-10 bg-red-500/[0.03]">
+                    <div className="border border-red-500/20 rounded-3xl p-6 sm:p-10 bg-red-500/[0.03]">
                         <h2 className="text-2xl text-red-500 mb-8 sm:mb-10 font-bold flex items-center gap-3">
                             <span className="material-icons">warning</span> Danger Zone
                         </h2>
@@ -583,7 +548,7 @@ const Profile = () => {
                     {DUMMY_ORDERS.length > 0 ? (
                         <div className="space-y-4">
                             {DUMMY_ORDERS.map((order) => (
-                                <div key={order.id} className="glass rounded-xl overflow-hidden border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                <div key={order.id} className="glass rounded-3xl overflow-hidden border-l-2 border-l-primary/60 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
                                     <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
                                         <div className="space-y-4 flex-1">
                                             <div className="flex flex-wrap items-center gap-4">
@@ -603,8 +568,8 @@ const Profile = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col justify-between items-start md:items-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0 text-right">
-                                            <span className="text-3xl text-primary font-bold shadow-sm">{order.price}</span>
+                                        <div className="flex flex-col justify-center items-start md:items-end gap-4 border-t md:border-t-0 border-white/10 pt-4 md:pt-0 text-right">
+                                            <span className="text-xl text-primary font-bold">{order.price}</span>
                                             <div className="flex gap-4">
                                                 <button
                                                     onMouseEnter={() => setHoveredDetail(`tab-${order.id}`)}
@@ -623,7 +588,13 @@ const Profile = () => {
                                                         backgroundColor: hoveredDetail === `tab-${order.id}` ? 'rgba(238,124,43,0.12)' : 'rgba(255,255,255,0.04)',
                                                         border: '2px solid rgba(238,124,43,0.6)',
                                                         color: '#ffffff',
+                                                        boxShadow: hoveredDetail === `tab-${order.id}`
+                                                            ? '0 0 20px rgba(238,124,43,0.2), 0 4px 12px rgba(0,0,0,0.3)'
+                                                            : '0 2px 8px rgba(0,0,0,0.25)',
+                                                        transform: hoveredDetail === `tab-${order.id}` ? 'translateY(-2px)' : 'translateY(0)',
                                                         transition: 'all 0.25s ease',
+                                                        backdropFilter: 'blur(8px)',
+                                                        WebkitBackdropFilter: 'blur(8px)',
                                                     }}
                                                 >
                                                     Details
@@ -643,7 +614,12 @@ const Profile = () => {
                                                         letterSpacing: '0.1em',
                                                         textTransform: 'uppercase',
                                                         backgroundColor: hoveredReorder === `tab-${order.id}` ? '#d96e1f' : '#ee7c2b',
+                                                        border: '2px solid transparent',
                                                         color: '#ffffff',
+                                                        boxShadow: hoveredReorder === `tab-${order.id}`
+                                                            ? '0 0 30px rgba(238,124,43,0.45), 0 6px 16px rgba(0,0,0,0.4)'
+                                                            : '0 2px 10px rgba(238,124,43,0.2)',
+                                                        transform: hoveredReorder === `tab-${order.id}` ? 'translateY(-2px)' : 'translateY(0)',
                                                         transition: 'all 0.25s ease',
                                                     }}
                                                 >
@@ -656,7 +632,7 @@ const Profile = () => {
                             ))}
                         </div>
                     ) : (
-                        <div className="glass rounded-xl min-h-[450px] flex items-center justify-center border-dashed border-2 border-white/10">
+                        <div className="glass rounded-3xl min-h-[450px] flex items-center justify-center border-dashed border-2 border-white/10">
                             <EmptyOrdersState />
                         </div>
                     )}
@@ -667,3 +643,5 @@ const Profile = () => {
 };
 
 export default Profile;
+
+

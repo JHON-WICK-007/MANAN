@@ -266,7 +266,7 @@ const Table = () => {
                                                     : 'text-stone-500 border-stone-800 cursor-not-allowed opacity-50'
                                             }`}
                                         >
-                                            {guests ? String(guests) : (!selectedTime ? "Select first" : "Select")}
+                                            {guests ? String(guests) : (!selectedTime ? "Select" : "Select")}
                                         </div>
                                     )}
                                     

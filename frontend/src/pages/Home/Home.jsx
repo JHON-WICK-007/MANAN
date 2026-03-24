@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { useCart } from "../../context/CartContext";
 
 const DUMMY_SPECIALS = [
@@ -152,52 +151,14 @@ const Home = () => {
     return (
         <div>
             {/* ───── Hero ───── */}
-            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-dark">
+            <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <motion.div
-                        style={{
-                            scale: useTransform(useScroll().scrollYProgress, [0, 0.5], [1.05, 1.2]),
-                            opacity: useTransform(useScroll().scrollYProgress, [0, 0.5], [0.6, 0.3])
-                        }}
-                        className="w-full h-full"
-                    >
-                        <img
-                            src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80"
-                            alt="Fine dining"
-                            className="w-full h-full object-cover"
-                        />
-                    </motion.div>
+                    <img
+                        src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80"
+                        alt="Fine dining"
+                        className="w-full h-full object-cover scale-105 opacity-60"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-transparent to-dark" />
-                </div>
-
-                {/* 3D Floating Assets */}
-                <div className="absolute inset-0 z-[5] pointer-events-none perspective-[1000px]">
-                    {[...Array(6)].map((_, i) => (
-                        <motion.div
-                            key={i}
-                            initial={{
-                                x: Math.random() * 100 - 50 + "%",
-                                y: Math.random() * 100 - 50 + "%",
-                                z: Math.random() * 400 - 200,
-                                rotate: Math.random() * 360
-                            }}
-                            animate={{
-                                y: ["-10%", "10%"],
-                                rotate: [0, 360],
-                                scale: [1, 1.1, 1]
-                            }}
-                            transition={{
-                                duration: 10 + Math.random() * 10,
-                                repeat: Infinity,
-                                ease: "linear"
-                            }}
-                            className="absolute w-24 h-24 rounded-2xl border border-white/5 glass-light flex items-center justify-center opacity-30 shadow-[0_0_30px_rgba(238,124,43,0.05)]"
-                        >
-                            <span className="material-icons text-primary/20 text-3xl">
-                                {["eco", "restaurant", "local_bar", "diamond", "auto_awesome", "spa"][i]}
-                            </span>
-                        </motion.div>
-                    ))}
                 </div>
 
                 <div className="relative z-10 text-center px-4 max-w-4xl">
@@ -252,65 +213,34 @@ const Home = () => {
                     </div>
                 </div>
 
-                <div className="relative mt-12 overflow-visible py-10">
-                    <div className="flex gap-12 overflow-x-auto px-[10vw] pb-16 hide-scrollbar snap-x snap-mandatory">
-                        {specials.map((item, idx) => (
-                            <motion.div
-                                key={item._id}
-                                initial={{ opacity: 0, y: 50 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: idx * 0.1 }}
-                                className="min-w-[320px] md:min-w-[420px] snap-center"
-                            >
-                                <TiltCard className="group relative">
-                                    <div className="relative h-[550px] overflow-hidden rounded-2xl" style={{ background: "rgb(34, 24, 16)" }}>
-                                        {item.image && (
-                                            <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
-                                        )}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-dark/95 via-dark/30 to-transparent"></div>
-                                        <div className="relative h-full flex flex-col justify-end p-8">
-                                            <div className="flex items-center gap-3 mb-4">
-                                                <span className="h-px w-8 bg-primary/60"></span>
-                                                <span className="text-primary font-bold text-xs tracking-widest uppercase">{item.category}</span>
-                                            </div>
-                                            <h4 className="text-3xl font-bold text-white mb-3 group-hover:text-primary transition-colors duration-300 tracking-tight">{item.name}</h4>
-                                            <p className="text-stone-400 text-sm font-light mb-8 leading-relaxed line-clamp-2">{item.description}</p>
-                                            <div className="flex items-center justify-between gap-6">
-                                                <span className="text-2xl font-bold text-white">₹{item.price?.toFixed(0)}</span>
-                                                <button onClick={() => addItem(item)}
-                                                    className="px-6 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-xs font-bold uppercase tracking-widest hover:bg-primary hover:border-primary transition-all duration-300">
-                                                    Selection
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </TiltCard>
-                            </motion.div>
-                        ))}
-                    </div>
+                <div className="flex gap-8 overflow-x-auto px-8 pt-4 pb-12 hide-scrollbar snap-x snap-mandatory">
+                    {specials.map((item) => (
+                        <TiltCard key={item._id} className="min-w-[320px] md:min-w-[420px] snap-center group relative">
+                            <div className="relative h-[500px] overflow-hidden" style={{ background: "rgb(34, 24, 16)" }}>
+                                {item.image && (
+                                    <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/20 to-transparent"></div>
+                                <div className="relative h-full flex flex-col justify-end p-6">
+                                    <span className="text-primary font-bold text-sm tracking-widest mb-2">₹{item.price?.toFixed(2)}</span>
+                                    <h4 className="text-2xl font-bold text-white mb-2">{item.name}</h4>
+                                    <p className="text-stone-300 text-sm font-light mb-6">{item.description}</p>
+                                    <button onClick={() => addItem(item)}
+                                        className="w-full py-3 border border-white/20 rounded-lg text-white font-medium group-hover:bg-primary group-hover:border-primary transition-all">
+                                        Add to Selection
+                                    </button>
+                                </div>
+                            </div>
+                        </TiltCard>
+                    ))}
                 </div>
             </section>
 
             {/* ───── Our Story ───── */}
-            <section className="py-24 overflow-hidden relative">
-                {/* 3D Parallax Background Decor */}
-                <motion.div
-                    style={{
-                        y: useTransform(useScroll().scrollYProgress, [0.3, 0.8], [0, -150]),
-                        opacity: 0.1
-                    }}
-                    className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] pointer-events-none"
-                />
-
+            <section className="py-24 overflow-hidden">
                 <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, x: -50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1 }}
-                        className="relative order-2 md:order-1"
-                    >
-                        <div className="relative z-10 rounded-2xl overflow-hidden shadow-2xl">
+                    <div className="relative order-2 md:order-1">
+                        <div className="relative z-10 rounded-2xl overflow-hidden">
                             {heroImgError ? (
                                 <div
                                     className="relative w-full h-[600px] flex flex-col items-center justify-center rounded-2xl animate-[fallbackFadeIn_0.5s_ease-out_forwards]"
@@ -408,7 +338,8 @@ const Home = () => {
                         </div>
                         <div className="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-primary/40 rounded-tl-2xl"></div>
                         <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r-2 border-b-2 border-primary/40 rounded-br-2xl"></div>
-                    </motion.div>
+
+                    </div>
 
                     <div className="order-1 md:order-2">
                         <h2 className="section-label">Our Heritage</h2>
