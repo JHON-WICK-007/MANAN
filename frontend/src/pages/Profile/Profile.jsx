@@ -26,8 +26,8 @@ const DUMMY_ORDERS = [
         items: "Grilled Lobster, Scallops in Garlic Butter, Tiger Prawns",
         date: "Oct 18, 2024",
         price: "₹12,200.00",
-        status: "Completed",
-        statusColor: "blue"
+        status: "Delivered",
+        statusColor: "green"
     },
     {
         id: "LM-87955",
@@ -42,22 +42,31 @@ const DUMMY_ORDERS = [
 
 const DUMMY_RESERVATIONS = [
     {
+        id: "RES-9934",
+        title: "Chef's Table Experience",
+        details: "2 Guests • CT-01 (Kitchen View)",
+        time: "08:00 PM",
+        date: "Nov 02, 2024",
+        status: "Pending",
+        statusColor: "yellow"
+    },
+    {
         id: "RES-9912",
         title: "Dinner for Four",
         details: "4 Guests • T-12 (Corner View)",
         time: "07:30 PM",
         date: "Oct 26, 2024",
         status: "Confirmed",
-        statusColor: "blue"
+        statusColor: "green"
     },
     {
-        id: "RES-9884",
-        title: "Anniversary Celebration",
-        details: "2 Guests • T-05 (Window Side)",
-        time: "08:15 PM",
-        date: "Oct 20, 2024",
-        status: "Completed",
-        statusColor: "green"
+        id: "RES-9821",
+        title: "Business Lunch",
+        details: "6 Guests • Private Dining Room",
+        time: "01:00 PM",
+        date: "Oct 15, 2024",
+        status: "Cancelled",
+        statusColor: "red"
     }
 ];
 
@@ -168,7 +177,13 @@ const Profile = () => {
             {/* SECTION 1: PROFILE HEADER CARD */}
             <section className="glass rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_0_15px_rgba(238,124,43,0.15)] relative">
                 <div className="absolute top-6 right-6">
-                    <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-red-400 hover:text-red-300 transition-colors font-bold uppercase tracking-widest">
+                    <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest"
+                        style={{ color: '#ef4444', transition: 'color 0.2s ease' }}
+                        onMouseEnter={e => e.currentTarget.style.color = '#f87171'}
+                        onMouseLeave={e => e.currentTarget.style.color = '#ef4444'}
+                    >
                         <span className="material-icons text-lg">logout</span>
                         <span className="hidden sm:inline">Sign Out</span>
                     </button>
@@ -206,8 +221,8 @@ const Profile = () => {
                 </div>
                 <div className="hidden lg:block absolute bottom-8 right-8">
                     <div className="text-right">
-                        <p className="uppercase tracking-widest text-[10px] text-stone-400 mb-1 font-bold">Tier Status</p>
-                        <p className="text-2xl text-primary italic font-bold">Lumière Gold</p>
+                        <p className="uppercase tracking-[0.2em] text-[10px] text-stone-400 mb-1 font-bold">Tier Status</p>
+                        <p className="text-3xl text-primary italic font-black tracking-tight" style={{ textShadow: '0 2px 10px rgba(238,124,43,0.3)' }}>Lumière Gold</p>
                     </div>
                 </div>
             </section>
@@ -388,16 +403,16 @@ const Profile = () => {
 
                     {/* SECTION 5: RECENT RESERVATIONS */}
                     <div className="space-y-6">
-                        <h2 className="text-2xl text-primary px-2 font-bold">Recent Experience</h2>
+                        <h2 className="text-2xl text-primary px-2 font-bold">Recent Reservations</h2>
                         {DUMMY_RESERVATIONS.length > 0 ? (
                             <div className="space-y-4">
-                                {DUMMY_RESERVATIONS.slice(0, 2).map((res) => (
-                                    <div key={res.id} className="glass rounded-3xl overflow-hidden border-l-2 border-l-primary/60 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                {DUMMY_RESERVATIONS.slice(0, 4).map((res) => (
+                                    <div key={res.id} className="glass rounded-3xl overflow-hidden border-l-[3px] border-l-primary/90 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
                                         <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
                                             <div className="space-y-4 flex-1">
                                                 <div className="flex flex-wrap items-center gap-4">
                                                     <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Booking #{res.id}</span>
-                                                    <span className={`px-2.5 py-0.5 ${res.statusColor === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/20' : res.statusColor === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} text-[9px] uppercase font-bold tracking-widest rounded-full border`}>
+                                                    <span className={`px-2.5 py-0.5 ${res.statusColor === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/20' : res.statusColor === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : res.statusColor === 'yellow' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} text-[9px] uppercase font-bold tracking-widest rounded-full border`}>
                                                         {res.status}
                                                     </span>
                                                 </div>
@@ -406,42 +421,16 @@ const Profile = () => {
                                                     <p className="text-stone-400 text-sm">{res.details}</p>
                                                 </div>
                                                 <div className="flex flex-wrap items-center gap-6 text-stone-400">
-                                                    <div className="flex items-center gap-1.5">
+                                                    <div className="flex items-center gap-1">
                                                         <span className="material-icons text-base">calendar_month</span>
-                                                        <span className="text-xs font-semibold">{res.date} at {res.time}</span>
+                                                        <span className="text-xs font-semibold pr-1">{res.date}</span>
+                                                        <span className="material-icons text-base ml-1">schedule</span>
+                                                        <span className="text-xs font-semibold">{res.time}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="flex flex-col justify-center items-start md:items-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0">
                                                 <div className="flex gap-4">
-                                                    <button
-                                                        onMouseEnter={() => setHoveredDetail(res.id)}
-                                                        onMouseLeave={() => setHoveredDetail(null)}
-                                                        style={{
-                                                            height: '40px',
-                                                            padding: '0 24px',
-                                                            display: 'inline-flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            borderRadius: '12px',
-                                                            fontSize: '11px',
-                                                            fontWeight: 700,
-                                                            letterSpacing: '0.1em',
-                                                            textTransform: 'uppercase',
-                                                            backgroundColor: hoveredDetail === res.id ? 'rgba(238,124,43,0.12)' : 'rgba(255,255,255,0.04)',
-                                                            border: '2px solid rgba(238,124,43,0.6)',
-                                                            color: '#ffffff',
-                                                            boxShadow: hoveredDetail === res.id
-                                                                ? '0 0 20px rgba(238,124,43,0.2), 0 4px 12px rgba(0,0,0,0.3)'
-                                                                : '0 2px 8px rgba(0,0,0,0.25)',
-                                                            transform: hoveredDetail === res.id ? 'translateY(-2px)' : 'translateY(0)',
-                                                            transition: 'all 0.25s ease',
-                                                            backdropFilter: 'blur(8px)',
-                                                            WebkitBackdropFilter: 'blur(8px)',
-                                                        }}
-                                                    >
-                                                        Details
-                                                    </button>
                                                     <button
                                                         onMouseEnter={() => setHoveredReorder(res.id)}
                                                         onMouseLeave={() => setHoveredReorder(null)}
@@ -453,20 +442,32 @@ const Profile = () => {
                                                             justifyContent: 'center',
                                                             borderRadius: '12px',
                                                             fontSize: '11px',
-                                                            fontWeight: 800,
+                                                            fontWeight: (res.status === 'Pending' || res.status === 'Confirmed') ? 700 : 800,
                                                             letterSpacing: '0.1em',
                                                             textTransform: 'uppercase',
-                                                            backgroundColor: hoveredReorder === res.id ? '#d96e1f' : '#ee7c2b',
-                                                            border: '2px solid transparent',
-                                                            color: '#ffffff',
-                                                            boxShadow: hoveredReorder === res.id
-                                                                ? '0 0 30px rgba(238,124,43,0.45), 0 6px 16px rgba(0,0,0,0.4)'
-                                                                : '0 2px 10px rgba(238,124,43,0.2)',
-                                                            transform: hoveredReorder === res.id ? 'translateY(-2px)' : 'translateY(0)',
                                                             transition: 'all 0.25s ease',
+                                                            backgroundColor: (res.status === 'Pending' || res.status === 'Confirmed')
+                                                                ? (hoveredReorder === res.id ? 'rgba(238, 124, 43, 0.12)' : 'rgba(255, 255, 255, 0.04)')
+                                                                : (hoveredReorder === res.id ? '#d96e1f' : '#ee7c2b'),
+                                                            border: (res.status === 'Pending' || res.status === 'Confirmed')
+                                                                ? `2px solid ${hoveredReorder === res.id ? 'rgba(238, 124, 43, 0.8)' : 'rgba(238, 124, 43, 0.5)'}`
+                                                                : '2px solid transparent',
+                                                            color: '#ffffff',
+                                                            boxShadow: (res.status === 'Pending' || res.status === 'Confirmed')
+                                                                ? (hoveredReorder === res.id ? '0 0 20px rgba(238, 124, 43, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0,0,0,0.25)')
+                                                                : (hoveredReorder === res.id ? '0 0 30px rgba(238, 124, 43, 0.45), 0 6px 16px rgba(0, 0, 0, 0.4)' : '0 2px 10px rgba(238, 124, 43, 0.2)'),
+                                                            transform: hoveredReorder === res.id ? 'translateY(-2px)' : 'translateY(0)',
+                                                            backfaceVisibility: 'hidden',
+                                                            WebkitBackfaceVisibility: 'hidden',
+                                                            transformStyle: 'preserve-3d',
+                                                            WebkitFontSmoothing: 'antialiased',
+                                                            MozOsxFontSmoothing: 'grayscale',
+                                                            willChange: 'transform, box-shadow, background-color',
+                                                            backdropFilter: (res.status === 'Pending' || res.status === 'Confirmed') ? 'blur(8px)' : 'none',
+                                                            WebkitBackdropFilter: (res.status === 'Pending' || res.status === 'Confirmed') ? 'blur(8px)' : 'none',
                                                         }}
                                                     >
-                                                        {res.status === 'Confirmed' ? 'Modify' : 'Rebook'}
+                                                        {(res.status === 'Pending' || res.status === 'Confirmed') ? 'Cancel' : 'Rebook'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -488,7 +489,7 @@ const Profile = () => {
                 <section className="space-y-12 animate-fade-in">
                     {/* SECTION 6: SETTINGS */}
                     <div className="glass rounded-3xl p-6 sm:p-10">
-                        <h2 className="text-2xl text-white mb-10 font-bold">Notification Settings</h2>
+                        <h2 className="text-2xl text-primary mb-10 font-bold">Notification Settings</h2>
                         <div className="space-y-8">
                             <div className="flex items-center justify-between py-2 border-b border-white/5 pb-6">
                                 <div className="space-y-1 pr-4">
@@ -524,18 +525,29 @@ const Profile = () => {
                     </div>
 
                     {/* SECTION 7: DANGER ZONE */}
-                    <div className="border border-red-500/20 rounded-3xl p-6 sm:p-10 bg-red-500/[0.03]">
-                        <h2 className="text-2xl text-red-500 mb-8 sm:mb-10 font-bold flex items-center gap-3">
-                            <span className="material-icons">warning</span> Danger Zone
-                        </h2>
-                        <div className="flex flex-col md:flex-row gap-6 md:items-center justify-between border-t border-red-500/10 pt-6">
-                            <div className="space-y-1">
-                                <p className="text-white font-bold">Security & Privacy</p>
-                                <p className="text-xs text-stone-400">Changing your password will log you out from all other devices.</p>
+                    <div className="glass rounded-3xl p-10 border-l-4 border-l-red-500/80 border-t border-r border-b border-white/5 bg-gradient-to-br from-red-500/[0.04] to-transparent relative overflow-hidden group/danger">
+                        <div className="flex flex-col md:flex-row gap-10 md:items-center justify-between relative z-10">
+                            <div className="space-y-4">
+                                <h2 className="text-3xl text-red-500 font-black italic uppercase tracking-tighter flex items-center gap-4 drop-shadow-[0_2px_12px_rgba(239,68,68,0.25)]">
+                                    <span className="material-icons text-4xl group-hover/danger:rotate-12 transition-transform duration-500">report_problem</span>
+                                    Danger Zone
+                                </h2>
+                                <div className="space-y-2">
+                                    <h3 className="text-xl text-white font-bold tracking-tight">Security & Privacy</h3>
+                                    <p className="text-sm text-stone-400 max-w-md leading-relaxed">Changing your password will log you out from all other devices. This action is final.</p>
+                                </div>
                             </div>
-                            <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-                                <button className="px-6 py-3 sm:py-2.5 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors text-[10px] uppercase tracking-widest font-bold">Change Password</button>
-                                <button className="px-6 py-3 sm:py-2.5 bg-red-500/20 border border-red-500/40 hover:bg-red-500/30 text-red-400 rounded-lg transition-colors text-[10px] uppercase tracking-widest font-bold shadow-lg shadow-red-500/10">Delete Account</button>
+                            <div className="flex flex-col sm:flex-row gap-5 shrink-0">
+                                <button
+                                    className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/40 hover:text-white active:scale-95 backdrop-blur-sm [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
+                                >
+                                    Change Password
+                                </button>
+                                <button
+                                    className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 bg-red-600 border border-transparent hover:bg-red-500 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.45)] hover:-translate-y-0.5 active:scale-95 [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
+                                >
+                                    Delete Account
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -548,7 +560,7 @@ const Profile = () => {
                     {DUMMY_ORDERS.length > 0 ? (
                         <div className="space-y-4">
                             {DUMMY_ORDERS.map((order) => (
-                                <div key={order.id} className="glass rounded-3xl overflow-hidden border-l-2 border-l-primary/60 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
+                                <div key={order.id} className="glass rounded-3xl overflow-hidden border-l-[3px] border-l-primary/90 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
                                     <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
                                         <div className="space-y-4 flex-1">
                                             <div className="flex flex-wrap items-center gap-4">
@@ -569,36 +581,8 @@ const Profile = () => {
                                             </div>
                                         </div>
                                         <div className="flex flex-col justify-center items-start md:items-end gap-4 border-t md:border-t-0 border-white/10 pt-4 md:pt-0 text-right">
-                                            <span className="text-xl text-primary font-bold">{order.price}</span>
+                                            <span className="text-4xl text-primary font-black tracking-tight">{order.price}</span>
                                             <div className="flex gap-4">
-                                                <button
-                                                    onMouseEnter={() => setHoveredDetail(`tab-${order.id}`)}
-                                                    onMouseLeave={() => setHoveredDetail(null)}
-                                                    style={{
-                                                        height: '40px',
-                                                        padding: '0 24px',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        borderRadius: '12px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 700,
-                                                        letterSpacing: '0.1em',
-                                                        textTransform: 'uppercase',
-                                                        backgroundColor: hoveredDetail === `tab-${order.id}` ? 'rgba(238,124,43,0.12)' : 'rgba(255,255,255,0.04)',
-                                                        border: '2px solid rgba(238,124,43,0.6)',
-                                                        color: '#ffffff',
-                                                        boxShadow: hoveredDetail === `tab-${order.id}`
-                                                            ? '0 0 20px rgba(238,124,43,0.2), 0 4px 12px rgba(0,0,0,0.3)'
-                                                            : '0 2px 8px rgba(0,0,0,0.25)',
-                                                        transform: hoveredDetail === `tab-${order.id}` ? 'translateY(-2px)' : 'translateY(0)',
-                                                        transition: 'all 0.25s ease',
-                                                        backdropFilter: 'blur(8px)',
-                                                        WebkitBackdropFilter: 'blur(8px)',
-                                                    }}
-                                                >
-                                                    Details
-                                                </button>
                                                 <button
                                                     onMouseEnter={() => setHoveredReorder(`tab-${order.id}`)}
                                                     onMouseLeave={() => setHoveredReorder(null)}
@@ -621,6 +605,11 @@ const Profile = () => {
                                                             : '0 2px 10px rgba(238,124,43,0.2)',
                                                         transform: hoveredReorder === `tab-${order.id}` ? 'translateY(-2px)' : 'translateY(0)',
                                                         transition: 'all 0.25s ease',
+                                                        backfaceVisibility: 'hidden',
+                                                        WebkitBackfaceVisibility: 'hidden',
+                                                        WebkitFontSmoothing: 'antialiased',
+                                                        MozOsxFontSmoothing: 'grayscale',
+                                                        willChange: 'transform, box-shadow, background-color',
                                                     }}
                                                 >
                                                     Reorder
