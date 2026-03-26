@@ -95,7 +95,7 @@ const Table = () => {
 
     const handleReserve = async () => {
         if (!selectedDate || !selectedTime || !guests) return;
-        
+
         // Validate that selected date is not in the past
         if (isDateInPast(year, month, selectedDate)) return;
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
@@ -129,16 +129,16 @@ const Table = () => {
 
                 <div className="glass w-full rounded-2xl p-8 shadow-2xl">
                     {/* Progress Steps */}
-                    <div className="flex items-center justify-center mb-12 space-x-4 md:space-x-12">
+                    <div className="flex items-start justify-center mb-12 space-x-4 md:space-x-12">
                         {[{ icon: "event", label: "Date", active: bookingStep >= 1 }, { icon: "schedule", label: "Time", active: bookingStep >= 2 }, { icon: "group", label: "Guests", active: bookingStep >= 3 }].map((step, i, arr) => (
-                            <div key={step.label} className="flex items-center gap-4 md:gap-12">
+                            <div key={step.label} className="flex items-start gap-4 md:gap-12">
                                 <div className={`flex flex-col items-center ${step.active ? "" : "opacity-60"}`}>
                                     <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center mb-2 ${step.active ? "border-primary bg-primary text-white shadow-[0_0_15px_rgba(238,124,43,0.3)]" : "border-white/20"}`}>
                                         <span className="material-icons text-sm">{step.icon}</span>
                                     </div>
                                     <span className={`text-xs uppercase tracking-tighter font-semibold ${step.active ? "text-primary" : ""}`}>{step.label}</span>
                                 </div>
-                                {i < arr.length - 1 && <div className={`h-[2px] w-12 md:w-20 ${step.active ? "bg-primary/30" : "bg-white/10"}`}></div>}
+                                {i < arr.length - 1 && <div className={`h-[2px] w-20 md:w-36 mt-[19px] ${step.active ? "bg-primary/30" : "bg-white/10"}`}></div>}
                             </div>
                         ))}
                     </div>
@@ -165,9 +165,9 @@ const Table = () => {
                                 {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
                                     const dayIsPast = isDateInPast(year, month, day);
                                     return (
-                                        <button 
-                                            key={day} 
-                                            disabled={dayIsPast} 
+                                        <button
+                                            key={day}
+                                            disabled={dayIsPast}
                                             onClick={() => {
                                                 if (!dayIsPast) {
                                                     setSelectedDate(day);
@@ -176,9 +176,9 @@ const Table = () => {
                                                     setIsEditingGuests(false);
                                                 }
                                             }}
-                                            className={`aspect-square flex items-center justify-center rounded-xl transition-colors text-sm ${dayIsPast ? "text-stone-600 cursor-not-allowed" :
-                                                selectedDate === day ? "bg-primary/20 border border-primary/50 text-white font-bold" :
-                                                    "hover:bg-white/5 cursor-pointer"
+                                            className={`aspect-square flex items-center justify-center rounded-xl transition-all duration-300 text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ${dayIsPast ? "text-stone-600 cursor-not-allowed" :
+                                                selectedDate === day ? "bg-transparent border border-primary/50 text-primary shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)]" :
+                                                    "hover:bg-white/5 cursor-pointer border border-transparent"
                                                 }`}
                                         >
                                             {day}
@@ -194,8 +194,8 @@ const Table = () => {
                             <div ref={guestSection}>
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-500 mb-4">Number of Guests</h3>
                                 <div className="flex items-center space-x-4">
-                                    <button 
-                                        disabled={!selectedTime || !guests} 
+                                    <button
+                                        disabled={!selectedTime || !guests}
                                         onClick={() => {
                                             // Decrement: if guests is 1, reset to null (show "Select")
                                             // Otherwise decrease by 1
@@ -210,14 +210,14 @@ const Table = () => {
                                     >
                                         <span className="material-icons">remove</span>
                                     </button>
-                                    
+
                                     {isEditingGuests ? (
-                                        <input 
+                                        <input
                                             ref={guestInputRef}
-                                            type="number" 
-                                            min="1" 
-                                            max="100" 
-                                            value={guestInput} 
+                                            type="number"
+                                            min="1"
+                                            max="100"
+                                            value={guestInput}
                                             onChange={(e) => setGuestInput(e.target.value)}
                                             onBlur={() => {
                                                 const num = parseInt(guestInput, 10);
@@ -254,24 +254,23 @@ const Table = () => {
                                             placeholder="Enter guests"
                                         />
                                     ) : (
-                                        <div 
+                                        <div
                                             onClick={() => {
                                                 if (!selectedTime) return;
                                                 setIsEditingGuests(true);
                                                 setGuestInput(guests ? String(guests) : "");
                                             }}
-                                            className={`flex-1 text-center py-2 text-2xl font-bold border-b-2 transition-colors ${
-                                                selectedTime 
-                                                    ? 'text-white border-primary/30 cursor-pointer hover:border-primary/60' 
-                                                    : 'text-stone-500 border-stone-800 cursor-not-allowed opacity-50'
-                                            }`}
+                                            className={`flex-1 text-center py-2 text-2xl font-bold border-b-2 transition-colors ${selectedTime
+                                                ? 'text-white border-primary/30 cursor-pointer hover:border-primary/60'
+                                                : 'text-stone-500 border-stone-800 cursor-not-allowed opacity-50'
+                                                }`}
                                         >
                                             {guests ? String(guests) : (!selectedTime ? "Select" : "Select")}
                                         </div>
                                     )}
-                                    
-                                    <button 
-                                        disabled={!selectedTime} 
+
+                                    <button
+                                        disabled={!selectedTime}
                                         onClick={() => {
                                             if (guests === null) {
                                                 setGuests(1);
@@ -296,17 +295,16 @@ const Table = () => {
                                     {timeSlots.map((t) => {
                                         const isTimePast = isTimeInPastForToday(t);
                                         return (
-                                            <button 
-                                                key={t} 
+                                            <button
+                                                key={t}
                                                 disabled={!selectedDate || isTimePast}
                                                 onClick={() => {
                                                     setSelectedTime(t);
                                                     setGuests(null);
                                                     setIsEditingGuests(false);
                                                 }}
-                                                className={`py-2 text-sm rounded border transition-all ${
-                                                    selectedTime === t ? "border-primary bg-primary/20 text-white" : "border-white/10 bg-white/5 hover:border-primary"
-                                                } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:bg-white/5`}
+                                                className={`py-2 text-sm rounded-xl border transition-all duration-300 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ${selectedTime === t ? "border-primary/50 bg-transparent text-primary shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)]" : "border-white/10 bg-transparent text-stone-300 hover:text-white hover:border-primary"
+                                                    } disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-white/10 disabled:hover:text-stone-300`}
                                                 title={isTimePast && bookingStep >= 1 ? "Time already passed" : ""}
                                             >
                                                 {t}
@@ -318,12 +316,12 @@ const Table = () => {
 
                             <div>
                                 <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-500 mb-4">Special Requests</h3>
-                                <textarea 
-                                    value={specialReq} 
-                                    onChange={(e) => setSpecialReq(e.target.value)} 
-                                    rows={3} 
+                                <textarea
+                                    value={specialReq}
+                                    onChange={(e) => setSpecialReq(e.target.value)}
+                                    rows={3}
                                     placeholder="Any dietary needs or preferences..."
-                                    className="input-dark resize-none text-sm" 
+                                    className="input-dark resize-none text-sm"
                                 />
                             </div>
 
@@ -347,8 +345,8 @@ const Table = () => {
                                 </div>
                             )}
 
-                            <button 
-                                onClick={handleReserve} 
+                            <button
+                                onClick={handleReserve}
                                 disabled={!selectedDate || !selectedTime || !guests || guests === 0}
                                 className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                             >

@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import ScrollReveal, { ScrollSection, fadeUp } from "../../components/ScrollReveal";
+import { motion } from "framer-motion";
 
 const categories = ["All Items", "Starters", "Main Course", "Desserts", "Beverages"];
 
@@ -42,14 +45,16 @@ const Menu = () => {
         <main className="min-h-screen pt-20">
             <div className="max-w-7xl mx-auto px-6 md:px-8 py-12">
                 {/* Title */}
-                <div className="mb-12 text-center">
-                    <h1 className="text-5xl font-bold mb-4 tracking-tight">Our Curated <span className="text-primary">Menu</span></h1>
-                    <p className="text-stone-400 max-w-2xl mx-auto">Experience a symphony of flavors crafted with the finest seasonal ingredients and modern culinary techniques.</p>
-                </div>
+                <ScrollSection className="mb-12 text-center">
+                    <ScrollReveal>
+                        <h1 className="text-5xl font-bold mb-4 tracking-tight">Our Curated <span className="text-primary">Menu</span></h1>
+                        <p className="text-stone-400 max-w-2xl mx-auto">Experience a symphony of flavors crafted with the finest seasonal ingredients and modern culinary techniques.</p>
+                    </ScrollReveal>
+                </ScrollSection>
 
                 {/* Filters + Search */}
-                <div className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
-                    <div className="flex flex-wrap justify-center gap-3">
+                <ScrollSection className="flex flex-col lg:flex-row gap-6 items-center justify-between mb-12">
+                    <ScrollReveal custom={0} className="flex flex-wrap justify-center gap-3">
                         {categories.map((cat) => (
                             <button
                                 key={cat}
@@ -62,15 +67,15 @@ const Menu = () => {
                                 {cat}
                             </button>
                         ))}
-                    </div>
-                    <div className="relative w-full lg:w-96">
-                        <span className={`material-icons absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300 ${search ? 'text-primary' : 'text-stone-500'}`}>search</span>
+                    </ScrollReveal>
+                    <ScrollReveal custom={1} className="relative w-full lg:w-96">
                         <input
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="w-full pl-12 pr-10 py-3.5 bg-white/5 border border-white/10 rounded-2xl focus:outline-none focus:border-primary/60 focus:bg-white/8 focus:shadow-[0_0_0_3px_rgba(238,124,43,0.12)] text-white placeholder:text-stone-500 transition-all duration-300"
+                            className="input-dark pl-12 pr-10 peer"
                             placeholder="Search for your favorite dish..."
                         />
+                        <span className={`material-icons absolute left-4 top-1/2 -translate-y-1/2 transition-all duration-300 pointer-events-none peer-focus:text-primary peer-focus:drop-shadow-[0_0_12px_rgba(238,124,43,0.8)] ${search ? 'text-primary drop-shadow-[0_0_8px_rgba(238,124,43,0.5)]' : 'text-stone-500'}`}>search</span>
                         {search && (
                             <button
                                 onClick={() => setSearch("")}
@@ -79,27 +84,19 @@ const Menu = () => {
                                 <span className="material-icons text-[18px]">close</span>
                             </button>
                         )}
-                    </div>
-                </div>
+                    </ScrollReveal>
+                </ScrollSection>
 
-                {/* Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {filtered.map((item) => (
-                        <div key={item._id} className="group card-dark flex flex-col h-full">
+                {/* Grid — stagger container matches About page pattern */}
+                <ScrollSection className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+                    {filtered.map((item, idx) => (
+                        <ScrollReveal key={item._id} custom={idx % 3} className="group card-dark flex flex-col h-full">
                             <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
                                 {item.image && (
                                     <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                 )}
-                                <div className="absolute top-4 left-2 flex items-center justify-center z-10" aria-label={item.isVeg ? "Vegetarian" : "Non-Vegetarian"}>
-                                    {item.isVeg ? (
-                                        <div className="w-6 h-6 border-[3px] border-green-500 flex items-center justify-center rounded-sm backdrop-blur-sm bg-black/30">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                                        </div>
-                                    ) : (
-                                        <div className="w-6 h-6 border-[3px] border-red-500 flex items-center justify-center rounded-sm backdrop-blur-sm bg-black/30">
-                                            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                                        </div>
-                                    )}
+                                <div className="absolute top-0 left-0 z-10">
+                                    <div className={`w-5 h-5 rounded-br-lg ${item.isVeg ? 'bg-green-600' : 'bg-red-600'}`}></div>
                                 </div>
                                 <div className="absolute top-4 right-4 glass-light px-4 py-2 rounded-xl text-primary font-bold">
                                     ₹{item.price?.toFixed(2)}
@@ -114,15 +111,25 @@ const Menu = () => {
                                     Add to Cart
                                 </button>
                             </div>
-                        </div>
+                        </ScrollReveal>
                     ))}
-                </div>
+                </ScrollSection>
 
                 {filtered.length === 0 && (
                     <div className="text-center py-20">
                         <span className="material-icons text-6xl text-stone-600 mb-4">search_off</span>
                         <p className="text-stone-400 text-xl">No dishes found</p>
                     </div>
+                )}
+
+                {/* Go to Cart Link */}
+                {filtered.length > 0 && (
+                    <ScrollReveal delay={0.4} className="mt-16 mb-8 flex justify-center">
+                        <Link to="/cart" className="flex items-center gap-2 text-stone-400 hover:text-primary transition-colors duration-300 font-medium text-[15px]">
+                            Go to cart
+                            <span className="material-icons text-[20px]">arrow_forward</span>
+                        </Link>
+                    </ScrollReveal>
                 )}
             </div>
         </main>

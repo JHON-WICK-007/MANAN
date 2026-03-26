@@ -69,7 +69,7 @@ const Cart = () => {
         return (
             <main className="min-h-screen pt-20 flex flex-col items-center justify-center text-center px-4">
                 <span className="material-icons text-8xl text-stone-600 mb-6">shopping_bag</span>
-                <h1 className="text-3xl font-bold text-white mb-4">Your <span className="text-primary">Cart</span> is Empty</h1>
+                <h1 className="text-4xl md:text-5xl font-bold mb-4 text-white">Your <span className="text-primary">Cart</span> is Empty</h1>
                 <p className="text-stone-400 mb-8 max-w-md">Looks like you haven't added anything yet. Explore our menu and discover culinary perfection.</p>
                 <Link to="/menu" className="btn-primary">Browse Menu</Link>
             </main>

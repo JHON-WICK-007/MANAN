@@ -11,6 +11,7 @@ const healthRoutes = require("./routes/healthRoutes");
 const authRoutes = require("./routes/authRoutes");
 const menuRoutes = require("./routes/menuRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
+const orderRoutes = require("./routes/orderRoutes");
 
 // Initialize app
 const app = express();
@@ -29,6 +30,7 @@ app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/menu", menuRoutes);
 app.use("/api/reservations", reservationRoutes);
+app.use("/api/orders", orderRoutes);
 
 // --- 404 handler ---
 app.use((req, res) => {

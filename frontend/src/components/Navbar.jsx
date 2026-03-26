@@ -82,28 +82,29 @@ const Navbar = () => {
 
                             {/* Desktop Nav Links */}
                             <div className="hidden lg:flex items-center space-x-1">
-                                {navLinks.map((link) => (
-                                    <Link
-                                        key={link.path}
-                                        to={link.path}
-                                        className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide transition-colors duration-300 ${isActive(link.path)
-                                            ? "text-primary"
-                                            : "text-gray-300 hover:text-white"
+                                {navLinks.map((link) => {
+                                    const active = isActive(link.path);
+                                    return (
+                                        <Link
+                                            key={link.path}
+                                            to={link.path}
+                                            className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide ${
+                                                active ? "text-primary" : "text-gray-300 hover:text-white"
                                             }`}
-                                    >
-                                        {link.name}
-                                        {isActive(link.path) && (
-                                            <motion.div
-                                                layoutId="activeUnderline"
-                                                className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+                                        >
+                                            {link.name}
+                                            <div
+                                                className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full origin-center ${
+                                                    active ? "transition-transform duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" : ""
+                                                }`}
                                                 style={{
                                                     background: `linear-gradient(to right, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
+                                                    transform: active ? "scaleX(1)" : "scaleX(0)",
                                                 }}
-                                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                             />
-                                        )}
-                                    </Link>
-                                ))}
+                                        </Link>
+                                    );
+                                })}
                             </div>
                         </div>
 
@@ -169,7 +170,7 @@ const Navbar = () => {
                                     <Link
                                         key={link.path}
                                         to={link.path}
-                                        className={`block px-5 py-3 rounded-xl font-medium border transition-colors duration-300 ${isActive(link.path)
+                                        className={`block px-5 py-3 rounded-xl font-medium border ${isActive(link.path)
                                             ? "border-primary/50 bg-primary/10 text-primary"
                                             : "border-transparent text-gray-300 hover:bg-white/5 hover:text-white"
                                             }`}

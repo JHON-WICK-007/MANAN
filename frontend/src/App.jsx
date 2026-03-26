@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { CartProvider } from "./context/CartContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
@@ -13,6 +14,37 @@ import OrderStatus from "./pages/OrderStatus/OrderStatus";
 import Checkout from "./pages/Checkout/Checkout";
 import AboutContact from "./pages/AboutContact/AboutContact";
 
+/* AnimatedRoutes: AnimatePresence directly wraps the motion.div so exit/enter work */
+function AnimatedRoutes() {
+    const location = useLocation();
+
+    return (
+        <AnimatePresence mode="wait">
+            <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ width: "100%" }}
+            >
+                <Routes location={location}>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/login" element={<Auth />} />
+                    <Route path="/register" element={<Auth />} />
+                    <Route path="/table" element={<Table />} />
+                    <Route path="/cart" element={<Cart />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/profile" element={<Profile />} />
+                    <Route path="/order-status" element={<OrderStatus />} />
+                    <Route path="/about" element={<AboutContact />} />
+                </Routes>
+            </motion.div>
+        </AnimatePresence>
+    );
+}
+
 function App() {
     return (
         <CartProvider>
@@ -20,18 +52,7 @@ function App() {
             <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
                 <Navbar />
                 <main className="flex-grow">
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/menu" element={<Menu />} />
-                        <Route path="/login" element={<Auth />} />
-                        <Route path="/register" element={<Auth />} />
-                        <Route path="/table" element={<Table />} />
-                        <Route path="/cart" element={<Cart />} />
-                        <Route path="/checkout" element={<Checkout />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/order-status" element={<OrderStatus />} />
-                        <Route path="/about" element={<AboutContact />} />
-                    </Routes>
+                    <AnimatedRoutes />
                 </main>
                 <Footer />
             </div>

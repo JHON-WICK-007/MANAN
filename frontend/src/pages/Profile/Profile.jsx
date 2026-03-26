@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import ScrollReveal from "../../components/ScrollReveal";
 
 const DUMMY_USER = {
     _id: "u1",
@@ -71,7 +72,11 @@ const DUMMY_RESERVATIONS = [
 ];
 
 const Profile = () => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        const stored = localStorage.getItem("user");
+        if (stored) return JSON.parse(stored);
+        return DUMMY_USER;
+    });
     const [activeTab, setActiveTab] = useState("Profile");
     const [isEditing, setIsEditing] = useState(false);
     const [hoveredTab, setHoveredTab] = useState(null);
@@ -103,15 +108,6 @@ const Profile = () => {
             reader.readAsDataURL(file);
         }
     };
-
-    useEffect(() => {
-        const stored = localStorage.getItem("user");
-        if (stored) {
-            setUser(JSON.parse(stored));
-        } else {
-            setUser(DUMMY_USER);
-        }
-    }, []);
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -175,7 +171,7 @@ const Profile = () => {
     return (
         <main className="min-h-screen pt-28 px-4 max-w-[1100px] mx-auto space-y-12 mb-20 font-display">
             {/* SECTION 1: PROFILE HEADER CARD */}
-            <section className="glass rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_0_15px_rgba(238,124,43,0.15)] relative">
+            <ScrollReveal as="section" className="glass rounded-3xl p-8 flex flex-col md:flex-row items-center gap-8 shadow-[0_0_15px_rgba(238,124,43,0.15)] relative">
                 <div className="absolute top-6 right-6">
                     <button
                         onClick={handleLogout}
@@ -225,10 +221,10 @@ const Profile = () => {
                         <p className="text-3xl text-primary italic font-black tracking-tight" style={{ textShadow: '0 2px 10px rgba(238,124,43,0.3)' }}>Lumière Gold</p>
                     </div>
                 </div>
-            </section>
+            </ScrollReveal>
 
             {/* SECTION 2: TAB NAVIGATION */}
-            <section className="flex p-1.5 glass rounded-3xl w-full" style={{ gap: '4px' }}>
+            <ScrollReveal delay={1} as="section" className="flex p-1.5 glass rounded-3xl w-full" style={{ gap: '4px' }}>
                 {[
                     { name: "Profile", icon: "person" },
                     { name: "Order History", icon: "receipt_long" },
@@ -264,7 +260,7 @@ const Profile = () => {
                         {tab.name}
                     </button>
                 ))}
-            </section>
+            </ScrollReveal>
 
             {/* PROFILE TAB CONTENT */}
             {activeTab === "Profile" && (
@@ -544,7 +540,7 @@ const Profile = () => {
                                     Change Password
                                 </button>
                                 <button
-                                    className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 bg-red-600 border border-transparent hover:bg-red-500 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.45)] hover:-translate-y-0.5 active:scale-95 [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
+                                    className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 bg-red-600 border border-transparent hover:bg-red-500 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.45)] active:scale-95 [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
                                 >
                                     Delete Account
                                 </button>
@@ -627,10 +623,16 @@ const Profile = () => {
                     )}
                 </section>
             )}
+
+            {/* Back to Home Link */}
+            <ScrollReveal delay={0.4} className="mt-20 mb-4 flex justify-center w-full">
+                <Link to="/" className="flex items-center gap-2 text-stone-400 hover:text-primary transition-colors duration-300 font-medium text-[15px]">
+                    <span className="material-icons text-[20px]">arrow_back</span>
+                    Back to Home
+                </Link>
+            </ScrollReveal>
         </main>
     );
 };
 
 export default Profile;
-
-

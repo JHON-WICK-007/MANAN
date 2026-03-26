@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
+import ScrollReveal from "../../components/ScrollReveal";
 
 const DUMMY_SPECIALS = [
     { _id: "s1", name: "Smoked Wagyu Ribeye", description: "45-day dry-aged beef, served with black garlic purée and charred heritage carrots.", price: 850, image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80", isVeg: false, category: "Main Course" },
@@ -69,7 +70,8 @@ const TiltCard = ({ children, className }) => {
                     borderRadius: "1rem",
                     overflow: "hidden",
                     position: "relative",
-                    border: "2px solid rgba(255, 255, 255, 0.12)",
+                    transform: "translateZ(0)",
+                    WebkitMaskImage: "-webkit-radial-gradient(white, black)",
                 }}
             >
                 {children}
@@ -207,15 +209,16 @@ const Home = () => {
             {/* ───── Chef's Specials ───── */}
             <section className="pt-32 pb-12 px-4 md:px-20">
                 <div className="max-w-7xl mx-auto mb-6">
-                    <div className="max-w-xl">
+                    <ScrollReveal className="max-w-xl">
                         <h2 className="section-label">Seasonal Curation</h2>
                         <h3 className="section-title">Chef's <span className="text-primary">Signature</span> Specials</h3>
-                    </div>
+                    </ScrollReveal>
                 </div>
 
                 <div className="flex gap-8 overflow-x-auto px-8 pt-4 pb-12 hide-scrollbar snap-x snap-mandatory">
-                    {specials.map((item) => (
+                    {specials.map((item, idx) => (
                         <TiltCard key={item._id} className="min-w-[320px] md:min-w-[420px] snap-center group relative">
+                            <ScrollReveal delay={idx}>
                             <div className="relative h-[500px] overflow-hidden" style={{ background: "rgb(34, 24, 16)" }}>
                                 {item.image && (
                                     <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
@@ -231,6 +234,7 @@ const Home = () => {
                                     </button>
                                 </div>
                             </div>
+                            </ScrollReveal>
                         </TiltCard>
                     ))}
                 </div>
@@ -341,7 +345,7 @@ const Home = () => {
 
                     </div>
 
-                    <div className="order-1 md:order-2">
+                    <ScrollReveal className="order-1 md:order-2">
                         <h2 className="section-label">Our Heritage</h2>
                         <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">Crafting Memories Since <span className="text-primary">1984</span></h3>
                         <p className="text-lg text-stone-400 font-light leading-relaxed mb-8">
@@ -364,7 +368,7 @@ const Home = () => {
                         <Link to="/menu" className="inline-flex items-center gap-2 text-white hover:text-primary transition-colors duration-300 font-bold group">
                             <span>Explore Our <span className="text-primary">Philosophy</span></span>
                         </Link>
-                    </div>
+                    </ScrollReveal>
                 </div>
             </section>
         </div>
