@@ -3,8 +3,27 @@ import { useState, useRef, useEffect } from "react";
 const timeSlots = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
 const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+const TABLES = [
+    { id: "CT-01", view: "Kitchen View", capacity: 2 },
+    { id: "CT-02", view: "Chef Counter", capacity: 2 },
+    { id: "TR-08", view: "Terrace View", capacity: 2 },
+    { id: "WD-02", view: "Window View", capacity: 2 },
+    { id: "CF-09", view: "Romantic Booth", capacity: 2 },
+    { id: "T-12", view: "Corner View", capacity: 4 },
+    { id: "T-14", view: "Center Hall", capacity: 4 },
+    { id: "GD-03", view: "Garden View", capacity: 4 },
+    { id: "PD-05", view: "Private Dining", capacity: 6 },
+    { id: "GD-06", view: "Outdoor Garden", capacity: 6 },
+    { id: "FM-15", view: "Family Table", capacity: 6 },
+    { id: "PD-07", view: "VIP Room", capacity: 8 },
+    { id: "FM-18", view: "Large Group", capacity: 8 },
+];
+
 const Table = () => {
     const [guests, setGuests] = useState(null);
+    const [selectedTable, setSelectedTable] = useState("");
+    const [tableDropdownOpen, setTableDropdownOpen] = useState(false);
+    const filteredTables = guests ? TABLES.filter(t => t.capacity === guests) : [];
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [bookingStep, setBookingStep] = useState(0); // 0 = nothing, 1 = date, 2 = time, 3 = guests
@@ -94,25 +113,64 @@ const Table = () => {
     };
 
     const handleReserve = async () => {
-        if (!selectedDate || !selectedTime || !guests) return;
+        if (!selectedDate || !selectedTime || !guests || !selectedTable) return;
 
         // Validate that selected date is not in the past
         if (isDateInPast(year, month, selectedDate)) return;
         const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(selectedDate).padStart(2, "0")}`;
         const token = localStorage.getItem("token");
 
+        // Helper: format date for display (e.g. "Nov 02, 2024")
+        const formatForDisplay = (ds) => {
+            const d = new Date(ds + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+        };
+
+        // Helper: format time to 12-hr (e.g. "18:30" → "06:30 PM")
+        const to12hr = (t) => {
+            const [h, m] = t.split(':').map(Number);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            const hr = h % 12 || 12;
+            return `${String(hr).padStart(2, '0')}:${String(m).padStart(2, '0')} ${ampm}`;
+        };
+
+        // Build the local reservation entry
+        const tableInfo = TABLES.find(t => t.id === selectedTable);
+        const refId = 'RES-' + Math.floor(1000 + Math.random() * 9000);
+        const localEntry = {
+            id: refId,
+            title: tableInfo ? `${tableInfo.view} Table` : 'Table Reservation',
+            details: `${guests} Guest${guests > 1 ? 's' : ''} • ${selectedTable} (${tableInfo?.view || ''})`,
+            date: formatForDisplay(dateStr),
+            time: to12hr(selectedTime),
+            status: 'Pending',
+            statusColor: 'yellow',
+            createdAt: Date.now(),
+        };
+
         try {
             const res = await fetch("/api/reservations", {
                 method: "POST",
                 headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-                body: JSON.stringify({ date: dateStr, time: selectedTime, guests, specialRequests: specialReq }),
+                body: JSON.stringify({ date: dateStr, time: selectedTime, guests, table: selectedTable, specialRequests: specialReq }),
             });
             const data = await res.json();
             if (data.success) {
-                setBookingRef(data.data._id?.slice(-8)?.toUpperCase() || "XXXX");
-                setShowModal(true);
+                const apiRef = data.data._id?.slice(-6)?.toUpperCase() || refId;
+                localEntry.id = 'RES-' + apiRef;
+                setBookingRef(localEntry.id);
+            } else {
+                setBookingRef(refId);
             }
-        } catch { }
+        } catch {
+            setBookingRef(refId);
+        }
+
+        // Save to localStorage regardless of API success
+        const existing = JSON.parse(localStorage.getItem('reservations') || '[]');
+        existing.unshift(localEntry);
+        localStorage.setItem('reservations', JSON.stringify(existing.slice(0, 20)));
+        setShowModal(true);
     };
 
     return (
@@ -173,10 +231,12 @@ const Table = () => {
                                                     setSelectedDate(day);
                                                     setSelectedTime(null);
                                                     setGuests(null);
+                                                    setSelectedTable("");
+                                                    setTableDropdownOpen(false);
                                                     setIsEditingGuests(false);
                                                 }
                                             }}
-                                            className={`aspect-square flex items-center justify-center rounded-xl transition-all duration-300 text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ${dayIsPast ? "text-stone-600 cursor-not-allowed" :
+                                            className={`aspect-square flex items-center justify-center rounded-xl transition-[background-color,color,box-shadow] duration-300 text-sm outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ${dayIsPast ? "text-stone-600 cursor-not-allowed" :
                                                 selectedDate === day ? "bg-transparent border border-primary/50 text-primary shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)]" :
                                                     "hover:bg-white/5 cursor-pointer border border-transparent"
                                                 }`}
@@ -216,14 +276,14 @@ const Table = () => {
                                             ref={guestInputRef}
                                             type="number"
                                             min="1"
-                                            max="100"
+                                            max="20"
                                             value={guestInput}
                                             onChange={(e) => setGuestInput(e.target.value)}
                                             onBlur={() => {
                                                 const num = parseInt(guestInput, 10);
                                                 if (guestInput && !isNaN(num)) {
-                                                    if (num > 100) {
-                                                        setGuests(100);
+                                                    if (num > 20) {
+                                                        setGuests(20);
                                                         setShowGuestLimitModal(true);
                                                     } else if (num >= 1) {
                                                         setGuests(num);
@@ -236,8 +296,8 @@ const Table = () => {
                                                 if (e.key === "Enter") {
                                                     const num = parseInt(guestInput, 10);
                                                     if (guestInput && !isNaN(num)) {
-                                                        if (num > 100) {
-                                                            setGuests(100);
+                                                        if (num > 20) {
+                                                            setGuests(20);
                                                             setShowGuestLimitModal(true);
                                                         } else if (num >= 1) {
                                                             setGuests(num);
@@ -274,7 +334,7 @@ const Table = () => {
                                         onClick={() => {
                                             if (guests === null) {
                                                 setGuests(1);
-                                            } else if (guests >= 100) {
+                                            } else if (guests >= 20) {
                                                 setShowGuestLimitModal(true);
                                             } else {
                                                 setGuests(guests + 1);
@@ -286,6 +346,87 @@ const Table = () => {
                                         <span className="material-icons text-white">add</span>
                                     </button>
                                 </div>
+                            </div>
+
+                            {/* Table Dropdown - Custom glassmorphism */}
+                            <div className="relative">
+                                <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-500 mb-4">Select Table</h3>
+
+                                {/* Trigger button */}
+                                <button
+                                    type="button"
+                                    disabled={!guests}
+                                    onClick={() => guests && setTableDropdownOpen(o => !o)}
+                                    className={`w-full flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-medium transition-all duration-200 outline-none focus:outline-none ${!guests
+                                        ? 'border-white/10 text-white/40 cursor-not-allowed'
+                                        : selectedTable
+                                            ? 'border-primary/60 text-primary shadow-[0_0_18px_-4px_rgba(238,124,43,0.4)]'
+                                            : 'border-white/10 text-stone-300 hover:border-primary/30 hover:text-white'
+                                        }`}
+                                    style={{ background: 'rgba(34,24,16,0.8)' }}
+                                >
+                                    <span className="flex items-center gap-2.5">
+                                        <span className={`material-icons text-[18px] ${selectedTable ? 'text-primary' : 'text-white/60'}`}>table_restaurant</span>
+                                        {selectedTable
+                                            ? (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()
+                                            : (!guests ? 'Select guests first' : `${filteredTables.length} tables available`)
+                                        }
+                                    </span>
+                                    <span className={`material-icons text-lg transition-transform duration-200 ${tableDropdownOpen ? 'rotate-180 text-primary' : selectedTable ? 'text-primary' : 'text-white/50'
+                                        }`}>expand_more</span>
+                                </button>
+
+                                {/* Dropdown panel */}
+                                {tableDropdownOpen && guests && (
+                                    <>
+                                        {/* backdrop to close on outside click */}
+                                        <div className="fixed inset-0 z-10" onClick={() => setTableDropdownOpen(false)} />
+                                        <div
+                                            className="absolute z-20 top-[calc(100%+6px)] left-0 right-0 rounded-xl overflow-hidden"
+                                            style={{
+                                                background: 'rgba(18,11,5,0.97)',
+                                                boxShadow: '0 16px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(238,124,43,0.06)',
+                                                backdropFilter: 'blur(16px)',
+                                            }}
+                                        >
+                                            {/* Header */}
+                                            <div className="px-3 py-2 border-b border-white/5">
+                                                <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold">
+                                                    {filteredTables.length} tables for {guests} guests
+                                                </span>
+                                            </div>
+                                            {/* Options */}
+                                            <div className="max-h-52 overflow-y-auto hide-scrollbar">
+                                                {filteredTables.map((table) => {
+                                                    const isSelected = selectedTable === table.id;
+                                                    return (
+                                                        <button
+                                                            key={table.id}
+                                                            type="button"
+                                                            onClick={() => { setSelectedTable(table.id); setTableDropdownOpen(false); }}
+                                                            className={`w-full flex items-center justify-between px-4 py-3 text-sm transition-all duration-150 ${isSelected
+                                                                ? 'bg-primary/15 text-primary'
+                                                                : 'text-stone-300 hover:bg-white/5 hover:text-white'
+                                                                }`}
+                                                        >
+                                                            <span className="flex items-center gap-3">
+                                                                <span className={`material-icons text-base ${isSelected ? 'text-primary' : 'text-stone-600'}`}>chair</span>
+                                                                <span>
+                                                                    <span className={`font-bold mr-2 ${isSelected ? 'text-primary' : 'text-white'}`}>{table.id}</span>
+                                                                    <span className="text-stone-500">{table.view}</span>
+                                                                </span>
+                                                            </span>
+                                                            <span className="flex items-center gap-2">
+                                                                <span className={`text-xs px-2 py-0.5 rounded-full border ${isSelected ? 'border-primary/40 bg-primary/10 text-primary' : 'border-white/10 text-stone-500'
+                                                                    }`}>{table.capacity} guests</span>
+                                                            </span>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
                             {/* STEP 2: Time Selection - Disabled until date selected */}
@@ -301,6 +442,8 @@ const Table = () => {
                                                 onClick={() => {
                                                     setSelectedTime(t);
                                                     setGuests(null);
+                                                    setSelectedTable("");
+                                                    setTableDropdownOpen(false);
                                                     setIsEditingGuests(false);
                                                 }}
                                                 className={`py-2 text-sm rounded-xl border transition-all duration-300 outline-none focus:outline-none focus-visible:outline-none focus:ring-0 ${selectedTime === t ? "border-primary/50 bg-transparent text-primary shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)]" : "border-white/10 bg-transparent text-stone-300 hover:text-white hover:border-primary"
@@ -327,7 +470,7 @@ const Table = () => {
 
                             {/* Reservation Summary */}
                             {selectedDate && selectedTime && guests && (
-                                <div className="flex items-center justify-center px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25 gap-1.5 whitespace-nowrap overflow-hidden">
+                                <div className="flex flex-wrap items-center justify-center px-4 py-3 rounded-lg bg-stone-900/40 border border-primary/25 gap-x-2 gap-y-1">
                                     <div className="flex items-center gap-1">
                                         <span className="material-icons text-primary text-lg">event</span>
                                         <span className="text-white text-sm">{formatSelectedDate()}</span>
@@ -342,12 +485,13 @@ const Table = () => {
                                         <span className="material-icons text-primary text-lg">group</span>
                                         <span className="text-white text-sm">{guests} Guests</span>
                                     </div>
+
                                 </div>
                             )}
 
                             <button
                                 onClick={handleReserve}
-                                disabled={!selectedDate || !selectedTime || !guests || guests === 0}
+                                disabled={!selectedDate || !selectedTime || !guests || !selectedTable}
                                 className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                             >
                                 <span>RESERVE NOW</span>
@@ -400,7 +544,7 @@ const Table = () => {
                         <h2 className="text-2xl font-bold text-white mb-3" style={{ letterSpacing: '-0.02em' }}>Limit Exceeded</h2>
 
                         <p className="text-stone-400 text-[15px] mb-8 leading-relaxed max-w-[280px] mx-auto">
-                            We can only accommodate a maximum of <strong className="text-white font-semibold">100 guests</strong> per online booking.
+                            We can only accommodate a maximum of <strong className="text-white font-semibold">20 guests</strong> per online booking.
                         </p>
 
                         <span

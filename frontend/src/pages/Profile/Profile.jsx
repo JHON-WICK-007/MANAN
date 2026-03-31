@@ -88,9 +88,29 @@ const Profile = () => {
         address: ""
     });
     const [hoveredDetail, setHoveredDetail] = useState(false);
-    const [hoveredReorder, setHoveredReorder] = useState(false);
+    const [hoveredReorder, setHoveredReorder] = useState(null);
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
+
+    // Load real reservations from localStorage, merge with dummies
+    const [reservations, setReservations] = useState(() => {
+        const saved = JSON.parse(localStorage.getItem('reservations') || '[]');
+        // Deduplicate by id; real ones first
+        const allIds = new Set(saved.map(r => r.id));
+        const dummies = DUMMY_RESERVATIONS.filter(r => !allIds.has(r.id));
+        return [...saved, ...dummies];
+    });
+
+    const cancelReservation = (id) => {
+        // Remove from localStorage (only real ones are stored there)
+        const saved = JSON.parse(localStorage.getItem('reservations') || '[]');
+        const updated = saved.filter(r => r.id !== id);
+        localStorage.setItem('reservations', JSON.stringify(updated));
+        // Update state: mark dummy ones as cancelled, remove real ones
+        setReservations(prev =>
+            prev.map(r => r.id === id ? { ...r, status: 'Cancelled', statusColor: 'red' } : r)
+        );
+    };
 
     const handlePhotoClick = () => {
         fileInputRef.current.click();
@@ -400,9 +420,9 @@ const Profile = () => {
                     {/* SECTION 5: RECENT RESERVATIONS */}
                     <div className="space-y-6">
                         <h2 className="text-2xl text-primary px-2 font-bold">Recent Reservations</h2>
-                        {DUMMY_RESERVATIONS.length > 0 ? (
+                        {reservations.length > 0 ? (
                             <div className="space-y-4">
-                                {DUMMY_RESERVATIONS.slice(0, 4).map((res) => (
+                                {reservations.slice(0, 6).map((res) => (
                                     <div key={res.id} className="glass rounded-3xl overflow-hidden border-l-[3px] border-l-primary/90 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
                                         <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
                                             <div className="space-y-4 flex-1">
@@ -430,6 +450,7 @@ const Profile = () => {
                                                     <button
                                                         onMouseEnter={() => setHoveredReorder(res.id)}
                                                         onMouseLeave={() => setHoveredReorder(null)}
+                                                        onClick={() => (res.status === 'Pending' || res.status === 'Confirmed') && cancelReservation(res.id)}
                                                         style={{
                                                             height: '40px',
                                                             padding: '0 24px',
