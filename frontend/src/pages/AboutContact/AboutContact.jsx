@@ -82,13 +82,18 @@ const AboutContact = () => {
             {/* ══════════════════════════ 1. HERO ══════════════════════════ */}
             <section className="relative h-[70vh] min-h-[520px] flex items-center justify-center overflow-hidden">
                 {/* Background */}
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80"
-                        alt="Restaurant interior"
-                        className="w-full h-full object-cover scale-105 opacity-40"
+                <div className="absolute inset-0 z-0 bg-black">
+                    <div 
+                        className="w-full h-full scale-105 opacity-40"
+                        style={{
+                            backgroundColor: '#000000',
+                            backgroundImage: `url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80')`,
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                        }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-dark/90 via-dark/60 to-dark" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-dark/90 via-dark/60 to-dark z-[1]" />
                 </div>
 
                 {/* Content */}

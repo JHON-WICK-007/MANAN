@@ -14,7 +14,7 @@ export default {
                 },
                 dark: {
                     DEFAULT: '#221810',
-                    deep: '#1a1207',
+                    deep: '#1a110a',
                     card: '#2a1f14',
                 },
             },

@@ -14,47 +14,39 @@ import OrderStatus from "./pages/OrderStatus/OrderStatus";
 import Checkout from "./pages/Checkout/Checkout";
 import AboutContact from "./pages/AboutContact/AboutContact";
 
-/* AnimatedRoutes: AnimatePresence directly wraps the motion.div so exit/enter work */
+/* AnimatedRoutes: Removed AnimatePresence and motion wrapper to prevent Hero unmounting/fading as a container */
 function AnimatedRoutes() {
     const location = useLocation();
 
     return (
-        <AnimatePresence mode="wait">
-            <motion.div
-                key={location.pathname}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-                style={{ width: "100%" }}
-            >
-                <Routes location={location}>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/menu" element={<Menu />} />
-                    <Route path="/login" element={<Auth />} />
-                    <Route path="/register" element={<Auth />} />
-                    <Route path="/table" element={<Table />} />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/order-status" element={<OrderStatus />} />
-                    <Route path="/about" element={<AboutContact />} />
-                </Routes>
-            </motion.div>
-        </AnimatePresence>
+        <Routes location={location}>
+            <Route path="/" element={<Home />} />
+            <Route path="/menu" element={<Menu />} />
+            <Route path="/login" element={<Auth />} />
+            <Route path="/register" element={<Auth />} />
+            <Route path="/table" element={<Table />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/order-status" element={<OrderStatus />} />
+            <Route path="/about" element={<AboutContact />} />
+        </Routes>
     );
 }
 
 function App() {
+    const location = useLocation();
+    const hideNavAndFooter = ["/login", "/register"].includes(location.pathname);
+
     return (
         <CartProvider>
             <ScrollToTop />
             <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
-                <Navbar />
+                {!hideNavAndFooter && <Navbar />}
                 <main className="flex-grow">
                     <AnimatedRoutes />
                 </main>
-                <Footer />
+                {!hideNavAndFooter && <Footer />}
             </div>
         </CartProvider>
     );

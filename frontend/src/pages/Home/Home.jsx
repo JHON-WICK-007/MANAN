@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
 import ScrollReveal from "../../components/ScrollReveal";
 
@@ -154,16 +155,28 @@ const Home = () => {
         <div>
             {/* ───── Hero ───── */}
             <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80"
-                        alt="Fine dining"
-                        className="w-full h-full object-cover scale-105 opacity-60"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-transparent to-dark" />
-                </div>
+                {/* 1. Static Background Image Container at z-0 */}
+                <div 
+                    className="absolute inset-0 w-full h-full z-0"
+                    style={{
+                        backgroundColor: '#000000',
+                        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1920&q=80')`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                    }}
+                />
 
-                <div className="relative z-10 text-center px-4 max-w-4xl">
+                {/* 2. Static Gradient Overlay at z-[1] */}
+                <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-transparent to-dark z-[1]" />
+
+                {/* 3. Animated Hero Content Wrapper at z-[2] */}
+                <motion.div 
+                    className="relative z-[2] text-center px-4 max-w-4xl"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
                     <div className="inline-flex items-center gap-3 px-6 py-2.5 mb-8 rounded-full bg-white/[0.06] border border-white/[0.12] backdrop-blur-md shadow-[0_0_30px_rgba(238,124,43,0.08)]">
                         <span className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(238,124,43,0.6)]" />
                         <span className="text-[11px] font-semibold tracking-[0.35em] uppercase text-stone-300">
@@ -203,174 +216,178 @@ const Home = () => {
                             Book Your Table
                         </Link>
                     </div>
-                </div>
+                </motion.div>
             </section>
 
-            {/* ───── Chef's Specials ───── */}
-            <section className="pt-32 pb-12 px-4 md:px-20">
-                <div className="max-w-7xl mx-auto mb-6">
-                    <ScrollReveal className="max-w-xl">
-                        <h2 className="section-label">Seasonal Curation</h2>
-                        <h3 className="section-title">Chef's <span className="text-primary">Signature</span> Specials</h3>
-                    </ScrollReveal>
-                </div>
-
-                <div className="flex gap-8 overflow-x-auto px-8 pt-4 pb-12 hide-scrollbar snap-x snap-mandatory">
-                    {specials.map((item, idx) => (
-                        <TiltCard key={item._id} className="min-w-[320px] md:min-w-[420px] snap-center group relative">
-                            <ScrollReveal delay={idx}>
-                            <div className="relative h-[500px] overflow-hidden" style={{ background: "rgb(34, 24, 16)" }}>
-                                {item.image && (
-                                    <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
-                                )}
-                                <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/20 to-transparent"></div>
-                                <div className="relative h-full flex flex-col justify-end p-6">
-                                    <span className="text-primary font-bold text-sm tracking-widest mb-2">₹{item.price?.toFixed(2)}</span>
-                                    <h4 className="text-2xl font-bold text-white mb-2">{item.name}</h4>
-                                    <p className="text-stone-300 text-sm font-light mb-6">{item.description}</p>
-                                    <button onClick={() => addItem(item)}
-                                        className="w-full py-3 border border-white/20 rounded-lg text-white font-medium group-hover:bg-primary group-hover:border-primary transition-all">
-                                        Add to Selection
-                                    </button>
-                                </div>
-                            </div>
-                            </ScrollReveal>
-                        </TiltCard>
-                    ))}
-                </div>
-            </section>
-
-            {/* ───── Our Story ───── */}
-            <section className="py-24 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 items-center">
-                    <div className="relative order-2 md:order-1">
-                        <div className="relative z-10 rounded-2xl overflow-hidden">
-                            {heroImgError ? (
-                                <div
-                                    className="relative w-full h-[600px] flex flex-col items-center justify-center rounded-2xl animate-[fallbackFadeIn_0.5s_ease-out_forwards]"
-                                    style={{
-                                        background: "radial-gradient(ellipse at 50% 40%, rgba(60,42,22,0.7) 0%, rgba(20,14,8,0.95) 55%, #0a0705 100%)",
-                                    }}
-                                >
-                                    {/* Ambient amber vignette */}
-                                    <div
-                                        className="absolute inset-0 rounded-2xl animate-[ambientGlow_4s_ease-in-out_infinite]"
-                                        style={{
-                                            background: "radial-gradient(ellipse at 50% 45%, rgba(238,124,43,0.06) 0%, transparent 65%)",
-                                        }}
-                                    />
-                                    {/* Subtle grain texture */}
-                                    <div
-                                        className="absolute inset-0 rounded-2xl opacity-[0.03] pointer-events-none"
-                                        style={{
-                                            backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
-                                            backgroundSize: "128px 128px",
-                                        }}
-                                    />
-                                    {/* Glass overlay */}
-                                    <div
-                                        className="absolute inset-0 rounded-2xl"
-                                        style={{
-                                            background: "linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 40%)",
-                                            boxShadow: "inset 0 0 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
-                                            border: "1px solid rgba(238,124,43,0.1)",
-                                        }}
-                                    />
-                                    {/* Content */}
-                                    <div className="relative z-10 flex flex-col items-center gap-5">
-                                        {/* SVG plate icon */}
-                                        <div
-                                            className="w-20 h-20 flex items-center justify-center"
-                                            style={{
-                                                filter: "drop-shadow(0 0 20px rgba(217,165,90,0.12))",
-                                            }}
-                                        >
-                                            <svg
-                                                width="52"
-                                                height="52"
-                                                viewBox="0 0 64 64"
-                                                fill="none"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                            >
-                                                {/* Plate outer ring */}
-                                                <circle cx="32" cy="36" r="24" stroke="#c4935a" strokeWidth="1.2" opacity="0.45" />
-                                                {/* Plate inner ring */}
-                                                <circle cx="32" cy="36" r="16" stroke="#c4935a" strokeWidth="0.8" opacity="0.25" />
-                                                {/* Plate center dot */}
-                                                <circle cx="32" cy="36" r="2" fill="#c4935a" opacity="0.3" />
-                                                {/* Fork left */}
-                                                <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
-                                                    <line x1="8" y1="14" x2="8" y2="50" />
-                                                    <line x1="8" y1="14" x2="8" y2="24" />
-                                                    <line x1="5" y1="14" x2="5" y2="22" />
-                                                    <line x1="11" y1="14" x2="11" y2="22" />
-                                                </g>
-                                                {/* Knife right */}
-                                                <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
-                                                    <line x1="56" y1="14" x2="56" y2="50" />
-                                                    <path d="M56 14 C59 16, 59 22, 56 24" />
-                                                </g>
-                                            </svg>
-                                        </div>
-                                        {/* Thin decorative line */}
-                                        <div
-                                            className="w-10 h-px"
-                                            style={{
-                                                background: "linear-gradient(90deg, transparent, rgba(196,147,90,0.3), transparent)",
-                                            }}
-                                        />
-                                        {/* Label */}
-                                        <span
-                                            className="text-[10px] font-medium uppercase"
-                                            style={{
-                                                letterSpacing: "0.35em",
-                                                color: "rgba(168,148,128,0.55)",
-                                            }}
-                                        >
-                                            Visual Coming Soon
-                                        </span>
-                                    </div>
-                                </div>
-                            ) : (
-                                <img
-                                    src="/res.jpg"
-                                    alt="Restaurant exterior"
-                                    className="w-full h-[600px] object-cover"
-                                    onError={() => setHeroImgError(true)}
-                                />
-                            )}
-                        </div>
-                        <div className="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-primary/40 rounded-tl-2xl"></div>
-                        <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r-2 border-b-2 border-primary/40 rounded-br-2xl"></div>
-
+            {/* UNIFIED WRAPPER (to fix the subpixel gap / 1px line rendering issues between sections) */}
+            <div className="relative z-10 bg-dark" style={{ marginTop: '-4px' }}>
+                {/* ───── Chef's Specials ───── */}
+                <section className="pt-32 pb-12 px-4 md:px-20">
+                    <div className="max-w-7xl mx-auto mb-6">
+                        <ScrollReveal className="max-w-xl">
+                            <h2 className="section-label">Seasonal Curation</h2>
+                            <h3 className="section-title">Chef's <span className="text-primary">Signature</span> Specials</h3>
+                        </ScrollReveal>
                     </div>
 
-                    <ScrollReveal className="order-1 md:order-2">
-                        <h2 className="section-label">Our Heritage</h2>
-                        <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">Crafting Memories Since <span className="text-primary">1984</span></h3>
-                        <p className="text-lg text-stone-400 font-light leading-relaxed mb-8">
-                            Born from a passion for authentic flavors and the warmth of shared moments, Lumière has redefined fine dining for four decades.
-                            We believe that a meal is more than just sustenance; it is a narrative told through textures, aromas, and visual artistry.
-                        </p>
-                        <p className="text-lg text-stone-400 font-light leading-relaxed mb-10">
-                            Our ingredients are sourced from local artisans who share our commitment to quality, ensuring that every dish we serve is a testament to the richness of our terroir.
-                        </p>
-                        <div className="grid grid-cols-2 gap-8 mb-12">
-                            <div>
-                                <p className="text-3xl font-bold text-primary mb-1">12k+</p>
-                                <p className="text-stone-500 uppercase text-xs tracking-widest font-bold">Happy Diners</p>
+                    <div className="flex gap-8 overflow-x-auto px-8 pt-4 pb-12 hide-scrollbar snap-x snap-mandatory">
+                        {specials.map((item, idx) => (
+                            <TiltCard key={item._id} className="min-w-[320px] md:min-w-[420px] snap-center group relative">
+                                <ScrollReveal delay={idx}>
+                                    <div className="relative h-[500px] overflow-hidden" style={{ background: "#000000" }}>
+                                        {item.image && (
+                                            <img src={item.image} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-110 transition-transform duration-700" />
+                                        )}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-dark via-dark/20 to-transparent"></div>
+                                        <div className="relative h-full flex flex-col justify-end p-6">
+                                            <span className="text-primary font-bold text-sm tracking-widest mb-2">₹{item.price?.toFixed(2)}</span>
+                                            <h4 className="text-2xl font-bold text-white mb-2">{item.name}</h4>
+                                            <p className="text-stone-300 text-sm font-light mb-6">{item.description}</p>
+                                            <button onClick={() => addItem(item)}
+                                                className="w-full py-3 border border-white/20 rounded-lg text-white font-medium group-hover:bg-primary group-hover:border-primary transition-all">
+                                                Add to Selection
+                                            </button>
+                                        </div>
+                                    </div>
+                                </ScrollReveal>
+                            </TiltCard>
+                        ))}
+                    </div>
+                </section>
+
+                {/* ───── Our Story ───── */}
+                <section className="py-24 overflow-hidden">
+                    <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 items-center">
+                        <div className="relative order-2 md:order-1">
+                            <div className="relative z-10 rounded-2xl overflow-hidden">
+                                {heroImgError ? (
+                                    <div
+                                        className="relative w-full h-[600px] flex flex-col items-center justify-center rounded-2xl animate-[fallbackFadeIn_0.5s_ease-out_forwards]"
+                                        style={{
+                                            background: "radial-gradient(ellipse at 50% 40%, rgba(60,42,22,0.7) 0%, rgba(20,14,8,0.95) 55%, #0a0705 100%)",
+                                        }}
+                                    >
+                                        {/* Ambient amber vignette */}
+                                        <div
+                                            className="absolute inset-0 rounded-2xl animate-[ambientGlow_4s_ease-in-out_infinite]"
+                                            style={{
+                                                background: "radial-gradient(ellipse at 50% 45%, rgba(238,124,43,0.06) 0%, transparent 65%)",
+                                            }}
+                                        />
+                                        {/* Subtle grain texture */}
+                                        <div
+                                            className="absolute inset-0 rounded-2xl opacity-[0.03] pointer-events-none"
+                                            style={{
+                                                backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                                backgroundSize: "128px 128px",
+                                            }}
+                                        />
+                                        {/* Glass overlay */}
+                                        <div
+                                            className="absolute inset-0 rounded-2xl"
+                                            style={{
+                                                background: "linear-gradient(180deg, rgba(255,255,255,0.015) 0%, transparent 40%)",
+                                                boxShadow: "inset 0 0 100px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04)",
+                                                border: "1px solid rgba(238,124,43,0.1)",
+                                            }}
+                                        />
+                                        {/* Content */}
+                                        <div className="relative z-10 flex flex-col items-center gap-5">
+                                            {/* SVG plate icon */}
+                                            <div
+                                                className="w-20 h-20 flex items-center justify-center"
+                                                style={{
+                                                    filter: "drop-shadow(0 0 20px rgba(217,165,90,0.12))",
+                                                }}
+                                            >
+                                                <svg
+                                                    width="52"
+                                                    height="52"
+                                                    viewBox="0 0 64 64"
+                                                    fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                >
+                                                    {/* Plate outer ring */}
+                                                    <circle cx="32" cy="36" r="24" stroke="#c4935a" strokeWidth="1.2" opacity="0.45" />
+                                                    {/* Plate inner ring */}
+                                                    <circle cx="32" cy="36" r="16" stroke="#c4935a" strokeWidth="0.8" opacity="0.25" />
+                                                    {/* Plate center dot */}
+                                                    <circle cx="32" cy="36" r="2" fill="#c4935a" opacity="0.3" />
+                                                    {/* Fork left */}
+                                                    <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
+                                                        <line x1="8" y1="14" x2="8" y2="50" />
+                                                        <line x1="8" y1="14" x2="8" y2="24" />
+                                                        <line x1="5" y1="14" x2="5" y2="22" />
+                                                        <line x1="11" y1="14" x2="11" y2="22" />
+                                                    </g>
+                                                    {/* Knife right */}
+                                                    <g stroke="#c4935a" strokeWidth="1.2" strokeLinecap="round" opacity="0.4">
+                                                        <line x1="56" y1="14" x2="56" y2="50" />
+                                                        <path d="M56 14 C59 16, 59 22, 56 24" />
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                            {/* Thin decorative line */}
+                                            <div
+                                                className="w-10 h-px"
+                                                style={{
+                                                    background: "linear-gradient(90deg, transparent, rgba(196,147,90,0.3), transparent)",
+                                                }}
+                                            />
+                                            {/* Label */}
+                                            <span
+                                                className="text-[10px] font-medium uppercase"
+                                                style={{
+                                                    letterSpacing: "0.35em",
+                                                    color: "rgba(168,148,128,0.55)",
+                                                }}
+                                            >
+                                                Visual Coming Soon
+                                            </span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <img
+                                        src="/res.jpg"
+                                        alt="Restaurant exterior"
+                                        className="w-full h-[600px] object-cover"
+                                        onError={() => setHeroImgError(true)}
+                                    />
+                                )}
                             </div>
-                            <div>
-                                <p className="text-3xl font-bold text-primary mb-1">3</p>
-                                <p className="text-stone-500 uppercase text-xs tracking-widest font-bold">Michelin Stars</p>
-                            </div>
+                            <div className="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-primary/40 rounded-tl-2xl"></div>
+                            <div className="absolute -bottom-6 -right-6 w-32 h-32 border-r-2 border-b-2 border-primary/40 rounded-br-2xl"></div>
+
                         </div>
-                        <Link to="/menu" className="inline-flex items-center gap-2 text-white hover:text-primary transition-colors duration-300 font-bold group">
-                            <span>Explore Our <span className="text-primary">Philosophy</span></span>
-                        </Link>
-                    </ScrollReveal>
-                </div>
-            </section>
+
+                        <ScrollReveal className="order-1 md:order-2">
+                            <h2 className="section-label">Our Heritage</h2>
+                            <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">Crafting Memories Since <span className="text-primary">1984</span></h3>
+                            <p className="text-lg text-stone-400 font-light leading-relaxed mb-8">
+                                Born from a passion for authentic flavors and the warmth of shared moments, Lumière has redefined fine dining for four decades.
+                                We believe that a meal is more than just sustenance; it is a narrative told through textures, aromas, and visual artistry.
+                            </p>
+                            <p className="text-lg text-stone-400 font-light leading-relaxed mb-10">
+                                Our ingredients are sourced from local artisans who share our commitment to quality, ensuring that every dish we serve is a testament to the richness of our terroir.
+                            </p>
+                            <div className="grid grid-cols-2 gap-8 mb-12">
+                                <div>
+                                    <p className="text-3xl font-bold text-primary mb-1">12k+</p>
+                                    <p className="text-stone-500 uppercase text-xs tracking-widest font-bold">Happy Diners</p>
+                                </div>
+                                <div>
+                                    <p className="text-3xl font-bold text-primary mb-1">3</p>
+                                    <p className="text-stone-500 uppercase text-xs tracking-widest font-bold">Michelin Stars</p>
+                                </div>
+                            </div>
+                            <Link to="/menu" className="inline-flex items-center gap-2 text-white hover:text-primary transition-colors duration-300 font-bold group">
+                                <span>Explore Our <span className="text-primary">Philosophy</span></span>
+                            </Link>
+                        </ScrollReveal>
+                    </div>
+                </section>
+
+            </div>
         </div>
     );
 };
