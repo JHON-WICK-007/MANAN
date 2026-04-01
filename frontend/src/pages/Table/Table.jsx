@@ -99,6 +99,24 @@ const Table = () => {
         }
     }, [isEditingGuests]);
 
+    // When guests change: if exact-match tables exist let user pick, else assign Random Table
+    useEffect(() => {
+        if (!guests) {
+            setSelectedTable("");
+            return;
+        }
+        const exactMatch = TABLES.filter(t => t.capacity === guests);
+        if (exactMatch.length === 0) {
+            // No exact-capacity table → assign Random Table automatically
+            setSelectedTable("RANDOM");
+        } else {
+            // Exact tables exist — clear if currently RANDOM or invalid
+            const isCurrentValid = exactMatch.some(t => t.id === selectedTable);
+            if (!isCurrentValid) setSelectedTable("");
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [guests]);
+
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1).getDay();
     const monthName = new Date(year, month).toLocaleString("default", { month: "long" });
@@ -135,12 +153,14 @@ const Table = () => {
         };
 
         // Build the local reservation entry
-        const tableInfo = TABLES.find(t => t.id === selectedTable);
+        const isRandom = selectedTable === "RANDOM";
+        const tableInfo = isRandom ? null : TABLES.find(t => t.id === selectedTable);
+        const tableLabel = isRandom ? "Random Table" : `${selectedTable} (${tableInfo?.view || ''})`;
         const refId = 'RES-' + Math.floor(1000 + Math.random() * 9000);
         const localEntry = {
             id: refId,
-            title: tableInfo ? `${tableInfo.view} Table` : 'Table Reservation',
-            details: `${guests} Guest${guests > 1 ? 's' : ''} • ${selectedTable} (${tableInfo?.view || ''})`,
+            title: isRandom ? 'Random Table Assignment' : `${tableInfo?.view} Table`,
+            details: `${guests} Guest${guests > 1 ? 's' : ''} • ${tableLabel}`,
             date: formatForDisplay(dateStr),
             time: to12hr(selectedTime),
             status: 'Pending',
@@ -365,11 +385,15 @@ const Table = () => {
                                         }`}
                                     style={{ background: 'rgba(34,24,16,0.8)' }}
                                 >
-                                    <span className="flex items-center gap-2.5">
-                                        <span className={`material-icons text-[18px] ${selectedTable ? 'text-primary' : 'text-white/60'}`}>table_restaurant</span>
-                                        {selectedTable
-                                            ? (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()
-                                            : (!guests ? 'Select guests first' : `${filteredTables.length} tables available`)
+                                <span className="flex items-center gap-2.5">
+                                        <span className={`material-icons text-[18px] ${selectedTable ? 'text-primary' : 'text-white/60'}`}>
+                                            {selectedTable === 'RANDOM' ? 'casino' : 'table_restaurant'}
+                                        </span>
+                                        {selectedTable === 'RANDOM'
+                                            ? 'Random Table'
+                                            : selectedTable
+                                                ? (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()
+                                                : (!guests ? 'Select guests first' : `${filteredTables.length} tables available`)
                                         }
                                     </span>
                                     <span className={`material-icons text-lg transition-transform duration-200 ${tableDropdownOpen ? 'rotate-180 text-primary' : selectedTable ? 'text-primary' : 'text-white/50'
@@ -491,7 +515,7 @@ const Table = () => {
 
                             <button
                                 onClick={handleReserve}
-                                disabled={!selectedDate || !selectedTime || !guests || !selectedTable}
+                                disabled={!selectedDate || !selectedTime || !guests}
                                 className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 flex items-center justify-center space-x-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-primary"
                             >
                                 <span>RESERVE NOW</span>
@@ -505,24 +529,117 @@ const Table = () => {
 
             {/* Success Modal */}
             {showModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-dark/80 backdrop-blur-md">
-                    <div className="glass max-w-md w-full rounded-2xl p-10 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-primary/20">
-                        <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 relative">
-                            <div className="absolute inset-0 border-2 border-primary rounded-full animate-ping opacity-20"></div>
-                            <span className="material-icons text-5xl text-primary">check_circle</span>
+                <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/70 backdrop-blur-xl">
+                    <div
+                        className="relative w-full max-w-md rounded-[28px] overflow-hidden text-center"
+                        style={{
+                            background: 'linear-gradient(160deg, #1e1208 0%, #150d04 60%, #0f0802 100%)',
+                            border: '1px solid rgba(238,124,43,0.25)',
+                            boxShadow: '0 0 0 1px rgba(238,124,43,0.08), 0 32px 80px rgba(0,0,0,0.7), 0 0 120px rgba(238,124,43,0.08)',
+                        }}
+                    >
+                        {/* Top glow bar */}
+                        <div style={{ height: '3px', background: 'linear-gradient(90deg, transparent, #ee7c2b, #f5a623, #ee7c2b, transparent)' }} />
+
+                        <div className="p-8 pt-10">
+                            {/* Animated icon */}
+                            <div className="relative mx-auto mb-7 w-24 h-24">
+                                {/* outer ping ring */}
+                                <div className="absolute inset-0 rounded-full border-2 border-primary/40 animate-ping" style={{ animationDuration: '2s' }} />
+                                {/* middle glow ring */}
+                                <div className="absolute inset-2 rounded-full" style={{ background: 'rgba(238,124,43,0.08)', boxShadow: '0 0 30px 6px rgba(238,124,43,0.2)' }} />
+                                {/* icon circle */}
+                                <div className="absolute inset-0 rounded-full flex items-center justify-center" style={{ background: 'radial-gradient(circle, rgba(238,124,43,0.18) 0%, rgba(238,124,43,0.06) 70%)' }}>
+                                    <span className="material-icons text-primary" style={{ fontSize: '42px' }}>check_circle</span>
+                                </div>
+                            </div>
+
+                            {/* Title */}
+                            <h2
+                                className="font-bold mb-2"
+                                style={{
+                                    fontSize: '28px',
+                                    letterSpacing: '-0.02em',
+                                    background: 'linear-gradient(135deg, #ffffff 30%, #ee7c2b 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                }}
+                            >
+                                Reservation Confirmed!
+                            </h2>
+                            <p className="text-stone-400 text-sm mb-8 leading-relaxed">
+                                Your table has been reserved. A confirmation<br />has been sent to your registered email.
+                            </p>
+
+                            {/* Booking details card */}
+                            <div
+                                className="rounded-2xl mb-6 text-left overflow-hidden"
+                                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
+                            >
+                                <div className="px-5 py-3 border-b border-white/5 flex items-center justify-between">
+                                    <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-semibold">Booking Reference</span>
+                                    <span className="text-primary font-mono font-bold text-sm">#{bookingRef}</span>
+                                </div>
+                                <div className="px-5 py-4 space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-icons text-primary/70 text-base">calendar_today</span>
+                                        <span className="text-stone-300 text-sm">{selectedDate && new Date(year, month, selectedDate).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-icons text-primary/70 text-base">schedule</span>
+                                        <span className="text-stone-300 text-sm">{selectedTime}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-icons text-primary/70 text-base">group</span>
+                                        <span className="text-stone-300 text-sm">{guests} {guests === 1 ? 'Guest' : 'Guests'}</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="material-icons text-primary/70 text-base">{selectedTable === 'RANDOM' ? 'casino' : 'table_restaurant'}</span>
+                                        <span className="text-stone-300 text-sm">
+                                            {selectedTable === 'RANDOM' ? 'Random Table Assignment' : (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => { setShowModal(false); window.location.href = '/profile'; }}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = '#ee7c2b';
+                                        e.currentTarget.style.borderColor = '#ee7c2b';
+                                        e.currentTarget.style.boxShadow = '0 6px 24px rgba(238,124,43,0.45)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'rgba(238,124,43,0.08)';
+                                        e.currentTarget.style.borderColor = 'rgba(238,124,43,0.5)';
+                                        e.currentTarget.style.boxShadow = 'none';
+                                    }}
+                                    className="flex-1 py-3 rounded-xl font-semibold text-sm"
+                                    style={{ background: 'rgba(238,124,43,0.08)', border: '1px solid rgba(238,124,43,0.5)', color: '#ffffff', transition: 'all 0.2s ease' }}
+                                >
+                                    View Reservation
+                                </button>
+                                <button
+                                    onClick={() => setShowModal(false)}
+                                    onMouseEnter={e => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.12)';
+                                    }}
+                                    onMouseLeave={e => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)';
+                                    }}
+                                    className="flex-1 py-3 rounded-xl font-semibold text-sm text-stone-300"
+                                    style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', transition: 'all 0.2s ease' }}
+                                >
+                                    Close
+                                </button>
+                            </div>
                         </div>
-                        <h2 className="text-3xl font-bold text-white mb-2">Reservation Confirmed!</h2>
-                        <p className="text-stone-400 mb-8">We've sent the confirmation details to your registered email.</p>
-                        <div className="bg-white/5 rounded-xl p-4 mb-8 border border-white/10">
-                            <span className="text-xs text-stone-500 uppercase tracking-widest block mb-1">Booking Reference ID</span>
-                            <span className="text-2xl font-mono text-primary font-bold">#{bookingRef}</span>
-                        </div>
-                        <button onClick={() => setShowModal(false)} className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-lg font-semibold transition-colors">
-                            Back to Homepage
-                        </button>
                     </div>
                 </div>
             )}
+
             {/* Guest Limit Error Modal */}
             {showGuestLimitModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm">

@@ -88,28 +88,30 @@ const Profile = () => {
         address: ""
     });
     const [hoveredDetail, setHoveredDetail] = useState(false);
-    const [hoveredReorder, setHoveredReorder] = useState(null);
+    const [hoveredReorder, setHoveredReorder] = useState(false);
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    // Load real reservations from localStorage, merge with dummies
+    // Load reservations: real (from localStorage) + dummy fallback
     const [reservations, setReservations] = useState(() => {
-        const saved = JSON.parse(localStorage.getItem('reservations') || '[]');
-        // Deduplicate by id; real ones first
-        const allIds = new Set(saved.map(r => r.id));
-        const dummies = DUMMY_RESERVATIONS.filter(r => !allIds.has(r.id));
-        return [...saved, ...dummies];
+        try {
+            const stored = JSON.parse(localStorage.getItem("reservations") || "[]");
+            // Real bookings first, then dummies that aren't duplicated
+            const realIds = new Set(stored.map(r => r.id));
+            const dummies = DUMMY_RESERVATIONS.filter(d => !realIds.has(d.id));
+            return [...stored, ...dummies];
+        } catch {
+            return DUMMY_RESERVATIONS;
+        }
     });
 
-    const cancelReservation = (id) => {
-        // Remove from localStorage (only real ones are stored there)
-        const saved = JSON.parse(localStorage.getItem('reservations') || '[]');
-        const updated = saved.filter(r => r.id !== id);
-        localStorage.setItem('reservations', JSON.stringify(updated));
-        // Update state: mark dummy ones as cancelled, remove real ones
-        setReservations(prev =>
-            prev.map(r => r.id === id ? { ...r, status: 'Cancelled', statusColor: 'red' } : r)
-        );
+    const handleCancelReservation = (id) => {
+        setReservations(prev => prev.filter(r => r.id !== id));
+        try {
+            const stored = JSON.parse(localStorage.getItem("reservations") || "[]");
+            const updated = stored.filter(r => r.id !== id);
+            localStorage.setItem("reservations", JSON.stringify(updated));
+        } catch { /* noop */ }
     };
 
     const handlePhotoClick = () => {
@@ -418,85 +420,121 @@ const Profile = () => {
                     </div>
 
                     {/* SECTION 5: RECENT RESERVATIONS */}
-                    <div className="space-y-6">
-                        <h2 className="text-2xl text-primary px-2 font-bold">Recent Reservations</h2>
+                    <div className="space-y-5">
+                        <h2 className="text-2xl text-primary px-1 font-bold">Recent Reservations</h2>
                         {reservations.length > 0 ? (
-                            <div className="space-y-4">
-                                {reservations.slice(0, 6).map((res) => (
-                                    <div key={res.id} className="glass rounded-3xl overflow-hidden border-l-[3px] border-l-primary/90 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
-                                        <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
-                                            <div className="space-y-4 flex-1">
-                                                <div className="flex flex-wrap items-center gap-4">
-                                                    <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Booking #{res.id}</span>
-                                                    <span className={`px-2.5 py-0.5 ${res.statusColor === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/20' : res.statusColor === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : res.statusColor === 'yellow' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} text-[9px] uppercase font-bold tracking-widest rounded-full border`}>
-                                                        {res.status}
-                                                    </span>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {reservations.map((res) => {
+                                    const isActive = res.status === 'Pending' || res.status === 'Confirmed';
+                                    const ss = {
+                                        green: { dot: '#4ade80', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+                                        red: { dot: '#f87171', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', text: '#f87171' },
+                                        yellow: { dot: '#ee7c2b', bg: 'rgba(238,124,43,0.08)', border: 'rgba(238,124,43,0.2)', text: '#ee7c2b' },
+                                        blue: { dot: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.2)', text: '#60a5fa' },
+                                    }[res.statusColor] || { dot: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.2)', text: '#60a5fa' };
+
+                                    const detailParts = (res.details || '').split('•').map(s => s.trim());
+                                    const guestsBadge = detailParts[0] || '';
+                                    const tableBadge = detailParts[1] || '';
+
+                                    return (
+                                        <div
+                                            key={res.id}
+                                            className="group relative flex flex-col rounded-2xl overflow-hidden cursor-default"
+                                            style={{
+                                                background: 'linear-gradient(135deg, rgba(30,18,8,0.95) 0%, rgba(20,12,4,0.98) 100%)',
+                                                border: 'none',
+                                                boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                                                transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(238,124,43,0.12), 0 0 32px -8px rgba(238,124,43,0.25)'; }}
+                                            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.3)'; }}
+                                        >
+                                            {/* Orange top accent line */}
+                                            <div style={{ height: '2px', background: 'linear-gradient(90deg, #ee7c2b 0%, rgba(238,124,43,0.3) 60%, transparent 100%)' }} />
+
+                                            <div className="flex flex-col flex-1 p-6">
+                                                {/* TOP SECTION */}
+                                                <div className="flex items-start justify-between gap-4">
+                                                    <div className="flex-1 min-w-0">
+                                                        {/* Booking ref + status */}
+                                                        <div className="flex items-center gap-2.5 mb-2">
+                                                            <span className="text-[10px] font-black uppercase tracking-[0.16em] text-primary/90">#{res.id}</span>
+                                                            <span
+                                                                className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+                                                                style={{ background: ss.bg, border: `1px solid ${ss.border}`, color: ss.text }}
+                                                            >
+                                                                {res.status}
+                                                            </span>
+                                                        </div>
+                                                        {/* Title */}
+                                                        <h4 className="text-[18px] font-extrabold text-white leading-tight group-hover:text-primary transition-colors duration-200 truncate">
+                                                            {res.title}
+                                                        </h4>
+                                                    </div>
+
+                                                    {/* Action button — top right */}
+                                                    <button
+                                                        onClick={() => isActive ? handleCancelReservation(res.id) : navigate('/table')}
+                                                        className={`shrink-0 h-[36px] px-[18px] inline-flex items-center gap-1.5 rounded-[10px] text-[10px] font-bold tracking-[0.12em] uppercase transition-all duration-300 ${
+                                                            isActive
+                                                                ? 'bg-white/5 hover:bg-red-500/10 border border-transparent hover:border-red-500/50 text-stone-400 hover:text-red-400'
+                                                                : 'bg-primary hover:bg-[#d96e1f] border border-transparent text-white shadow-[0_4px_16px_rgba(238,124,43,0.3)] hover:shadow-[0_4px_24px_rgba(238,124,43,0.5)]'
+                                                        }`}
+                                                    >
+                                                        {isActive ? 'Cancel' : (
+                                                            <>
+                                                                Rebook
+                                                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                                </svg>
+                                                            </>
+                                                        )}
+                                                    </button>
                                                 </div>
-                                                <div>
-                                                    <h4 className="text-xl text-white mb-1 font-bold group-hover:text-primary transition-colors duration-300">{res.title}</h4>
-                                                    <p className="text-stone-400 text-sm">{res.details}</p>
-                                                </div>
-                                                <div className="flex flex-wrap items-center gap-6 text-stone-400">
-                                                    <div className="flex items-center gap-1">
-                                                        <span className="material-icons text-base">calendar_month</span>
-                                                        <span className="text-xs font-semibold pr-1">{res.date}</span>
-                                                        <span className="material-icons text-base ml-1">schedule</span>
-                                                        <span className="text-xs font-semibold">{res.time}</span>
+
+                                                {/* DETAILS SECTION (Chips) */}
+                                                <div className="flex flex-col gap-3 mt-4">
+                                                    {/* Guest & Table row */}
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        {guestsBadge && (
+                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                                <span className="material-icons text-primary/50" style={{ fontSize: '13px' }}>group</span>
+                                                                <span className="text-[11px] font-semibold text-stone-400">{guestsBadge}</span>
+                                                            </div>
+                                                        )}
+                                                        {tableBadge && (
+                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                                <span className="material-icons text-primary/50" style={{ fontSize: '13px' }}>table_restaurant</span>
+                                                                <span className="text-[11px] font-semibold text-stone-400">{tableBadge}</span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Date & Time row */}
+                                                    <div className="flex flex-wrap items-center gap-3">
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                            <span className="material-icons text-primary/50" style={{ fontSize: '13px' }}>calendar_today</span>
+                                                            <span className="text-[11px] font-semibold text-stone-400">{res.date}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg" style={{ background: 'rgba(255,255,255,0.04)' }}>
+                                                            <span className="material-icons text-primary/50" style={{ fontSize: '13px' }}>schedule</span>
+                                                            <span className="text-[11px] font-semibold text-stone-400">{res.time}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-col justify-center items-start md:items-end gap-6 border-t md:border-t-0 border-white/10 pt-4 md:pt-0">
-                                                <div className="flex gap-4">
-                                                    <button
-                                                        onMouseEnter={() => setHoveredReorder(res.id)}
-                                                        onMouseLeave={() => setHoveredReorder(null)}
-                                                        onClick={() => (res.status === 'Pending' || res.status === 'Confirmed') && cancelReservation(res.id)}
-                                                        style={{
-                                                            height: '40px',
-                                                            padding: '0 24px',
-                                                            display: 'inline-flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            borderRadius: '12px',
-                                                            fontSize: '11px',
-                                                            fontWeight: (res.status === 'Pending' || res.status === 'Confirmed') ? 700 : 800,
-                                                            letterSpacing: '0.1em',
-                                                            textTransform: 'uppercase',
-                                                            transition: 'all 0.25s ease',
-                                                            backgroundColor: (res.status === 'Pending' || res.status === 'Confirmed')
-                                                                ? (hoveredReorder === res.id ? 'rgba(238, 124, 43, 0.12)' : 'rgba(255, 255, 255, 0.04)')
-                                                                : (hoveredReorder === res.id ? '#d96e1f' : '#ee7c2b'),
-                                                            border: (res.status === 'Pending' || res.status === 'Confirmed')
-                                                                ? `2px solid ${hoveredReorder === res.id ? 'rgba(238, 124, 43, 0.8)' : 'rgba(238, 124, 43, 0.5)'}`
-                                                                : '2px solid transparent',
-                                                            color: '#ffffff',
-                                                            boxShadow: (res.status === 'Pending' || res.status === 'Confirmed')
-                                                                ? (hoveredReorder === res.id ? '0 0 20px rgba(238, 124, 43, 0.2), 0 4px 12px rgba(0, 0, 0, 0.3)' : '0 2px 8px rgba(0,0,0,0.25)')
-                                                                : (hoveredReorder === res.id ? '0 0 30px rgba(238, 124, 43, 0.45), 0 6px 16px rgba(0, 0, 0, 0.4)' : '0 2px 10px rgba(238, 124, 43, 0.2)'),
-                                                            transform: hoveredReorder === res.id ? 'translateY(-2px)' : 'translateY(0)',
-                                                            backfaceVisibility: 'hidden',
-                                                            WebkitBackfaceVisibility: 'hidden',
-                                                            transformStyle: 'preserve-3d',
-                                                            WebkitFontSmoothing: 'antialiased',
-                                                            MozOsxFontSmoothing: 'grayscale',
-                                                            willChange: 'transform, box-shadow, background-color',
-                                                            backdropFilter: (res.status === 'Pending' || res.status === 'Confirmed') ? 'blur(8px)' : 'none',
-                                                            WebkitBackdropFilter: (res.status === 'Pending' || res.status === 'Confirmed') ? 'blur(8px)' : 'none',
-                                                        }}
-                                                    >
-                                                        {(res.status === 'Pending' || res.status === 'Confirmed') ? 'Cancel' : 'Rebook'}
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         ) : (
                             <div className="glass rounded-3xl border border-white/5 border-dashed py-10">
                                 <EmptyReservationsState />
                             </div>
+
                         )}
+
                     </div>
                 </section>
             )}
@@ -573,69 +611,99 @@ const Profile = () => {
 
             {/* ORDER HISTORY TAB */}
             {activeTab === "Order History" && (
-                <section className="animate-fade-in space-y-6">
+                <section className="animate-fade-in space-y-5">
                     {DUMMY_ORDERS.length > 0 ? (
-                        <div className="space-y-4">
-                            {DUMMY_ORDERS.map((order) => (
-                                <div key={order.id} className="glass rounded-3xl overflow-hidden border-l-[3px] border-l-primary/90 border-t border-r border-b border-t-white/5 border-r-white/5 border-b-white/5 hover:border-t-primary/40 hover:border-r-primary/40 hover:border-b-primary/40 hover:shadow-[0_0_15px_-3px_rgba(238,124,43,0.4)] transition-all duration-300 group">
-                                    <div className="p-6 md:p-8 flex flex-col md:flex-row justify-between gap-6">
-                                        <div className="space-y-4 flex-1">
-                                            <div className="flex flex-wrap items-center gap-4">
-                                                <span className="text-[10px] uppercase tracking-widest text-primary font-bold">Order #{order.id}</span>
-                                                <span className={`px-2.5 py-0.5 ${order.statusColor === 'green' ? 'bg-green-500/10 text-green-400 border-green-500/20' : order.statusColor === 'red' ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'} text-[9px] uppercase font-bold tracking-widest rounded-full border`}>
-                                                    {order.status}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {DUMMY_ORDERS.map((order) => {
+                                const ss = ({
+                                    green: { dot: '#4ade80', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', text: '#4ade80' },
+                                    red: { dot: '#f87171', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', text: '#f87171' },
+                                    blue: { dot: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.2)', text: '#60a5fa' },
+                                })[order.statusColor] || { dot: '#60a5fa', bg: 'rgba(96,165,250,0.08)', border: 'rgba(96,165,250,0.2)', text: '#60a5fa' };
+
+                                return (
+                                    <div
+                                        key={order.id}
+                                        className="group relative flex flex-col rounded-2xl overflow-hidden transition-all duration-300 cursor-default"
+                                        style={{
+                                            background: 'linear-gradient(135deg, rgba(30,18,8,0.95) 0%, rgba(20,12,4,0.98) 100%)',
+                                            border: 'none',
+                                            boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
+                                            transition: 'transform 0.25s ease, box-shadow 0.25s ease',
+                                        }}
+                                        onMouseEnter={e => {
+                                            e.currentTarget.style.transform = 'translateY(-4px)';
+                                            e.currentTarget.style.boxShadow = '0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(238,124,43,0.12), 0 0 32px -8px rgba(238,124,43,0.25)';
+                                        }}
+                                        onMouseLeave={e => {
+                                            e.currentTarget.style.transform = 'translateY(0)';
+                                            e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,0,0,0.3)';
+                                        }}
+                                    >
+                                        {/* Orange top accent line */}
+                                        <div style={{ height: '2px', flexShrink: 0, background: 'linear-gradient(90deg, #ee7c2b 0%, rgba(238,124,43,0.3) 60%, transparent 100%)' }} />
+
+                                        {/* Card body */}
+                                        <div className="flex flex-col flex-1 p-6 gap-4">
+
+                                            {/* ── HEADER: order ID + status + price ── */}
+                                            <div className="flex items-center justify-between gap-3">
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className="text-[10px] font-black uppercase tracking-[0.16em] text-primary/90">
+                                                        #{order.id}
+                                                    </span>
+                                                    <span
+                                                        className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full shrink-0"
+                                                        style={{ background: ss.bg, border: `1px solid ${ss.border}`, color: ss.text }}
+                                                    >
+                                                        {order.status}
+                                                    </span>
+                                                </div>
+                                                {/* Price */}
+                                                <span className="text-lg font-black text-primary tracking-tight shrink-0">{order.price}</span>
+                                            </div>
+
+                                            {/* ── TITLE ── */}
+                                            <div>
+                                                <h4 className="text-[17px] font-extrabold text-white leading-snug group-hover:text-primary transition-colors duration-200">
+                                                    {order.title}
+                                                </h4>
+                                            </div>
+
+                                            {/* ── ITEMS badge ── */}
+                                            <div>
+                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-semibold text-stone-400"
+                                                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                                                    <span className="material-icons text-primary/70" style={{ fontSize: '11px' }}>restaurant_menu</span>
+                                                    {order.items}
                                                 </span>
                                             </div>
-                                            <div>
-                                                <h4 className="text-xl text-white mb-1 font-bold group-hover:text-primary transition-colors duration-300">{order.title}</h4>
-                                                <p className="text-stone-400 text-sm">{order.items}</p>
-                                            </div>
-                                            <div className="flex flex-wrap items-center gap-6 text-stone-400">
-                                                <div className="flex items-center gap-1.5">
-                                                    <span className="material-icons text-base">calendar_month</span>
-                                                    <span className="text-xs font-semibold">{order.date}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="flex flex-col justify-center items-start md:items-end gap-4 border-t md:border-t-0 border-white/10 pt-4 md:pt-0 text-right">
-                                            <span className="text-4xl text-primary font-black tracking-tight">{order.price}</span>
-                                            <div className="flex gap-4">
+
+                                            {/* ── DIVIDER ── */}
+                                            <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)' }} />
+
+                                            {/* ── FOOTER: date pill + reorder button ── */}
+                                            <div className="flex items-center justify-between gap-3 mt-auto">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-semibold text-stone-400"
+                                                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                                    <span className="material-icons text-primary/40" style={{ fontSize: '12px' }}>calendar_today</span>
+                                                    {order.date}
+                                                </span>
+
                                                 <button
-                                                    onMouseEnter={() => setHoveredReorder(`tab-${order.id}`)}
-                                                    onMouseLeave={() => setHoveredReorder(null)}
-                                                    style={{
-                                                        height: '40px',
-                                                        padding: '0 24px',
-                                                        display: 'inline-flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        borderRadius: '12px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 800,
-                                                        letterSpacing: '0.1em',
-                                                        textTransform: 'uppercase',
-                                                        backgroundColor: hoveredReorder === `tab-${order.id}` ? '#d96e1f' : '#ee7c2b',
-                                                        border: '2px solid transparent',
-                                                        color: '#ffffff',
-                                                        boxShadow: hoveredReorder === `tab-${order.id}`
-                                                            ? '0 0 30px rgba(238,124,43,0.45), 0 6px 16px rgba(0,0,0,0.4)'
-                                                            : '0 2px 10px rgba(238,124,43,0.2)',
-                                                        transform: hoveredReorder === `tab-${order.id}` ? 'translateY(-2px)' : 'translateY(0)',
-                                                        transition: 'all 0.25s ease',
-                                                        backfaceVisibility: 'hidden',
-                                                        WebkitBackfaceVisibility: 'hidden',
-                                                        WebkitFontSmoothing: 'antialiased',
-                                                        MozOsxFontSmoothing: 'grayscale',
-                                                        willChange: 'transform, box-shadow, background-color',
-                                                    }}
+                                                    className="shrink-0 h-[30px] px-[14px] inline-flex items-center gap-1.5 rounded-lg text-[9px] font-bold tracking-[0.12em] uppercase transition-all duration-300 bg-primary hover:bg-[#d96e1f] border border-transparent text-white shadow-[0_2px_12px_rgba(238,124,43,0.3)] hover:shadow-[0_4px_20px_rgba(238,124,43,0.5)]"
                                                 >
                                                     Reorder
+                                                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                    </svg>
                                                 </button>
                                             </div>
+
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="glass rounded-3xl min-h-[450px] flex items-center justify-center border-dashed border-2 border-white/10">
