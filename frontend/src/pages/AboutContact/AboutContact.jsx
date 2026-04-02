@@ -83,7 +83,7 @@ const AboutContact = () => {
             <section className="relative h-[70vh] min-h-[520px] flex items-center justify-center overflow-hidden">
                 {/* Background */}
                 <div className="absolute inset-0 z-0 bg-black">
-                    <div 
+                    <div
                         className="w-full h-full scale-105 opacity-40"
                         style={{
                             backgroundColor: '#000000',
@@ -217,7 +217,7 @@ const AboutContact = () => {
             </Section>
 
             {/* ══════════════════ 4. MEET THE TEAM ═════════════════════ */}
-            <Section className="py-24 px-4 md:px-8">
+            <Section className="py-12 px-4 md:px-8">
                 <div className="max-w-6xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-16">
                         <h2 className="section-label">The Artisans</h2>
@@ -255,7 +255,7 @@ const AboutContact = () => {
             </Section>
 
             {/* ═══════════════ 5. CONTACT INFORMATION ══════════════════ */}
-            <Section className="py-24 px-4 md:px-8">
+            <Section className="py-12 px-4 md:px-8">
                 <div className="max-w-6xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-16">
                         <h2 className="section-label">Reach Out</h2>
@@ -287,7 +287,7 @@ const AboutContact = () => {
             </Section>
 
             {/* ══════════════════ 6. CONTACT FORM ══════════════════════ */}
-            <Section className="py-24 px-4 md:px-8">
+            <Section className="py-12 px-4 md:px-8">
                 <div className="max-w-3xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-16">
                         <h2 className="section-label">Get In Touch</h2>
@@ -314,11 +314,10 @@ const AboutContact = () => {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder=" "
-                                                className="peer w-full px-4 pt-6 pb-3 bg-white/5 border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
+                                                className="peer w-full px-4 pt-6 pb-3 bg-[#1a120b] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
                                             />
                                             <label
                                                 htmlFor={`contact-${field.name}`}
-                                                className="absolute left-4 top-4 text-stone-500 text-sm transition-all pointer-events-none peer-focus:text-primary peer-focus:-translate-y-2.5 peer-focus:scale-[0.85] peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.85]"
                                             >
                                                 {field.label}
                                             </label>
@@ -335,11 +334,10 @@ const AboutContact = () => {
                                         value={form.phone}
                                         onChange={handleChange}
                                         placeholder=" "
-                                        className="peer w-full px-4 pt-6 pb-3 bg-white/5 border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
+                                        className="peer w-full px-4 pt-6 pb-3 bg-[#140c06] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
                                     />
                                     <label
                                         htmlFor="contact-phone"
-                                        className="absolute left-4 top-4 text-stone-500 text-sm transition-all pointer-events-none peer-focus:text-primary peer-focus:-translate-y-2.5 peer-focus:scale-[0.85] peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.85]"
                                     >
                                         Phone Number (Optional)
                                     </label>
@@ -355,11 +353,10 @@ const AboutContact = () => {
                                         required
                                         rows={5}
                                         placeholder=" "
-                                        className="peer w-full px-4 pt-6 pb-3 bg-white/5 border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white resize-none"
+                                        className="peer w-full px-4 pt-6 pb-3 bg-[#1a120b] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white resize-none"
                                     />
                                     <label
                                         htmlFor="contact-message"
-                                        className="absolute left-4 top-4 text-stone-500 text-sm transition-all pointer-events-none peer-focus:text-primary peer-focus:-translate-y-2.5 peer-focus:scale-[0.85] peer-[:not(:placeholder-shown)]:-translate-y-2.5 peer-[:not(:placeholder-shown)]:scale-[0.85]"
                                     >
                                         Your Message
                                     </label>
@@ -414,8 +411,8 @@ const AboutContact = () => {
             </Section>
 
             {/* ═══════════════════ 7. GOOGLE MAP ═══════════════════════ */}
-            <Section className="py-24 px-4 md:px-8">
-                <div className="max-w-5xl mx-auto">
+            <Section className="py-12 px-4 md:px-8">
+                <div className="max-w-7xl mx-auto px-4 md:px-8">
                     <M variants={fadeUp} className="text-center mb-16">
                         <h2 className="section-label">Find Us</h2>
                         <h3 className="section-title">
@@ -424,12 +421,12 @@ const AboutContact = () => {
                     </M>
 
                     <M variants={fadeUp} custom={1}>
-                        <div className="rounded-2xl overflow-hidden border border-primary/20 shadow-lg shadow-primary/5">
+                        <div className="rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/5">
                             <iframe
                                 title="Lumière Restaurant Location"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573291394!2d-73.98784368459395!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1650000000000!5m2!1sen!2sus"
                                 width="100%"
-                                height="450"
+                                height="650"
                                 style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1)" }}
                                 allowFullScreen
                                 loading="lazy"

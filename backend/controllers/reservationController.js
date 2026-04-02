@@ -5,7 +5,7 @@ const Reservation = require("../models/Reservation");
 // @access  Private
 exports.createReservation = async (req, res, next) => {
     try {
-        const { date, time, guests, specialRequests } = req.body;
+        const { date, time, guests, table, specialRequests } = req.body;
 
         // Validate required fields
         if (!date || !time || !guests) {
@@ -23,6 +23,9 @@ exports.createReservation = async (req, res, next) => {
 
         const reservation = await Reservation.create({
             user: req.user._id,
+            userName: req.user.name,
+            userEmail: req.user.email,
+            table,
             date,
             time,
             guests,

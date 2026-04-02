@@ -1,6 +1,8 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -24,11 +26,11 @@ function AnimatedRoutes() {
             <Route path="/menu" element={<Menu />} />
             <Route path="/login" element={<Auth />} />
             <Route path="/register" element={<Auth />} />
-            <Route path="/table" element={<Table />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/order-status" element={<OrderStatus />} />
+            <Route path="/table" element={<ProtectedRoute><Table /></ProtectedRoute>} />
+            <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+            <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+            <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+            <Route path="/order-status" element={<ProtectedRoute><OrderStatus /></ProtectedRoute>} />
             <Route path="/about" element={<AboutContact />} />
         </Routes>
     );
@@ -39,16 +41,18 @@ function App() {
     const hideNavAndFooter = ["/login", "/register"].includes(location.pathname);
 
     return (
-        <CartProvider>
-            <ScrollToTop />
-            <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
-                {!hideNavAndFooter && <Navbar />}
-                <main className="flex-grow">
-                    <AnimatedRoutes />
-                </main>
-                {!hideNavAndFooter && <Footer />}
-            </div>
-        </CartProvider>
+        <AuthProvider>
+            <CartProvider>
+                <ScrollToTop />
+                <div className="flex flex-col min-h-screen font-display overflow-x-hidden">
+                    {!hideNavAndFooter && <Navbar />}
+                    <main className="flex-grow">
+                        <AnimatedRoutes />
+                    </main>
+                    {!hideNavAndFooter && <Footer />}
+                </div>
+            </CartProvider>
+        </AuthProvider>
     );
 }
 

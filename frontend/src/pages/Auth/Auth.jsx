@@ -1,13 +1,20 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Auth = () => {
-    const [isLogin, setIsLogin] = useState(true);
+    const location = useLocation();
+    const [isLogin, setIsLogin] = useState(location.pathname !== "/register");
     const [form, setForm] = useState({ name: "", email: "", password: "", confirmPassword: "" });
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { login } = useAuth();
+
+    useEffect(() => {
+        setIsLogin(location.pathname !== "/register");
+    }, [location.pathname]);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -33,9 +40,7 @@ const Auth = () => {
             });
             const data = await res.json();
             if (data.success) {
-                localStorage.setItem("token", data.token);
-                localStorage.setItem("user", JSON.stringify(data.user));
-                navigate("/");
+                login(data.user, data.token);
             } else {
                 setError(data.message || "Something went wrong");
             }
@@ -91,10 +96,13 @@ const Auth = () => {
                         </Link>
 
                         <h1 className="text-6xl xl:text-7xl font-black text-white mb-6 tracking-tight leading-tight drop-shadow-xl">
-                            Welcome <br /> Back
+                            {isLogin ? "Welcome" : "Begin Your"} <br /> {isLogin ? "Back" : "Experience"}
                         </h1>
                         <p className="text-stone-300 text-lg font-light leading-relaxed max-w-md mb-4 drop-shadow-md">
-                            Experience the pinnacle of fine dining. Sign in to curate your journey, manage your reservations, and explore exclusive culinary events.
+                            {isLogin
+                                ? "Experience the pinnacle of fine dining. Sign in to curate your journey, manage your reservations, and explore exclusive culinary events."
+                                : "Sign up to unlock curated reservations, priority seating, and a dining journey tailored to your taste."
+                            }
                         </p>
 
                         {/* Social Icons Row */}
@@ -140,7 +148,7 @@ const Auth = () => {
                             >
                                 {/* Header Title */}
                                 <h2 className="text-3xl font-black text-primary mb-8 tracking-tight">
-                                    {isLogin ? "Login" : "Create Account"}
+                                    {isLogin ? "Log In" : "Sign Up"}
                                 </h2>
 
                                 {/* Error Alert */}
@@ -274,7 +282,7 @@ const Auth = () => {
                                         {isLogin ? "Don't have an account?" : "Already have an account?"}
                                         <button
                                             type="button"
-                                            onClick={() => { setIsLogin(!isLogin); setError(""); }}
+                                            onClick={() => { navigate(isLogin ? "/register" : "/login"); setError(""); }}
                                             className="text-primary hover:text-[#d96e1f] font-bold ml-1.5 transition-colors"
                                         >
                                             {isLogin ? "Sign up" : "Login"}

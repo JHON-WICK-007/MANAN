@@ -402,11 +402,43 @@
     scrollbar-width: none;
 }
 
-/* Floating label support */
-.input-floating-label input:focus+label,
-.input-floating-label input:not(:placeholder-shown)+label {
-    transform: translateY(-1.5rem) scale(0.85);
-    color: #ee7c2b;
+/* --- Advanced Floating Label (Google Style) --- */
+.input-floating-label {
+    position: relative;
+    margin-top: 10px;
+}
+.input-floating-label label {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    padding: 0 6px;
+    color: #78716c; /* stone-500 */
+    font-size: 0.875rem;
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 10;
+}
+.input-floating-label textarea + label {
+    top: 1.5rem;
+    transform: none;
+}
+.input-floating-label input:focus + label,
+.input-floating-label input:not(:placeholder-shown) + label,
+.input-floating-label textarea:focus + label,
+.input-floating-label textarea:not(:placeholder-shown) + label {
+    top: 0;
+    transform: translateY(-50%) scale(0.85);
+    background-color: #140c06; /* Match the new input background (#140c06) to hide border */
+    color: #ee7c2b; /* primary */
+    font-weight: 600;
+    left: 0.8rem;
+}
+.input-floating-label input:focus,
+.input-floating-label textarea:focus {
+    border-color: #ee7c2b;
+    box-shadow: 0 0 0 2px rgba(238, 124, 43, 0.1);
 }
 
 html {

@@ -7,6 +7,15 @@ const reservationSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+        userName: {
+            type: String,
+        },
+        userEmail: {
+            type: String,
+        },
+        table: {
+            type: String,
+        },
         date: {
             type: String,
             required: [true, "Reservation date is required"],

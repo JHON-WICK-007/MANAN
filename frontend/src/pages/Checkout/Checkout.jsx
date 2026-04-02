@@ -46,10 +46,42 @@ const Checkout = () => {
 
     const handlePlaceOrder = async () => {
         setProcessing(true);
-        // Simulate payment processing
-        await new Promise((r) => setTimeout(r, 2000));
-        setProcessing(false);
-        setShowSuccess(true);
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+
+            const activeItems = items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+                price: item.price
+            }));
+
+            const response = await fetch("/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    items: activeItems,
+                    totalAmount: total,
+                    paymentStatus: method === "cod" ? "Pending" : "Completed"
+                })
+            });
+
+            if (response.ok) {
+                setShowSuccess(true);
+            } else {
+                console.error("Failed to place order.");
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setProcessing(false);
+        }
     };
 
     if (showSuccess) {

@@ -1,19 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import "./Navbar.css";
 
 const NAV_COLOR = "#EE7C2B";
 const NAV_COLOR_DARK = "#d4621a";
 
 const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "Menu", path: "/menu" },
-    { name: "Reservations", path: "/table" },
-    { name: "Cart", path: "/cart" },
-    { name: "Order Status", path: "/order-status" },
-    { name: "Profile", path: "/profile" },
-    { name: "About", path: "/about" },
+    { name: "Home", path: "/", protected: false },
+    { name: "Menu", path: "/menu", protected: false },
+    { name: "Reservations", path: "/table", protected: true },
+    { name: "Cart", path: "/cart", protected: true },
+    { name: "Order Status", path: "/order-status", protected: true },
+    { name: "About", path: "/about", protected: false },
 ];
 
 const Navbar = () => {
@@ -22,6 +22,9 @@ const Navbar = () => {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const lastScrollY = useRef(0);
     const location = useLocation();
+    const { isAuthenticated, logout, user } = useAuth();
+    
+    const visibleLinks = navLinks.filter(link => !link.protected || isAuthenticated);
 
     // Hide on scroll down, show on scroll up
     useEffect(() => {
@@ -82,7 +85,7 @@ const Navbar = () => {
 
                             {/* Desktop Nav Links */}
                             <div className="hidden lg:flex items-center space-x-1">
-                                {navLinks.map((link) => {
+                                {visibleLinks.map((link) => {
                                     const active = isActive(link.path);
                                     return (
                                         <Link
@@ -110,28 +113,47 @@ const Navbar = () => {
 
                         {/* Auth + Cart — Right */}
                         <div className="hidden lg:flex items-center space-x-4 ml-auto">
-
-
-
-                            {/* Login */}
-                            <Link
-                                to="/login"
-                                className="px-6 py-2.5 text-white font-medium rounded-xl border border-white/20 hover:bg-white/10 transition-colors duration-300"
-                            >
-                                Login
-                            </Link>
-
-                            {/* Sign Up — no scale, brightness only */}
-                            <Link
-                                to="/register"
-                                className="px-6 py-2.5 text-white font-semibold rounded-xl shadow-lg hover:brightness-110 transition-[filter] duration-300"
-                                style={{
-                                    background: `linear-gradient(135deg, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
-                                    boxShadow: `0 4px 15px ${NAV_COLOR}40`,
-                                }}
-                            >
-                                Sign Up
-                            </Link>
+                            {!isAuthenticated ? (
+                                <>
+                                    <Link
+                                        to="/login"
+                                        className="px-6 py-2.5 text-white font-medium rounded-xl border border-white/20 hover:bg-white/10 transition-colors duration-300"
+                                    >
+                                        Login
+                                    </Link>
+                                    <Link
+                                        to="/register"
+                                        className="px-6 py-2.5 text-white font-semibold rounded-xl shadow-lg hover:brightness-110 transition-[filter] duration-300"
+                                        style={{
+                                            background: `linear-gradient(135deg, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
+                                            boxShadow: `0 4px 15px ${NAV_COLOR}40`,
+                                        }}
+                                    >
+                                        Sign Up
+                                    </Link>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/profile" className="px-3 py-1.5 text-white font-medium hover:text-primary transition-all duration-300 flex items-center gap-4 group">
+                                        {user?.profileImage ? (
+                                            <div className="w-14 h-14 rounded-full overflow-hidden ring-[3px] ring-primary/30 transition-all duration-300 shadow-[0_0_20px_rgba(238,124,43,0.3)]">
+                                                <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                            </div>
+                                        ) : (
+                                            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-white/50 group-hover:text-primary transition-all duration-300 border border-white/20">
+                                                <span className="material-icons text-3xl">person</span>
+                                            </div>
+                                        )}
+                                        <div className="hidden xl:flex flex-col">
+                                            <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-bold mb-0.5">Welcome,</span>
+                                            <span className="text-sm font-black tracking-tight text-white group-hover:text-primary transition-colors">{user?.name?.split(' ')[0] || "Guest"}</span>
+                                        </div>
+                                    </Link>
+                                    <button onClick={logout} className="px-5 py-2.5 text-white/50 hover:text-white hover:bg-white/5 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-300">
+                                        Logout
+                                    </button>
+                                </>
+                            )}
                         </div>
 
                         {/* Mobile — Cart + Hamburger */}
@@ -166,7 +188,7 @@ const Navbar = () => {
                             className="lg:hidden bg-dark/98 border-t border-white/10"
                         >
                             <div className="px-6 py-6 space-y-3">
-                                {navLinks.map((link) => (
+                                {visibleLinks.map((link) => (
                                     <Link
                                         key={link.path}
                                         to={link.path}
@@ -181,21 +203,44 @@ const Navbar = () => {
 
                                 <div className="border-t border-white/10 my-4" />
 
-                                <Link
-                                    to="/login"
-                                    className="block px-5 py-3 text-center text-white font-medium rounded-xl border border-white/20 hover:bg-white/10 transition-colors duration-300"
-                                >
-                                    Login
-                                </Link>
-                                <Link
-                                    to="/register"
-                                    className="block px-5 py-3 text-center text-white font-semibold rounded-xl transition-colors duration-300"
-                                    style={{
-                                        background: `linear-gradient(135deg, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
-                                    }}
-                                >
-                                    Sign Up
-                                </Link>
+                                {!isAuthenticated ? (
+                                    <>
+                                        <Link
+                                            to="/login"
+                                            className="block px-5 py-3 text-center text-white font-medium rounded-xl border border-white/20 hover:bg-white/10 transition-colors duration-300"
+                                        >
+                                            Login
+                                        </Link>
+                                        <Link
+                                            to="/register"
+                                            className="block px-5 py-3 text-center text-white font-semibold rounded-xl transition-colors duration-300"
+                                            style={{
+                                                background: `linear-gradient(135deg, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
+                                            }}
+                                        >
+                                            Sign Up
+                                        </Link>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Link to="/profile" className="flex flex-col items-center gap-4 px-6 py-8 text-center text-primary font-bold text-xl rounded-[2.5rem] border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-all duration-300 shadow-2xl">
+                                            {user?.profileImage ? (
+                                                <img src={user.profileImage} alt="Profile" className="w-24 h-24 rounded-full object-cover ring-4 ring-primary/40 shadow-[0_10px_30px_rgba(238,124,43,0.3)]" />
+                                            ) : (
+                                                <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center border-2 border-primary/20">
+                                                    <span className="material-icons text-5xl">person</span>
+                                                </div>
+                                            )}
+                                            <div className="space-y-1">
+                                                <span className="block text-2xl text-white">{user?.name || "Account"}</span>
+                                                <span className="block text-xs uppercase tracking-[0.3em] text-primary/70">View Your Profile</span>
+                                            </div>
+                                        </Link>
+                                        <button onClick={logout} className="w-full px-5 py-3 text-center text-red-400 font-medium rounded-xl border border-red-500/20 hover:bg-red-500/10 transition-colors duration-300 mt-2">
+                                            Logout
+                                        </button>
+                                    </>
+                                )}
                             </div>
                         </motion.div>
                     )}

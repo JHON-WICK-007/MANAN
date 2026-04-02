@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import ScrollReveal from "../../components/ScrollReveal";
 
 const DUMMY_USER = {
@@ -11,74 +12,13 @@ const DUMMY_USER = {
     role: "customer"
 };
 
-const DUMMY_ORDERS = [
-    {
-        id: "LM-88219",
-        title: "The Autumn Degustation Menu",
-        items: "Portobello Truffle Tart, Roasted Root Velouté, Saffron Risotto",
-        date: "Oct 24, 2024",
-        price: "₹8,450.00",
-        status: "Delivered",
-        statusColor: "green"
-    },
-    {
-        id: "LM-88104",
-        title: "Signature Seafood Platter",
-        items: "Grilled Lobster, Scallops in Garlic Butter, Tiger Prawns",
-        date: "Oct 18, 2024",
-        price: "₹12,200.00",
-        status: "Delivered",
-        statusColor: "green"
-    },
-    {
-        id: "LM-87955",
-        title: "Wagyu Steak & Red Wine Pair",
-        items: "A5 Wagyu Ribeye, Truffle Mash, Vintage Cabernet",
-        date: "Oct 12, 2024",
-        price: "₹15,400.00",
-        status: "Cancelled",
-        statusColor: "red"
-    }
-];
-
-const DUMMY_RESERVATIONS = [
-    {
-        id: "RES-9934",
-        title: "Chef's Table Experience",
-        details: "2 Guests • CT-01 (Kitchen View)",
-        time: "08:00 PM",
-        date: "Nov 02, 2024",
-        status: "Pending",
-        statusColor: "yellow"
-    },
-    {
-        id: "RES-9912",
-        title: "Dinner for Four",
-        details: "4 Guests • T-12 (Corner View)",
-        time: "07:30 PM",
-        date: "Oct 26, 2024",
-        status: "Confirmed",
-        statusColor: "green"
-    },
-    {
-        id: "RES-9821",
-        title: "Business Lunch",
-        details: "6 Guests • Private Dining Room",
-        time: "01:00 PM",
-        date: "Oct 15, 2024",
-        status: "Cancelled",
-        statusColor: "red"
-    }
-];
 
 const Profile = () => {
-    const [user, setUser] = useState(() => {
-        const stored = localStorage.getItem("user");
-        if (stored) return JSON.parse(stored);
-        return DUMMY_USER;
-    });
+    const { user: authUser, token, updateUser, logout } = useAuth();
+    const user = authUser || DUMMY_USER;
     const [activeTab, setActiveTab] = useState("Profile");
     const [isEditing, setIsEditing] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
     const [hoveredTab, setHoveredTab] = useState(null);
     const [editForm, setEditForm] = useState({
         firstName: "",
@@ -92,24 +32,115 @@ const Profile = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
-    // Load reservations: real (from localStorage) + dummy fallback
-    const [reservations, setReservations] = useState(() => {
-        try {
-            const stored = JSON.parse(localStorage.getItem("reservations") || "[]");
-            // Real bookings first, then dummies that aren't duplicated
-            const realIds = new Set(stored.map(r => r.id));
-            const dummies = DUMMY_RESERVATIONS.filter(d => !realIds.has(d.id));
-            return [...stored, ...dummies];
-        } catch {
-            return DUMMY_RESERVATIONS;
-        }
-    });
+    const [reservations, setReservations] = useState([]);
+    const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleCancelReservation = (id) => {
-        setReservations(prev => prev.filter(r => r.id !== id));
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                navigate("/login");
+                return;
+            }
+
+            setIsLoading(true);
+            try {
+                // Fetch reservations
+                const resResponse = await fetch("/api/reservations/my", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (resResponse.ok) {
+                    const resData = await resResponse.json();
+                    
+                    const formattedReservations = resData.data.map(r => ({
+                        id: r.bookingId || r._id,
+                        dbId: r._id,
+                        title: "Restaurant Reservation",
+                        details: `${r.guests} Guests • ${r.specialRequests || 'Standard'}`,
+                        time: r.time,
+                        date: r.date,
+                        status: r.status,
+                        statusColor: r.status === 'Confirmed' ? 'green' : (r.status === 'Cancelled' ? 'red' : 'yellow')
+                    }));
+
+                    setReservations(formattedReservations);
+                }
+
+                // Fetch extended profile data (phone, address, image)
+                const profResponse = await fetch("/api/profile", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (profResponse.ok) {
+                    const profData = await profResponse.json();
+                    if (profData.success) {
+                        updateUser(profData.data);
+                    }
+                }
+
+                // Fetch orders
+                const ordResponse = await fetch("/api/orders/my", {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (ordResponse.ok) {
+                    const ordData = await ordResponse.json();
+                    
+                    const formattedOrders = ordData.data.map(o => {
+                        const itemsStr = o.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
+                        const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                        const formattedDate = new Date(o.createdAt).toLocaleDateString('en-US', options);
+
+                        return {
+                            id: o.orderId || o._id,
+                            dbId: o._id,
+                            title: o.items.length > 0 ? o.items[0].name + (o.items.length > 1 ? ` & ${o.items.length - 1} more` : '') : "Order",
+                            items: itemsStr,
+                            date: formattedDate,
+                            price: `₹${o.totalAmount.toFixed(2)}`,
+                            status: o.status,
+                            statusColor: o.status === 'Delivered' ? 'green' : (o.status === 'Cancelled' ? 'red' : 'yellow')
+                        };
+                    });
+
+                    setOrders(formattedOrders);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                setReservations([]);
+                setOrders([]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchProfileData();
+    }, [navigate]);
+
+    const handleCancelReservation = async (id) => {
+        // Try to cancel via API if it's a real reservation
+        const realRes = reservations.find(r => r.id === id);
+        
+        if (realRes && realRes.dbId) {
+            try {
+                const token = localStorage.getItem("token");
+                const res = await fetch(`/api/reservations/${realRes.dbId}/cancel`, {
+                    method: "PATCH",
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (res.ok) {
+                    setReservations(prev => prev.map(r => r.id === id ? { ...r, status: "Cancelled", statusColor: "red" } : r));
+                    return;
+                }
+            } catch (error) {
+                console.error("Failed to cancel API reservation", error);
+            }
+        }
+        
+        // Fallback for local/dummy reservations
+        setReservations(prev => prev.map(r => r.id === id ? { ...r, status: "Cancelled", statusColor: "red" } : r));
         try {
             const stored = JSON.parse(localStorage.getItem("reservations") || "[]");
-            const updated = stored.filter(r => r.id !== id);
+            const updated = stored.map(r => r.id === id ? { ...r, status: "Cancelled", statusColor: "red" } : r);
             localStorage.setItem("reservations", JSON.stringify(updated));
         } catch { /* noop */ }
     };
@@ -118,23 +149,38 @@ const Profile = () => {
         fileInputRef.current.click();
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const file = e.target.files[0];
         if (file) {
+            const localPreview = URL.createObjectURL(file);
+            updateUser({ profileImage: localPreview });
+            setIsUploadingImage(true);
+
             const reader = new FileReader();
-            reader.onloadend = () => {
-                const updatedUser = { ...user, profileImage: reader.result };
-                setUser(updatedUser);
-                localStorage.setItem("user", JSON.stringify(updatedUser));
+            reader.onloadend = async () => {
+                const base64Image = reader.result;
+                try {
+                    const res = await fetch("/api/profile", {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                        body: JSON.stringify({ profileImage: base64Image }),
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        updateUser(data.user);
+                    }
+                } catch (err) {
+                    console.error("Failed to update profile image", err);
+                } finally {
+                    setIsUploadingImage(false);
+                }
             };
             reader.readAsDataURL(file);
         }
     };
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        navigate("/login");
+        logout();
     };
 
     const handleEditClick = () => {
@@ -150,16 +196,24 @@ const Profile = () => {
         setIsEditing(true);
     };
 
-    const handleSaveEdit = () => {
-        const updatedUser = {
-            ...user,
-            name: `${editForm.firstName} ${editForm.lastName}`.trim(),
-            email: editForm.email,
-            phone: editForm.phone,
-            address: editForm.address
-        };
-        setUser(updatedUser);
-        localStorage.setItem("user", JSON.stringify(updatedUser));
+    const handleSaveEdit = async () => {
+        try {
+            const res = await fetch("/api/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({
+                    name: `${editForm.firstName} ${editForm.lastName}`.trim(),
+                    phone: editForm.phone,
+                    address: editForm.address
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                updateUser(data.user);
+            }
+        } catch (err) {
+            console.error("Failed to update profile", err);
+        }
         setIsEditing(false);
     };
 
@@ -215,11 +269,17 @@ const Profile = () => {
                         accept="image/*"
                         className="hidden"
                     />
-                    <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-white text-4xl font-bold shadow-[inset_0_-5px_15px_rgba(0,0,0,0.15)] ring-4 ring-primary/20 overflow-hidden">
+                    <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-white text-4xl font-bold shadow-[inset_0_-5px_15px_rgba(0,0,0,0.15)] ring-4 ring-primary/20 overflow-hidden relative">
                         {user.profileImage ? (
                             <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             getInitials(user.name)
+                        )}
+                        
+                        {isUploadingImage && (
+                            <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[2px]">
+                                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+                            </div>
                         )}
                     </div>
                     <button
@@ -612,9 +672,9 @@ const Profile = () => {
             {/* ORDER HISTORY TAB */}
             {activeTab === "Order History" && (
                 <section className="animate-fade-in space-y-5">
-                    {DUMMY_ORDERS.length > 0 ? (
+                    {orders.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {DUMMY_ORDERS.map((order) => {
+                            {orders.map((order) => {
                                 const ss = ({
                                     green: { dot: '#4ade80', bg: 'rgba(34,197,94,0.08)', border: 'rgba(34,197,94,0.2)', text: '#4ade80' },
                                     red: { dot: '#f87171', bg: 'rgba(239,68,68,0.08)', border: 'rgba(239,68,68,0.2)', text: '#f87171' },
