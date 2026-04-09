@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
 import ScrollReveal, { ScrollSection, fadeUp } from "../../components/ScrollReveal";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const categories = ["All Items", "Starters", "Main Course", "Desserts", "Beverages"];
 
@@ -19,27 +19,29 @@ const DUMMY_MENU = [
 ];
 
 const Menu = () => {
-    const [items, setItems] = useState([]);
+    const [allItems, setAllItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [activeCategory, setActiveCategory] = useState("All Items");
     const [search, setSearch] = useState("");
     const { addItem } = useCart();
 
+    // Fetch ALL items once on mount — category filtering happens client-side (instant)
     useEffect(() => {
-        const query = activeCategory !== "All Items" ? `?category=${activeCategory}` : "";
-        fetch(`/api/menu${query}`)
+        fetch(`/api/menu`)
             .then((r) => r.json())
             .then((data) => {
-                if (data.success && data.data.length) setItems(data.data);
-                else setItems(activeCategory === "All Items" ? DUMMY_MENU : DUMMY_MENU.filter(i => i.category === activeCategory));
+                if (data.success && data.data.length) setAllItems(data.data);
+                else setAllItems(DUMMY_MENU);
             })
-            .catch(() => {
-                setItems(activeCategory === "All Items" ? DUMMY_MENU : DUMMY_MENU.filter(i => i.category === activeCategory));
-            });
-    }, [activeCategory]);
+            .catch(() => setAllItems(DUMMY_MENU))
+            .finally(() => setIsLoading(false));
+    }, []);
 
-    const filtered = items.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
-    );
+    const filtered = allItems.filter((item) => {
+        const matchesCategory = activeCategory === "All Items" || item.category === activeCategory;
+        const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
+        return matchesCategory && matchesSearch;
+    });
 
     return (
         <main className="min-h-screen pt-20">
@@ -87,35 +89,52 @@ const Menu = () => {
                     </ScrollReveal>
                 </ScrollSection>
 
-                {/* Grid — stagger container matches About page pattern */}
-                <ScrollSection className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {filtered.map((item, idx) => (
-                        <ScrollReveal key={item._id} custom={idx % 3} className="group card-dark flex flex-col h-full">
-                            <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
-                                {item.image && (
-                                    <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
-                                )}
-                                <div className="absolute top-0 left-0 z-10">
-                                    <div className={`w-5 h-5 rounded-br-lg ${item.isVeg ? 'bg-green-600' : 'bg-red-600'}`}></div>
-                                </div>
-                                <div className="absolute top-4 right-4 glass-light px-4 py-2 rounded-xl text-primary font-bold">
-                                    ₹{item.price?.toFixed(2)}
-                                </div>
-                            </div>
-                            <div className="p-6 flex flex-col flex-grow">
-                                <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">{item.name}</h3>
-                                <p className="text-stone-400 text-sm leading-relaxed mb-6 min-h-[72px]">{item.description}</p>
-                                <div className="flex-grow"></div>
-                                <button onClick={() => addItem(item)}
-                                    className="w-full py-3 border border-white/20 rounded-lg text-white font-medium hover:bg-primary hover:border-primary transition-all">
-                                    Add to Cart
-                                </button>
-                            </div>
-                        </ScrollReveal>
-                    ))}
-                </ScrollSection>
+                {/* Grid — animated on every category switch */}
+                {!isLoading && (
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeCategory}
+                            className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {filtered.map((item, idx) => (
+                                <motion.div
+                                    key={item._id}
+                                    className="group card-dark flex flex-col h-full"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.25, delay: idx * 0.05, ease: 'easeOut' }}
+                                >
+                                    <div className="aspect-[4/3] overflow-hidden relative flex-shrink-0">
+                                        {item.image && (
+                                            <img src={item.image} alt={item.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                        )}
+                                        <div className="absolute top-0 left-0 z-10">
+                                            <div className={`w-5 h-5 rounded-br-lg ${item.isVeg ? 'bg-green-600' : 'bg-red-600'}`}></div>
+                                        </div>
+                                        <div className="absolute top-4 right-4 glass-light px-4 py-2 rounded-xl text-primary font-bold">
+                                            ₹{item.price?.toFixed(2)}
+                                        </div>
+                                    </div>
+                                    <div className="p-6 flex flex-col flex-grow">
+                                        <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-2">{item.name}</h3>
+                                        <p className="text-stone-400 text-sm leading-relaxed mb-6 min-h-[72px]">{item.description}</p>
+                                        <div className="flex-grow"></div>
+                                        <button onClick={() => addItem(item)}
+                                            className="w-full py-3 border border-white/20 rounded-lg text-white font-medium hover:bg-primary hover:border-primary transition-all">
+                                            Add to Cart
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </AnimatePresence>
+                )}
 
-                {filtered.length === 0 && (
+                {!isLoading && filtered.length === 0 && (
                     <div className="text-center py-20">
                         <span className="material-icons text-6xl text-stone-600 mb-4">search_off</span>
                         <p className="text-stone-400 text-xl">No dishes found</p>

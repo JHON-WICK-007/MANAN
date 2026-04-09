@@ -52,7 +52,7 @@ const Profile = () => {
                 });
                 if (resResponse.ok) {
                     const resData = await resResponse.json();
-                    
+
                     const formattedReservations = resData.data.map(r => ({
                         id: r.bookingId || r._id,
                         dbId: r._id,
@@ -84,7 +84,7 @@ const Profile = () => {
                 });
                 if (ordResponse.ok) {
                     const ordData = await ordResponse.json();
-                    
+
                     const formattedOrders = ordData.data.map(o => {
                         const itemsStr = o.items.map(i => `${i.quantity}x ${i.name}`).join(', ');
                         const options = { year: 'numeric', month: 'short', day: 'numeric' };
@@ -119,7 +119,7 @@ const Profile = () => {
     const handleCancelReservation = async (id) => {
         // Try to cancel via API if it's a real reservation
         const realRes = reservations.find(r => r.id === id);
-        
+
         if (realRes && realRes.dbId) {
             try {
                 const token = localStorage.getItem("token");
@@ -135,7 +135,7 @@ const Profile = () => {
                 console.error("Failed to cancel API reservation", error);
             }
         }
-        
+
         // Fallback for local/dummy reservations
         setReservations(prev => prev.map(r => r.id === id ? { ...r, status: "Cancelled", statusColor: "red" } : r));
         try {
@@ -269,13 +269,13 @@ const Profile = () => {
                         accept="image/*"
                         className="hidden"
                     />
-                    <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-white text-4xl font-bold shadow-[inset_0_-5px_15px_rgba(0,0,0,0.15)] ring-4 ring-primary/20 overflow-hidden relative">
+                    <div className={`w-32 h-32 rounded-full flex items-center justify-center text-white text-4xl font-bold overflow-hidden relative ${!user.profileImage ? 'bg-primary' : 'bg-transparent'}`}>
                         {user.profileImage ? (
                             <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             getInitials(user.name)
                         )}
-                        
+
                         {isUploadingImage && (
                             <div className="absolute inset-0 bg-black/50 flex items-center justify-center backdrop-blur-[2px]">
                                 <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
@@ -536,11 +536,10 @@ const Profile = () => {
                                                     {/* Action button — top right */}
                                                     <button
                                                         onClick={() => isActive ? handleCancelReservation(res.id) : navigate('/table')}
-                                                        className={`shrink-0 h-[36px] px-[18px] inline-flex items-center gap-1.5 rounded-[10px] text-[10px] font-bold tracking-[0.12em] uppercase transition-all duration-300 ${
-                                                            isActive
-                                                                ? 'bg-white/5 hover:bg-red-500/10 border border-transparent hover:border-red-500/50 text-stone-400 hover:text-red-400'
-                                                                : 'bg-primary hover:bg-[#d96e1f] border border-transparent text-white shadow-[0_4px_16px_rgba(238,124,43,0.3)] hover:shadow-[0_4px_24px_rgba(238,124,43,0.5)]'
-                                                        }`}
+                                                        className={`shrink-0 h-[36px] px-[18px] inline-flex items-center gap-1.5 rounded-[10px] text-[10px] font-bold tracking-[0.12em] uppercase transition-all duration-300 ${isActive
+                                                            ? 'bg-white/5 hover:bg-red-500/10 border border-transparent hover:border-red-500/50 text-stone-400 hover:text-red-400'
+                                                            : 'bg-primary hover:bg-[#d96e1f] border border-transparent text-white shadow-[0_4px_16px_rgba(238,124,43,0.3)] hover:shadow-[0_4px_24px_rgba(238,124,43,0.5)]'
+                                                            }`}
                                                     >
                                                         {isActive ? 'Cancel' : (
                                                             <>

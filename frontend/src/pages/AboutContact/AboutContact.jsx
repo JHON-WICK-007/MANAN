@@ -80,13 +80,12 @@ const AboutContact = () => {
     return (
         <div className="overflow-hidden">
             {/* ══════════════════════════ 1. HERO ══════════════════════════ */}
-            <section className="relative h-[70vh] min-h-[520px] flex items-center justify-center overflow-hidden">
+            <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
                 {/* Background */}
-                <div className="absolute inset-0 z-0 bg-black">
+                <div className="absolute inset-0 z-0">
                     <div
                         className="w-full h-full scale-105 opacity-40"
                         style={{
-                            backgroundColor: '#000000',
                             backgroundImage: `url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80')`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
@@ -176,39 +175,72 @@ const AboutContact = () => {
             </Section>
 
             {/* ══════════════ 3. VISION & MISSION ══════════════════════ */}
-            <Section className="py-24 px-4 md:px-8">
-                <div className="max-w-5xl mx-auto">
-                    <M variants={fadeUp} className="text-center mb-16">
+            <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
+                {/* Subtle radial gradient background behind the cards */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+                <div className="relative z-10 max-w-5xl mx-auto">
+                    <M variants={fadeUp} className="text-center mb-20">
                         <h2 className="section-label">What Drives Us</h2>
                         <h3 className="section-title">
                             Our <span className="text-primary">Vision</span> & Mission
                         </h3>
                     </M>
 
-                    <div className="grid md:grid-cols-2 gap-8">
+                    <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
                         {[
                             {
                                 icon: "visibility",
-                                title: "Our Vision",
+                                titleStart: "Our",
+                                titleHighlight: "Vision",
                                 text: "To be a global beacon of culinary excellence — a place where every visit transcends dining and becomes an unforgettable sensory journey that celebrates heritage, innovation, and the art of gathering.",
                             },
                             {
                                 icon: "flag",
-                                title: "Our Mission",
+                                titleStart: "Our",
+                                titleHighlight: "Mission",
                                 text: "We craft world-class dining experiences through ethically sourced ingredients, masterful technique, and heartfelt hospitality — nurturing a community that values quality, creativity, and sustainability.",
                             },
                         ].map((card, i) => (
-                            <M key={card.title} variants={fadeUp} custom={i}>
+                            <M key={card.titleHighlight} variants={fadeUp} custom={i}>
                                 <motion.div
-                                    whileHover={{ y: -6, boxShadow: "0 0 40px rgba(238,124,43,0.12)" }}
-                                    transition={{ duration: 0.3 }}
-                                    className="glass-card rounded-2xl p-10 h-full"
+                                    whileHover={{ y: -8, boxShadow: "0 15px 40px -10px rgba(238,124,43,0.25)" }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="group relative overflow-hidden rounded-[24px] p-10 lg:p-12 h-full transition-colors duration-300"
+                                    style={{
+                                        background: "linear-gradient(180deg, rgba(30,20,15,0.5) 0%, rgba(20,15,10,0.8) 100%)",
+                                        backdropFilter: "blur(20px)",
+                                        WebkitBackdropFilter: "blur(20px)",
+                                        border: "1px solid rgba(255,255,255,0.06)",
+                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
+                                        backfaceVisibility: "hidden"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(40,25,15,0.7) 0%, rgba(25,15,10,0.9) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(238,124,43,0.4)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(30,20,15,0.5) 0%, rgba(20,15,10,0.8) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(255,255,255,0.06)";
+                                    }}
                                 >
-                                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                                        <span className="material-icons text-2xl text-primary">{card.icon}</span>
+                                    {/* Faint divider line inside card (top accent) */}
+                                    <div className="absolute top-0 left-10 right-10 h-[1px] bg-gradient-to-r from-transparent via-white/10 group-hover:via-primary/50 to-transparent transition-colors duration-500" />
+
+                                    {/* Top: small icon container */}
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 group-hover:border-primary/50 group-hover:shadow-[0_0_20px_rgba(238,124,43,0.25)] transition-all duration-300">
+                                        <span className="material-icons text-xl text-stone-400 group-hover:text-primary transition-colors duration-300">{card.icon}</span>
                                     </div>
-                                    <h4 className="text-2xl font-bold text-white mb-4">{card.title}</h4>
-                                    <p className="text-stone-400 font-light leading-relaxed">{card.text}</p>
+
+                                    {/* Middle: title */}
+                                    <h4 className="text-[26px] font-bold text-white/90 group-hover:text-white tracking-tight mb-3 transition-colors duration-300">
+                                        {card.titleStart} <span className="text-primary opacity-90 group-hover:opacity-100 transition-opacity duration-300">{card.titleHighlight}</span>
+                                    </h4>
+
+                                    {/* Bottom: description paragraph */}
+                                    <p className="text-stone-400/90 text-[15px] font-light leading-[1.8] group-hover:text-stone-300 transition-colors duration-300">
+                                        {card.text}
+                                    </p>
                                 </motion.div>
                             </M>
                         ))}
@@ -217,36 +249,70 @@ const AboutContact = () => {
             </Section>
 
             {/* ══════════════════ 4. MEET THE TEAM ═════════════════════ */}
-            <Section className="py-12 px-4 md:px-8">
-                <div className="max-w-6xl mx-auto">
-                    <M variants={fadeUp} className="text-center mb-16">
+            <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
+                {/* Subtle radial gradient background behind the cards */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-full max-h-[800px] bg-primary/5 blur-[140px] rounded-full pointer-events-none" />
+
+                <div className="relative z-10 max-w-6xl mx-auto">
+                    <M variants={fadeUp} className="text-center mb-20">
                         <h2 className="section-label">The Artisans</h2>
                         <h3 className="section-title">
                             Meet Our <span className="text-primary">Team</span>
                         </h3>
                     </M>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12">
                         {teamMembers.map((member, i) => (
-                            <M key={member.name} variants={fadeUp} custom={i}>
+                            <M key={member.name} variants={fadeUp} custom={i} className="h-full">
                                 <motion.div
-                                    whileHover={{ scale: 1.03, y: -6 }}
-                                    transition={{ duration: 0.35 }}
-                                    className="glass-card rounded-2xl p-8 text-center"
+                                    whileHover={{ y: -8, boxShadow: "0 20px 40px -10px rgba(238,124,43,0.25)" }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="group relative overflow-hidden rounded-[24px] p-8 lg:p-10 h-full flex flex-col items-center text-center transition-colors duration-300"
+                                    style={{
+                                        background: "linear-gradient(180deg, rgba(30,20,15,0.4) 0%, rgba(20,15,10,0.7) 100%)",
+                                        backdropFilter: "blur(20px)",
+                                        WebkitBackdropFilter: "blur(20px)",
+                                        border: "1px solid rgba(255,255,255,0.06)",
+                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
+                                        backfaceVisibility: "hidden"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(40,25,15,0.6) 0%, rgba(25,15,10,0.85) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(238,124,43,0.4)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(30,20,15,0.4) 0%, rgba(20,15,10,0.7) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(255,255,255,0.06)";
+                                    }}
                                 >
-                                    <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-2 border-primary/30 shadow-lg shadow-primary/10">
-                                        <img
-                                            src={member.image}
-                                            alt={member.name}
-                                            className="w-full h-full object-cover"
-                                            onError={(e) => {
-                                                if (member.fallback) e.currentTarget.src = member.fallback;
-                                            }}
-                                        />
+                                    {/* Top: Circular profile image (larger size) with soft outer glow ring */}
+                                    <div className="relative w-40 h-40 mx-auto mb-8 rounded-full p-[3px] bg-gradient-to-tr from-white/5 to-white/10 group-hover:from-primary/40 group-hover:to-primary/10 transition-all duration-500 shadow-lg group-hover:shadow-[0_0_30px_rgba(238,124,43,0.3)]">
+                                        <div className="w-full h-full rounded-full overflow-hidden border-4 border-dark/80 relative bg-dark">
+                                            <img
+                                                src={member.image}
+                                                alt={member.name}
+                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                                onError={(e) => {
+                                                    if (member.fallback) e.currentTarget.src = member.fallback;
+                                                }}
+                                            />
+                                            {/* Inner image overlay for ambient lighting */}
+                                            <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-10 mix-blend-overlay transition-opacity duration-500 pointer-events-none" />
+                                        </div>
                                     </div>
-                                    <h4 className="text-xl font-bold text-white mb-1">{member.name}</h4>
-                                    <p className="text-primary text-sm font-bold uppercase tracking-widest mb-3">{member.role}</p>
-                                    <p className="text-stone-400 text-sm font-light leading-relaxed">{member.bio}</p>
+
+                                    {/* Middle: Chef name & Role label */}
+                                    <h4 className="text-2xl font-bold text-white/90 group-hover:text-white mb-2 transition-colors duration-300">
+                                        {member.name}
+                                    </h4>
+                                    <p className="text-primary/70 group-hover:text-primary text-[11px] font-bold uppercase tracking-[0.25em] mb-5 transition-colors duration-300">
+                                        {member.role}
+                                    </p>
+
+                                    {/* Bottom: Description text */}
+                                    <p className="text-stone-400/90 text-[15px] font-light leading-[1.8] group-hover:text-stone-300 transition-colors duration-300 max-w-sm mx-auto mt-auto">
+                                        {member.bio}
+                                    </p>
                                 </motion.div>
                             </M>
                         ))}
@@ -255,30 +321,60 @@ const AboutContact = () => {
             </Section>
 
             {/* ═══════════════ 5. CONTACT INFORMATION ══════════════════ */}
-            <Section className="py-12 px-4 md:px-8">
-                <div className="max-w-6xl mx-auto">
-                    <M variants={fadeUp} className="text-center mb-16">
+            <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
+                {/* Subtle radial gradient background behind the cards */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
+                <div className="relative z-10 max-w-6xl mx-auto">
+                    <M variants={fadeUp} className="text-center mb-20">
                         <h2 className="section-label">Reach Out</h2>
                         <h3 className="section-title">
                             Contact <span className="text-primary">Information</span>
                         </h3>
                     </M>
 
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
                         {contactCards.map((card, i) => (
-                            <M key={card.title} variants={fadeUp} custom={i}>
+                            <M key={card.title} variants={fadeUp} custom={i} className="h-full">
                                 <motion.div
-                                    whileHover={{ y: -4, boxShadow: "0 0 30px rgba(238,124,43,0.1)" }}
-                                    transition={{ duration: 0.3 }}
-                                    className="glass-card rounded-2xl p-8 text-center h-full"
+                                    whileHover={{ y: -6, boxShadow: "0 15px 30px -10px rgba(238,124,43,0.2)" }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="group relative overflow-hidden rounded-[24px] p-8 h-full flex flex-col items-center text-center transition-colors duration-300"
+                                    style={{
+                                        background: "linear-gradient(180deg, rgba(30,20,15,0.4) 0%, rgba(20,15,10,0.7) 100%)",
+                                        backdropFilter: "blur(20px)",
+                                        WebkitBackdropFilter: "blur(20px)",
+                                        border: "1px solid rgba(255,255,255,0.06)",
+                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
+                                        backfaceVisibility: "hidden"
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(40,25,15,0.5) 0%, rgba(25,15,10,0.8) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(238,124,43,0.4)";
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = "linear-gradient(180deg, rgba(30,20,15,0.4) 0%, rgba(20,15,10,0.7) 100%)";
+                                        e.currentTarget.style.border = "1px solid rgba(255,255,255,0.06)";
+                                    }}
                                 >
-                                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
-                                        <span className="material-icons text-2xl text-primary">{card.icon}</span>
+                                    {/* Top: rounded square icon container */}
+                                    <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-[14px] group-hover:bg-primary/20 group-hover:border-primary/50 group-hover:shadow-[0_0_20px_rgba(238,124,43,0.25)] transition-all duration-300">
+                                        <span className="material-icons text-2xl text-primary/80 group-hover:text-primary group-hover:scale-110 transition-all duration-300">{card.icon}</span>
                                     </div>
-                                    <h4 className="text-lg font-bold text-white mb-3">{card.title}</h4>
-                                    {card.lines.map((line) => (
-                                        <p key={line} className="text-stone-400 text-sm font-light leading-relaxed">{line}</p>
-                                    ))}
+
+                                    {/* Middle: Title */}
+                                    <h4 className="text-xl font-bold text-white/90 group-hover:text-white mb-[10px] transition-colors duration-300">
+                                        {card.title}
+                                    </h4>
+
+                                    {/* Bottom: Contact Details */}
+                                    <div className="mt-auto w-full">
+                                        {card.lines.map((line) => (
+                                            <p key={line} className="text-stone-400/90 text-[15px] font-light leading-[1.8] group-hover:text-stone-300 transition-colors duration-300">
+                                                {line}
+                                            </p>
+                                        ))}
+                                    </div>
                                 </motion.div>
                             </M>
                         ))}
@@ -287,9 +383,12 @@ const AboutContact = () => {
             </Section>
 
             {/* ══════════════════ 6. CONTACT FORM ══════════════════════ */}
-            <Section className="py-12 px-4 md:px-8">
-                <div className="max-w-3xl mx-auto">
-                    <M variants={fadeUp} className="text-center mb-16">
+            <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
+                {/* Subtle radial glow specifically highlighting the form area */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full max-h-[600px] bg-primary/5 blur-[140px] rounded-full pointer-events-none" />
+
+                <div className="relative z-10 max-w-4xl mx-auto">
+                    <M variants={fadeUp} className="text-center mb-20">
                         <h2 className="section-label">Get In Touch</h2>
                         <h3 className="section-title">
                             Send Us A <span className="text-primary">Message</span>
@@ -297,15 +396,15 @@ const AboutContact = () => {
                     </M>
 
                     <M variants={fadeUp} custom={1}>
-                        <div className="glass-card rounded-2xl p-8 md:p-12">
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Row: Name + Email */}
-                                <div className="grid md:grid-cols-2 gap-6">
+                        <div className="mx-auto w-full max-w-2xl">
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                {/* Row 1: Name + Email */}
+                                <div className="grid md:grid-cols-2 gap-5">
                                     {[
                                         { name: "name", label: "Full Name", type: "text" },
                                         { name: "email", label: "Email Address", type: "email" },
                                     ].map((field) => (
-                                        <div key={field.name} className="input-floating-label relative">
+                                        <div key={field.name} className="relative group/input">
                                             <input
                                                 id={`contact-${field.name}`}
                                                 type={field.type}
@@ -314,19 +413,17 @@ const AboutContact = () => {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder=" "
-                                                className="peer w-full px-4 pt-6 pb-3 bg-[#1a120b] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
+                                                className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                             />
-                                            <label
-                                                htmlFor={`contact-${field.name}`}
-                                            >
+                                            <label htmlFor={`contact-${field.name}`} className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-1/2 -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
                                                 {field.label}
                                             </label>
                                         </div>
                                     ))}
                                 </div>
 
-                                {/* Phone */}
-                                <div className="input-floating-label relative">
+                                {/* Row 2: Phone */}
+                                <div className="relative group/input">
                                     <input
                                         id="contact-phone"
                                         type="tel"
@@ -334,17 +431,15 @@ const AboutContact = () => {
                                         value={form.phone}
                                         onChange={handleChange}
                                         placeholder=" "
-                                        className="peer w-full px-4 pt-6 pb-3 bg-[#140c06] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white"
+                                        className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                     />
-                                    <label
-                                        htmlFor="contact-phone"
-                                    >
+                                    <label htmlFor="contact-phone" className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-1/2 -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
                                         Phone Number (Optional)
                                     </label>
                                 </div>
 
-                                {/* Message */}
-                                <div className="input-floating-label relative">
+                                {/* Row 3: Message */}
+                                <div className="relative group/input">
                                     <textarea
                                         id="contact-message"
                                         name="message"
@@ -353,55 +448,55 @@ const AboutContact = () => {
                                         required
                                         rows={5}
                                         placeholder=" "
-                                        className="peer w-full px-4 pt-6 pb-3 bg-[#1a120b] border border-stone-700 rounded-xl focus:border-primary focus:ring-1 focus:ring-primary/30 transition-all outline-none text-white resize-none"
+                                        className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] resize-none [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                     />
-                                    <label
-                                        htmlFor="contact-message"
-                                    >
+                                    <label htmlFor="contact-message" className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-[24px] -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-[24px] peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
                                         Your Message
                                     </label>
                                 </div>
 
-                                {/* Submit */}
-                                <motion.button
-                                    type="submit"
-                                    disabled={status === "sending"}
-                                    whileHover={{ scale: 1.02, boxShadow: "0 0 40px rgba(238,124,43,0.35)" }}
-                                    whileTap={{ scale: 0.97 }}
-                                    className="w-full py-4 bg-primary hover:bg-primary-dark text-white font-bold rounded-xl transition-colors duration-300 uppercase tracking-widest text-sm flex items-center justify-center gap-3 disabled:opacity-50"
-                                >
-                                    {status === "sending" ? (
-                                        <>
-                                            <span className="material-icons animate-spin text-lg">autorenew</span>
-                                            Sending…
-                                        </>
-                                    ) : (
-                                        <>
-                                            <span className="material-icons text-lg">send</span>
-                                            Send Message
-                                        </>
-                                    )}
-                                </motion.button>
+                                {/* Submit Button */}
+                                <div className="flex justify-center pt-4">
+                                    <motion.button
+                                        type="submit"
+                                        disabled={status === "sending"}
+                                        whileHover={{ y: -2, boxShadow: "0 8px 20px -4px rgba(238,124,43,0.25)" }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className="py-[14px] px-10 bg-gradient-to-r from-primary to-primary-hover disabled:opacity-50 text-white font-medium rounded-[8px] transition-all duration-300 flex items-center justify-center gap-2"
+                                    >
+                                        {status === "sending" ? (
+                                            <>
+                                                <span className="material-icons animate-spin text-lg">autorenew</span>
+                                                Sending…
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span className="material-icons text-lg">send</span>
+                                                Send Message
+                                            </>
+                                        )}
+                                    </motion.button>
+                                </div>
 
                                 {/* Success / Error states */}
                                 {status === "success" && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center justify-center gap-2 text-green-400 font-medium mt-4"
+                                        className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium mt-4 bg-green-500/10 py-3 rounded-[8px] border border-green-500/10"
                                     >
                                         <span className="material-icons text-lg">check_circle</span>
-                                        Your message has been sent successfully!
+                                        Message sent! We'll be in touch shortly.
                                     </motion.div>
                                 )}
                                 {status === "error" && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center justify-center gap-2 text-red-400 font-medium mt-4"
+                                        className="flex items-center justify-center gap-2 text-red-400 text-sm font-medium mt-4 bg-red-500/10 py-3 rounded-[8px] border border-red-500/10"
                                     >
                                         <span className="material-icons text-lg">error</span>
-                                        Something went wrong. Please try again.
+                                        Connection failed. Please try again.
                                     </motion.div>
                                 )}
                             </form>

@@ -23,7 +23,7 @@ const Navbar = () => {
     const lastScrollY = useRef(0);
     const location = useLocation();
     const { isAuthenticated, logout, user } = useAuth();
-    
+
     const visibleLinks = navLinks.filter(link => !link.protected || isAuthenticated);
 
     // Hide on scroll down, show on scroll up
@@ -91,15 +91,13 @@ const Navbar = () => {
                                         <Link
                                             key={link.path}
                                             to={link.path}
-                                            className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide ${
-                                                active ? "text-primary" : "text-gray-300 hover:text-white"
-                                            }`}
+                                            className={`relative px-4 py-2 text-sm font-medium uppercase tracking-wide ${active ? "text-primary" : "text-gray-300 hover:text-white"
+                                                }`}
                                         >
                                             {link.name}
                                             <div
-                                                className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full origin-center ${
-                                                    active ? "transition-transform duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" : ""
-                                                }`}
+                                                className={`absolute bottom-0 left-0 right-0 h-0.5 rounded-full origin-center ${active ? "transition-transform duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)]" : ""
+                                                    }`}
                                                 style={{
                                                     background: `linear-gradient(to right, ${NAV_COLOR}, ${NAV_COLOR_DARK})`,
                                                     transform: active ? "scaleX(1)" : "scaleX(0)",
@@ -134,20 +132,16 @@ const Navbar = () => {
                                 </>
                             ) : (
                                 <>
-                                    <Link to="/profile" className="px-3 py-1.5 text-white font-medium hover:text-primary transition-all duration-300 flex items-center gap-4 group">
+                                    <Link to="/profile" className="px-3 py-1.5 text-white font-medium hover:text-primary transition-all duration-300 flex items-center gap-4 group !outline-none !border-none !ring-0 !shadow-none focus:outline-none focus:ring-0">
                                         {user?.profileImage ? (
-                                            <div className="w-14 h-14 rounded-full overflow-hidden ring-[3px] ring-primary/30 transition-all duration-300 shadow-[0_0_20px_rgba(238,124,43,0.3)]">
-                                                <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover" />
+                                            <div className="w-14 h-14 rounded-full overflow-hidden !outline-none !border-none !ring-0 !shadow-none">
+                                                <img src={user.profileImage} alt="Profile" className="w-full h-full object-cover !outline-none !border-none !ring-0" />
                                             </div>
                                         ) : (
-                                            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-white/50 group-hover:text-primary transition-all duration-300 border border-white/20">
+                                            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-white/50 group-hover:text-primary transition-all duration-300">
                                                 <span className="material-icons text-3xl">person</span>
                                             </div>
                                         )}
-                                        <div className="hidden xl:flex flex-col">
-                                            <span className="text-[10px] uppercase tracking-[0.2em] text-stone-500 font-bold mb-0.5">Welcome,</span>
-                                            <span className="text-sm font-black tracking-tight text-white group-hover:text-primary transition-colors">{user?.name?.split(' ')[0] || "Guest"}</span>
-                                        </div>
                                     </Link>
                                     <button onClick={logout} className="px-5 py-2.5 text-white/50 hover:text-white hover:bg-white/5 border border-white/10 hover:border-white/20 rounded-xl transition-all duration-300">
                                         Logout
