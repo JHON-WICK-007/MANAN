@@ -3,6 +3,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
+import ErrorBoundary from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -15,6 +17,7 @@ import Profile from "./pages/Profile/Profile";
 import OrderStatus from "./pages/OrderStatus/OrderStatus";
 import Checkout from "./pages/Checkout/Checkout";
 import AboutContact from "./pages/AboutContact/AboutContact";
+import AdminLayout from "./pages/Admin/AdminLayout/AdminLayout";
 
 /* AnimatedRoutes: Removed AnimatePresence and motion wrapper to prevent Hero unmounting/fading as a container */
 function AnimatedRoutes() {
@@ -32,13 +35,23 @@ function AnimatedRoutes() {
             <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="/order-status" element={<ProtectedRoute><OrderStatus /></ProtectedRoute>} />
             <Route path="/about" element={<AboutContact />} />
+            <Route
+                path="/admin/*"
+                element={
+                    <AdminRoute>
+                        <ErrorBoundary>
+                            <AdminLayout />
+                        </ErrorBoundary>
+                    </AdminRoute>
+                }
+            />
         </Routes>
     );
 }
 
 function App() {
     const location = useLocation();
-    const hideNavAndFooter = ["/login", "/register"].includes(location.pathname);
+    const hideNavAndFooter = ["/login", "/register"].includes(location.pathname) || location.pathname.startsWith("/admin");
 
     return (
         <AuthProvider>

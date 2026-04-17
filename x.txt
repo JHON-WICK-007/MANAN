@@ -1,0 +1,357 @@
+Create Admin Panel — Lumière Dining (Full Specification)
+Tech Stack
+React + Vite
+React Router
+Framer Motion (optional animations)
+Dark luxury theme (same as frontend)
+No white backgrounds
+Orange accent color
+Glass UI cards
+Responsive admin layout
+Admin Layout (Global)
+Structure
+AdminLayout
+ ├── Sidebar (fixed left)
+ ├── Header (top)
+ └── Content Area
+Sidebar
+
+Fixed left sidebar:
+Width: 260px
+Collapsed: 80px
+
+Sidebar items (exact order):
+
+Dashboard
+Reservations
+Tables
+Menu
+Orders
+Customers
+Messages
+Analytics
+Settings
+
+Sidebar behavior:
+
+active highlight
+hover glow
+icon + label
+collapsible toggle
+smooth animation
+Header (Top Bar)
+
+Right side:
+
+Admin avatar
+Admin name
+Logout button
+
+Left side:
+
+Page title
+Breadcrumb
+
+Optional:
+
+search bar
+Routing (exact)
+/admin/dashboard
+/admin/reservations
+/admin/tables
+/admin/menu
+/admin/orders
+/admin/customers
+/admin/messages
+/admin/analytics
+/admin/settings
+
+Protect all routes:
+Admin only
+
+Page 1 — Dashboard
+Top Cards (4 cards)
+
+Card 1:
+Today Reservations
+
+Card 2:
+Active Orders
+
+Card 3:
+Tables Occupied
+
+Card 4:
+Total Customers
+
+Each card:
+
+icon
+number
+label
+small change indicator
+Section 1 — Recent Reservations
+
+Table:
+
+Name
+Guests
+Table
+Time
+Status
+
+Limit:
+5 rows
+
+Action:
+View all → go to reservations page
+
+Section 2 — Recent Orders
+
+Table:
+
+Order ID
+Customer
+Items count
+Total
+Status
+Page 2 — Reservations
+Table Columns
+Reservation ID
+Customer Name
+Guests
+Table
+Date
+Time
+Status
+Actions
+Status
+Pending
+Confirmed
+Completed
+Cancelled
+Actions
+
+Buttons:
+Confirm
+Cancel
+Edit
+Delete
+
+Filters
+
+Top bar filters:
+
+Date picker
+Status dropdown
+Search by name
+Edit Reservation Modal
+
+Fields:
+
+Name
+Guests
+Table
+Date
+Time
+
+Buttons:
+Save
+Cancel
+
+Page 3 — Tables
+Table Cards Layout
+
+Each card shows:
+
+Table ID
+Capacity
+Type
+Status
+
+Example:
+
+CT-01
+2 Guests
+Kitchen View
+Available
+Actions
+
+Add Table
+Edit
+Delete
+Enable / Disable
+
+Add Table Modal
+
+Fields:
+Table ID
+Capacity
+Type (dropdown)
+Status
+
+Types:
+
+Window
+Private
+Terrace
+Kitchen
+Center
+Outdoor
+Page 4 — Menu
+
+Grid layout cards
+
+Each card:
+
+Image
+Dish Name
+Price
+Category
+
+Actions:
+Edit
+Delete
+
+Top button:
+Add Dish
+
+Add Dish Modal
+
+Fields:
+Name
+Price
+Category
+Image upload
+Description
+
+Categories:
+Starter
+Main Course
+Dessert
+Drinks
+
+Page 5 — Orders
+
+Table view:
+
+Columns:
+
+Order ID
+Customer
+Items
+Total
+Status
+Time
+Actions
+
+Status:
+
+Pending
+Preparing
+Completed
+Cancelled
+
+Admin can:
+Change status dropdown
+
+Page 6 — Customers
+
+Table:
+
+Name
+Email
+Reservations count
+Orders count
+Joined date
+
+Action:
+View details
+
+Page 7 — Messages
+
+Contact form submissions
+
+Table:
+
+Name
+Email
+Message
+Date
+Status
+
+Status:
+Unread
+Read
+
+Admin can:
+Mark read
+Delete
+
+Page 8 — Analytics
+
+Charts:
+
+Chart 1:
+Reservations per day (line chart)
+
+Chart 2:
+Orders per day (bar chart)
+
+Chart 3:
+Popular dishes (pie chart)
+
+Page 9 — Settings
+
+Fields:
+
+Restaurant Name
+Address
+Phone
+Email
+Opening Hours
+
+Button:
+Save Settings
+
+Design Rules
+
+Theme:
+Dark luxury
+
+Cards:
+Glass background
+Soft border
+Rounded corners
+
+Buttons:
+Orange accent
+Rounded
+Hover glow
+
+Tables:
+Dark rows
+Subtle divider
+
+Spacing:
+Large padding
+Clean layout
+
+Animation
+
+Page transition:
+fade + slide
+
+Card hover:
+lift
+
+Sidebar:
+smooth collapse
+
+Final Goal
+
+Create:
+Complete restaurant admin panel
+Production-ready
+Fully structured
+Dark luxury UI

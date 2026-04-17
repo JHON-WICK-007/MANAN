@@ -73,7 +73,7 @@ const AboutContact = () => {
         setTimeout(() => {
             setStatus("success");
             setForm({ name: "", email: "", phone: "", message: "" });
-            setTimeout(() => setStatus("idle"), 4000);
+            setTimeout(() => setStatus("idle"), 2000);
         }, 1500);
     };
 
@@ -384,7 +384,6 @@ const AboutContact = () => {
 
             {/* ══════════════════ 6. CONTACT FORM ══════════════════════ */}
             <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
-                {/* Subtle radial glow specifically highlighting the form area */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full max-h-[600px] bg-primary/5 blur-[140px] rounded-full pointer-events-none" />
 
                 <div className="relative z-10 max-w-4xl mx-auto">
@@ -397,14 +396,15 @@ const AboutContact = () => {
 
                     <M variants={fadeUp} custom={1}>
                         <div className="mx-auto w-full max-w-2xl">
-                            <form onSubmit={handleSubmit} className="space-y-5">
+                            <form onSubmit={handleSubmit} className="space-y-8">
+
                                 {/* Row 1: Name + Email */}
-                                <div className="grid md:grid-cols-2 gap-5">
+                                <div className="grid md:grid-cols-2 gap-8">
                                     {[
                                         { name: "name", label: "Full Name", type: "text" },
                                         { name: "email", label: "Email Address", type: "email" },
                                     ].map((field) => (
-                                        <div key={field.name} className="relative group/input">
+                                        <div key={field.name} className="relative pb-1">
                                             <input
                                                 id={`contact-${field.name}`}
                                                 type={field.type}
@@ -413,9 +413,15 @@ const AboutContact = () => {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder=" "
-                                                className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                             />
-                                            <label htmlFor={`contact-${field.name}`} className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-1/2 -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
+                                            <label
+                                                htmlFor={`contact-${field.name}`}
+                                                className="absolute left-0 top-5 text-[13px] text-white/35 pointer-events-none transition-all duration-300 uppercase tracking-[0.1em]
+                                                    peer-focus:top-[-2px] peer-focus:text-primary/70
+                                                    peer-placeholder-shown:top-5 peer-placeholder-shown:text-white/35
+                                                    peer-[&:not(:placeholder-shown)]:top-[-2px] peer-[&:not(:placeholder-shown)]:text-primary/60"
+                                            >
                                                 {field.label}
                                             </label>
                                         </div>
@@ -423,7 +429,7 @@ const AboutContact = () => {
                                 </div>
 
                                 {/* Row 2: Phone */}
-                                <div className="relative group/input">
+                                <div className="relative pb-1">
                                     <input
                                         id="contact-phone"
                                         type="tel"
@@ -431,72 +437,99 @@ const AboutContact = () => {
                                         value={form.phone}
                                         onChange={handleChange}
                                         placeholder=" "
-                                        className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
                                     />
-                                    <label htmlFor="contact-phone" className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-1/2 -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
-                                        Phone Number (Optional)
+                                    <label
+                                        htmlFor="contact-phone"
+                                        className="absolute left-0 top-5 text-[13px] text-white/35 pointer-events-none transition-all duration-300 uppercase tracking-[0.1em]
+                                            peer-focus:top-[-2px] peer-focus:text-primary/70
+                                            peer-placeholder-shown:top-5 peer-placeholder-shown:text-white/35
+                                            peer-[&:not(:placeholder-shown)]:top-[-2px] peer-[&:not(:placeholder-shown)]:text-primary/60"
+                                    >
+                                        Phone Number
+                                        <span className="ml-1.5 text-[11px] text-white/25 normal-case tracking-normal">Optional</span>
                                     </label>
                                 </div>
 
                                 {/* Row 3: Message */}
-                                <div className="relative group/input">
+                                <div className="relative pb-1">
                                     <textarea
                                         id="contact-message"
                                         name="message"
                                         value={form.message}
                                         onChange={handleChange}
                                         required
-                                        rows={5}
+                                        rows={2}
                                         placeholder=" "
-                                        className="peer w-full px-[14px] py-[16px] bg-transparent border border-white/15 rounded-[8px] focus:border-primary focus:shadow-[0_0_10px_rgba(238,124,43,0.1)] transition-colors outline-none text-white text-[15px] resize-none [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 resize-none"
                                     />
-                                    <label htmlFor="contact-message" className="absolute text-[15px] text-white/50 bg-[#0e0906] px-1.5 duration-300 transform top-[24px] -translate-y-1/2 scale-100 z-20 origin-[0] left-[10px] peer-placeholder-shown:scale-100 peer-placeholder-shown:top-[24px] peer-placeholder-shown:-translate-y-1/2 peer-focus:scale-[0.8] peer-focus:top-0 peer-focus:-translate-y-1/2 peer-focus:text-primary pointer-events-none transition-all">
+                                    <label
+                                        htmlFor="contact-message"
+                                        className="absolute left-0 top-5 text-[13px] text-white/35 pointer-events-none transition-all duration-300 uppercase tracking-[0.1em]
+                                            peer-focus:top-[-2px] peer-focus:text-primary/70
+                                            peer-placeholder-shown:top-5 peer-placeholder-shown:text-white/35
+                                            peer-[&:not(:placeholder-shown)]:top-[-2px] peer-[&:not(:placeholder-shown)]:text-primary/60"
+                                    >
                                         Your Message
                                     </label>
                                 </div>
 
                                 {/* Submit Button */}
-                                <div className="flex justify-center pt-4">
+                                <div className="flex justify-center pt-2">
                                     <motion.button
                                         type="submit"
                                         disabled={status === "sending"}
-                                        whileHover={{ y: -2, boxShadow: "0 8px 20px -4px rgba(238,124,43,0.25)" }}
-                                        whileTap={{ scale: 0.98 }}
-                                        className="py-[14px] px-10 bg-gradient-to-r from-primary to-primary-hover disabled:opacity-50 text-white font-medium rounded-[8px] transition-all duration-300 flex items-center justify-center gap-2"
+                                        whileHover={{ y: -2, boxShadow: "0 10px 28px -6px rgba(238,124,43,0.3)" }}
+                                        whileTap={{ scale: 0.97 }}
+                                        className="py-3.5 px-12 bg-gradient-to-r from-primary to-[#eb711e] disabled:opacity-50 text-white font-['Inter',sans-serif] font-medium text-[12px] uppercase tracking-[0.18em] rounded-full shadow-[0_4px_20px_rgba(238,124,43,0.15)] transition-all duration-300 flex items-center gap-2.5"
                                     >
                                         {status === "sending" ? (
                                             <>
-                                                <span className="material-icons animate-spin text-lg">autorenew</span>
+                                                <span className="material-icons animate-spin text-[16px]">autorenew</span>
                                                 Sending…
                                             </>
                                         ) : (
                                             <>
-                                                <span className="material-icons text-lg">send</span>
                                                 Send Message
+                                                <span className="material-symbols-outlined text-[16px] opacity-90">east</span>
                                             </>
                                         )}
                                     </motion.button>
                                 </div>
 
-                                {/* Success / Error states */}
                                 {status === "success" && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center justify-center gap-2 text-green-400 text-sm font-medium mt-4 bg-green-500/10 py-3 rounded-[8px] border border-green-500/10"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.5, ease: "easeOut" }}
+                                        className="flex flex-col items-center text-center py-6"
                                     >
-                                        <span className="material-icons text-lg">check_circle</span>
-                                        Message sent! We'll be in touch shortly.
+                                        <div className="w-16 h-[1px] bg-stone-500/30 mb-8" />
+
+                                        <p className="text-[#10b981] text-[16px] font-medium tracking-[0.2em] mb-4 uppercase">
+                                            Message Sent
+                                        </p>
+
+                                        <div className="text-[#a8a29e] text-[16px] tracking-wide leading-relaxed font-light">
+                                            <p>Your message has been received.</p>
+                                            <p>We'll get back to you shortly.</p>
+                                        </div>
                                     </motion.div>
                                 )}
                                 {status === "error" && (
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="flex items-center justify-center gap-2 text-red-400 text-sm font-medium mt-4 bg-red-500/10 py-3 rounded-[8px] border border-red-500/10"
+                                        initial={{ opacity: 0, scale: 0.95, y: 12 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        transition={{ duration: 0.4, ease: "easeOut" }}
+                                        className="flex flex-col items-center gap-3 py-6"
                                     >
-                                        <span className="material-icons text-lg">error</span>
-                                        Connection failed. Please try again.
+                                        <div className="w-12 h-12 rounded-full bg-red-500/15 border border-red-500/25 flex items-center justify-center">
+                                            <span className="material-icons text-red-400 text-[22px]">close</span>
+                                        </div>
+                                        <div className="text-center">
+                                            <p className="text-white/90 text-[15px] font-medium tracking-wide">Connection Failed</p>
+                                            <p className="text-white/35 text-[12px] tracking-[0.06em] uppercase mt-0.5">Please try again</p>
+                                        </div>
                                     </motion.div>
                                 )}
                             </form>

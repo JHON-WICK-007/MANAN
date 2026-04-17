@@ -13,6 +13,7 @@ const menuRoutes = require("./routes/menuRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const orderRoutes = require("./routes/orderRoutes");
 const profileRoutes = require("./routes/profileRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 // Initialize app
 const app = express();
@@ -33,6 +34,7 @@ app.use("/api/menu", menuRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/admin", adminRoutes);
 
 // --- 404 handler ---
 app.use((req, res) => {
