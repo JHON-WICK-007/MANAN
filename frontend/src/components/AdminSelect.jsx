@@ -66,14 +66,14 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
                 type="button"
                 onClick={openDropdown}
                 style={{
-                    width: "100%",
+                    width: "fit-content",
                     height: 42,
                     boxSizing: "border-box",
-                    display: "flex",
+                    display: "inline-flex",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: 8,
-                    padding: "0 14px",
+                    justifyContent: "flex-start",
+                    gap: 6,
+                    padding: "0 12px",
                     background: bg,
                     border: "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
@@ -87,8 +87,14 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
                     whiteSpace: "nowrap",
                 }}
             >
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {selected ? selected.label : placeholder}
+                {/* Ghost span locks width to placeholder, visible span shows actual value */}
+                <span style={{ display: "grid", overflow: "hidden", flex: 1 }}>
+                    <span style={{ gridArea: "1/1", visibility: "hidden", whiteSpace: "nowrap", fontSize: 13 }}>
+                        {placeholder}
+                    </span>
+                    <span style={{ gridArea: "1/1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {selected ? selected.label : placeholder}
+                    </span>
                 </span>
                 <ChevronDown
                     size={15}

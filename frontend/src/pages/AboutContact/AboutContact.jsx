@@ -61,20 +61,35 @@ const contactCards = [
 
 /* ─── Component ────────────────────────────────────────────────── */
 const AboutContact = () => {
-    const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+    const [form, setForm] = useState({ name: "", email: "", phone: "", message: "", rating: 0 });
     const [status, setStatus] = useState("idle"); // idle | sending | success | error
+    const [hoveredStar, setHoveredStar] = useState(0);
+    const msgRef = useRef(null);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setStatus("sending");
-        // Simulate network call
-        setTimeout(() => {
-            setStatus("success");
-            setForm({ name: "", email: "", phone: "", message: "" });
-            setTimeout(() => setStatus("idle"), 2000);
-        }, 1500);
+        try {
+            const res = await fetch("http://localhost:5000/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(form),
+            });
+            const data = await res.json();
+            if (data.success) {
+                setStatus("success");
+                setForm({ name: "", email: "", phone: "", message: "", rating: 0 });
+                setTimeout(() => setStatus("idle"), 5000);
+            } else {
+                setStatus("error");
+                setTimeout(() => setStatus("idle"), 3000);
+            }
+        } catch {
+            setStatus("error");
+            setTimeout(() => setStatus("idle"), 3000);
+        }
     };
 
     return (
@@ -176,8 +191,7 @@ const AboutContact = () => {
 
             {/* ══════════════ 3. VISION & MISSION ══════════════════════ */}
             <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
-                {/* Subtle radial gradient background behind the cards */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[600px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
 
                 <div className="relative z-10 max-w-5xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-20">
@@ -250,8 +264,7 @@ const AboutContact = () => {
 
             {/* ══════════════════ 4. MEET THE TEAM ═════════════════════ */}
             <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
-                {/* Subtle radial gradient background behind the cards */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-5xl h-full max-h-[800px] bg-primary/5 blur-[140px] rounded-full pointer-events-none" />
+
 
                 <div className="relative z-10 max-w-6xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-20">
@@ -322,8 +335,7 @@ const AboutContact = () => {
 
             {/* ═══════════════ 5. CONTACT INFORMATION ══════════════════ */}
             <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
-                {/* Subtle radial gradient background behind the cards */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl h-full max-h-[400px] bg-primary/5 blur-[120px] rounded-full pointer-events-none" />
+
 
                 <div className="relative z-10 max-w-6xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-20">
@@ -384,8 +396,6 @@ const AboutContact = () => {
 
             {/* ══════════════════ 6. CONTACT FORM ══════════════════════ */}
             <Section className="relative py-24 px-4 md:px-8 overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl h-full max-h-[600px] bg-primary/5 blur-[140px] rounded-full pointer-events-none" />
-
                 <div className="relative z-10 max-w-4xl mx-auto">
                     <M variants={fadeUp} className="text-center mb-20">
                         <h2 className="section-label">Get In Touch</h2>
@@ -413,7 +423,7 @@ const AboutContact = () => {
                                                 onChange={handleChange}
                                                 required
                                                 placeholder=" "
-                                                className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                                className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0d0908] [&:-webkit-autofill]:[-webkit-text-fill-color:#ffffff]"
                                             />
                                             <label
                                                 htmlFor={`contact-${field.name}`}
@@ -437,7 +447,7 @@ const AboutContact = () => {
                                         value={form.phone}
                                         onChange={handleChange}
                                         placeholder=" "
-                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0e0906] [&:-webkit-autofill]:[-webkit-text-fill-color:white]"
+                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 [&:-webkit-autofill]:shadow-[inset_0_0_0px_1000px_#0d0908] [&:-webkit-autofill]:[-webkit-text-fill-color:#ffffff]"
                                     />
                                     <label
                                         htmlFor="contact-phone"
@@ -456,12 +466,18 @@ const AboutContact = () => {
                                     <textarea
                                         id="contact-message"
                                         name="message"
+                                        ref={msgRef}
                                         value={form.message}
                                         onChange={handleChange}
+                                        onInput={(e) => {
+                                            e.target.style.height = "auto";
+                                            e.target.style.height = e.target.scrollHeight + "px";
+                                        }}
                                         required
-                                        rows={2}
+                                        rows={1}
                                         placeholder=" "
-                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 resize-none"
+                                        className="peer w-full bg-transparent border-0 border-b border-white/20 pt-5 pb-2 text-white text-[15px] font-['Inter',sans-serif] outline-none focus:border-primary transition-colors duration-300 resize-none overflow-hidden"
+                                        style={{ minHeight: 40 }}
                                     />
                                     <label
                                         htmlFor="contact-message"
@@ -472,6 +488,43 @@ const AboutContact = () => {
                                     >
                                         Your Message
                                     </label>
+                                </div>
+
+                                {/* Star Rating */}
+                                <div style={{ paddingTop: 8, paddingBottom: 4 }}>
+                                    <p style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 10 }}>
+                                        Rate Your Experience
+                                    </p>
+                                    <div style={{ display: "flex", gap: 8 }}>
+                                        {[1, 2, 3, 4, 5].map((star) => {
+                                            const filled = star <= (hoveredStar || form.rating);
+                                            return (
+                                                <button
+                                                    key={star}
+                                                    type="button"
+                                                    onClick={() => setForm({ ...form, rating: form.rating === star ? 0 : star })}
+                                                    onMouseEnter={() => setHoveredStar(star)}
+                                                    onMouseLeave={() => setHoveredStar(0)}
+                                                    style={{
+                                                        background: "none", border: "none", cursor: "pointer", padding: 0,
+                                                        fontSize: 30,
+                                                        color: filled ? "#ee7c2b" : "rgba(255,255,255,0.15)",
+                                                        textShadow: filled ? "0 0 12px rgba(238,124,43,0.6)" : "none",
+                                                        transform: filled ? "scale(1.15)" : "scale(1)",
+                                                        transition: "all 0.15s ease",
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    ★
+                                                </button>
+                                            );
+                                        })}
+                                        {form.rating > 0 && (
+                                            <span style={{ alignSelf: "center", color: "rgba(255,255,255,0.3)", fontSize: 12, marginLeft: 4 }}>
+                                                {["Poor", "Fair", "Good", "Great", "Excellent!"][form.rating - 1]}
+                                            </span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Submit Button */}
@@ -491,31 +544,12 @@ const AboutContact = () => {
                                         ) : (
                                             <>
                                                 Send Message
-                                                <span className="material-symbols-outlined text-[16px] opacity-90">east</span>
                                             </>
                                         )}
                                     </motion.button>
                                 </div>
 
-                                {status === "success" && (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.5, ease: "easeOut" }}
-                                        className="flex flex-col items-center text-center py-6"
-                                    >
-                                        <div className="w-16 h-[1px] bg-stone-500/30 mb-8" />
 
-                                        <p className="text-[#10b981] text-[16px] font-medium tracking-[0.2em] mb-4 uppercase">
-                                            Message Sent
-                                        </p>
-
-                                        <div className="text-[#a8a29e] text-[16px] tracking-wide leading-relaxed font-light">
-                                            <p>Your message has been received.</p>
-                                            <p>We'll get back to you shortly.</p>
-                                        </div>
-                                    </motion.div>
-                                )}
                                 {status === "error" && (
                                     <motion.div
                                         initial={{ opacity: 0, scale: 0.95, y: 12 }}
@@ -551,11 +585,18 @@ const AboutContact = () => {
                     <M variants={fadeUp} custom={1}>
                         <div className="rounded-3xl overflow-hidden border border-primary/20 shadow-2xl shadow-primary/5">
                             <iframe
+                                tabIndex="-1"
                                 title="Lumière Restaurant Location"
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573291394!2d-73.98784368459395!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1650000000000!5m2!1sen!2sus"
                                 width="100%"
                                 height="650"
-                                style={{ border: 0, filter: "invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1)" }}
+                                style={{ 
+                                    border: 0, 
+                                    outline: "none", 
+                                    display: "block", 
+                                    backgroundColor: "#fff",
+                                    filter: "invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1)" 
+                                }}
                                 allowFullScreen
                                 loading="lazy"
                                 referrerPolicy="no-referrer-when-downgrade"
@@ -564,6 +605,111 @@ const AboutContact = () => {
                     </M>
                 </div>
             </Section>
+
+            {/* ── Success Toast ── */}
+            {status === "success" && (
+                <motion.div
+                    initial={{ opacity: 0, x: 120, y: 0 }}
+                    animate={{ opacity: 1, x: 0, y: 0 }}
+                    exit={{ opacity: 0, x: 120 }}
+                    transition={{ duration: 0.5, ease: [0.34, 1.2, 0.64, 1] }}
+                    style={{
+                        position: "fixed",
+                        top: 28,
+                        right: 28,
+                        zIndex: 9999,
+                        width: 360,
+                        background: "rgba(10, 24, 17, 0.94)",
+                        backdropFilter: "blur(24px)",
+                        WebkitBackdropFilter: "blur(24px)",
+                        border: "1px solid rgba(16,185,129,0.28)",
+                        borderRadius: 20,
+                        overflow: "hidden",
+                        boxShadow: "0 24px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(16,185,129,0.08)",
+                    }}
+                >
+                    {/* Top green accent */}
+                    <div style={{ height: 2, background: "linear-gradient(90deg, #10b981, #34d399, #10b981)" }} />
+
+                    <div style={{ padding: "20px 20px 16px", display: "flex", gap: 16, alignItems: "flex-start" }}>
+                        {/* Check icon */}
+                        <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.15, duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
+                            style={{
+                                flexShrink: 0,
+                                width: 44, height: 44,
+                                borderRadius: "50%",
+                                background: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))",
+                                border: "1.5px solid rgba(16,185,129,0.5)",
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: "0 0 20px rgba(16,185,129,0.2)",
+                            }}
+                        >
+                            <motion.svg width="20" height="20" viewBox="0 0 20 20" fill="none"
+                                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}
+                            >
+                                <motion.path
+                                    d="M4 10.5l4 4 8-8"
+                                    stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                    initial={{ pathLength: 0 }}
+                                    animate={{ pathLength: 1 }}
+                                    transition={{ delay: 0.3, duration: 0.4 }}
+                                />
+                            </motion.svg>
+                        </motion.div>
+
+                        {/* Text */}
+                        <div style={{ flex: 1, paddingTop: 2 }}>
+                            <motion.p
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2, duration: 0.35 }}
+                                style={{ color: "#f5f0eb", fontSize: 15, fontWeight: 700, marginBottom: 4, letterSpacing: "-0.1px" }}
+                            >
+                                Message Sent!
+                            </motion.p>
+                            <motion.p
+                                initial={{ opacity: 0, y: 6 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.28, duration: 0.35 }}
+                                style={{ color: "rgba(196,180,165,0.7)", fontSize: 13, lineHeight: 1.6, fontWeight: 300 }}
+                            >
+                                We've received your message and will get back to you shortly.
+                            </motion.p>
+                        </div>
+
+                        {/* Close X */}
+                        <button
+                            onClick={() => setStatus("idle")}
+                            style={{
+                                flexShrink: 0, background: "none", border: "none",
+                                color: "rgba(255,255,255,0.25)", cursor: "pointer",
+                                fontSize: 18, lineHeight: 1, padding: 4,
+                                transition: "color 0.2s",
+                            }}
+                            onMouseEnter={e => e.target.style.color = "rgba(255,255,255,0.7)"}
+                            onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.25)"}
+                        >✕</button>
+                    </div>
+
+                    {/* Progress bar — drains over 5s */}
+                    <motion.div
+                        initial={{ scaleX: 1 }}
+                        animate={{ scaleX: 0 }}
+                        transition={{ duration: 5, ease: "linear" }}
+                        style={{
+                            height: 2,
+                            background: "linear-gradient(90deg, #10b981, #34d399)",
+                            transformOrigin: "left",
+                            margin: "0 20px 14px",
+                            borderRadius: 2,
+                            opacity: 0.5,
+                        }}
+                    />
+                </motion.div>
+            )}
         </div>
     );
 };

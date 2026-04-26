@@ -198,7 +198,21 @@ router.get("/customers", async (req, res) => {
 // ─── MESSAGES ────────────────────────────────────────────────────────────────
 router.get("/messages", async (req, res) => {
     try {
-        const messages = await ContactMessage.find().sort({ createdAt: -1 });
+        const messages = await ContactMessage.find().sort({ createdAt: -1 }).lean();
+        
+        const User = require('../models/User');
+        const Profile = require('../models/Profile');
+        
+        for (let msg of messages) {
+            const user = await User.findOne({ email: msg.email });
+            if (user) {
+                const profile = await Profile.findOne({ user: user._id });
+                if (profile && profile.profileImage) {
+                    msg.profileImage = profile.profileImage;
+                }
+            }
+        }
+        
         res.json({ success: true, data: messages });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

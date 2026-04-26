@@ -4,12 +4,30 @@ import { motion } from "framer-motion";
 import { useCart } from "../../context/CartContext";
 import ScrollReveal from "../../components/ScrollReveal";
 
+// Marquee animation for reviews
+const reviewsStyle = document.createElement("style");
+reviewsStyle.textContent = `@keyframes reviewsMarquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }`;
+if (!document.head.querySelector("[data-reviews-marquee]")) {
+    reviewsStyle.setAttribute("data-reviews-marquee", "1");
+    document.head.appendChild(reviewsStyle);
+}
+
 const DUMMY_SPECIALS = [
     { _id: "s1", name: "Smoked Wagyu Ribeye", description: "45-day dry-aged beef, served with black garlic purée and charred heritage carrots.", price: 850, image: "https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80", isVeg: false, category: "Main Course" },
     { _id: "s2", name: "Hand-Cut Truffle Linguine", description: "Fresh egg pasta tossed in cultured butter, finished with shaved black Perigord truffles.", price: 420, image: "https://images.unsplash.com/photo-1556761223-4c4282c73f77?w=600&q=80", isVeg: true, category: "Main Course" },
     { _id: "s3", name: "Saffron Sea Scallops", description: "Hokkaido scallops with saffron-infused foam, pea tendrils, and chorizo oil.", price: 380, image: "https://images.unsplash.com/photo-1559847844-5315695dadae?w=600&q=80", isVeg: false, category: "Starters" },
     { _id: "s4", name: "Honey Glazed Arctic Char", description: "Wild-caught char, miso-honey glaze, served with pickled radish and ginger broth.", price: 540, image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&q=80", isVeg: false, category: "Main Course" },
     { _id: "s5", name: "Molten Cacao Core", description: "70% dark Belgian chocolate lava cake served with Tahitian vanilla bean gelato and gold leaf.", price: 180, image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600&q=80", isVeg: true, category: "Desserts" },
+];
+
+const REVIEWS = [
+    { name: "Priya Sharma", date: "2 weeks ago", stars: 5, text: "An absolutely magical dining experience. The wagyu was perfectly cooked and the service was world-class. Lumière never disappoints!", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" },
+    { name: "Arjun Mehta", date: "1 month ago", stars: 5, text: "Celebrated our anniversary here and it was perfect. The truffle linguine is life-changing. Ambience is absolutely stunning.", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" },
+    { name: "Sofia Rossi", date: "3 weeks ago", stars: 5, text: "Best fine dining in the city, period. The saffron scallops were divine. Staff were attentive without being intrusive. 10/10.", avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" },
+    { name: "Rohan Desai", date: "1 week ago", stars: 5, text: "Brought clients here for dinner — they were blown away. The molten cacao dessert had everyone speechless. Highly recommend!", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80" },
+    { name: "Ananya Kapoor", date: "2 months ago", stars: 5, text: "Lumière is the gold standard. Every plate is a work of art. The sommelier's wine pairing was exceptional. Will be back soon!", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100&q=80" },
+    { name: "James Carter", date: "3 days ago", stars: 5, text: "Flew in from London and made a reservation on a whim. Best decision of the trip. The chef's table experience is unmatched.", avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&q=80" },
+    { name: "Meera Nair", date: "5 days ago", stars: 5, text: "The honey glazed arctic char was perfectly balanced — sweet, savoury, delicate. The atmosphere is intimate and luxurious.", avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=100&q=80" },
 ];
 
 /* ── 3D Tilt Card ── */
@@ -156,7 +174,7 @@ const Home = () => {
             {/* ───── Hero ───── */}
             <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
                 {/* 1. Static Background Image Container at z-0 */}
-                <div 
+                <div
                     className="absolute inset-0 w-full h-full z-0"
                     style={{
                         backgroundColor: '#000000',
@@ -171,7 +189,7 @@ const Home = () => {
                 <div className="absolute inset-0 bg-gradient-to-b from-dark/80 via-transparent to-dark z-[1]" />
 
                 {/* 3. Animated Hero Content Wrapper at z-[2] */}
-                <motion.div 
+                <motion.div
                     className="relative z-[2] text-center px-4 max-w-4xl"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -384,6 +402,76 @@ const Home = () => {
                                 <span>Explore Our <span className="text-primary">Philosophy</span></span>
                             </Link>
                         </ScrollReveal>
+                    </div>
+                </section>
+
+                {/* ───── Google Reviews ───── */}
+                <section className="py-28 overflow-hidden relative" style={{ background: "transparent" }}>
+                    {/* Header — fully centered */}
+                    <div style={{ textAlign: "center", marginBottom: 56, padding: "0 24px" }}>
+                        <p className="section-label">What Our Guests Say</p>
+                        <h3 className="section-title" style={{ marginBottom: 20 }}>Loved by <span className="text-primary">Thousands</span></h3>
+
+                        {/* Google rating pill */}
+                        <div style={{
+                            display: "inline-flex", alignItems: "center", gap: 10,
+                            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(238,124,43,0.15)",
+                            borderRadius: 50, padding: "10px 22px",
+                        }}>
+                            <svg width="18" height="18" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                            </svg>
+                            <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>4.9</span>
+                            <span style={{ color: "#ee7c2b", fontSize: 16, letterSpacing: 3 }}>★★★★★</span>
+                            <span style={{ width: 1, height: 16, background: "rgba(255,255,255,0.1)" }} />
+                            <span style={{ color: "#888", fontSize: 12 }}>200+ Google Reviews</span>
+                        </div>
+                    </div>
+
+                    {/* Marquee */}
+                    <div style={{ position: "relative", overflow: "hidden" }}>
+                        <div style={{ display: "flex", gap: 20, animation: "reviewsMarquee 45s linear infinite", width: "max-content", padding: "12px 0 20px" }}>
+                            {[...REVIEWS, ...REVIEWS].map((r, i) => (
+                                <div key={i} style={{
+                                    width: 380, flexShrink: 0,
+                                    padding: "32px 32px",
+                                    height: 320,
+                                    background: "linear-gradient(145deg, rgba(28,18,10,0.95) 0%, rgba(14,9,4,0.98) 100%)",
+                                    border: "1px solid rgba(238,124,43,0.1)",
+                                    borderRadius: 24,
+                                    boxShadow: "0 8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
+                                    display: "flex", flexDirection: "column",
+                                    alignItems: "flex-start",
+                                }}>
+                                    {/* Review text */}
+                                    <p style={{ color: "#c4b9b0", fontSize: 15.5, lineHeight: 1.8, margin: "0 0 18px", fontStyle: "italic", flex: 1, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 4, WebkitBoxOrient: "vertical" }}>{r.text}</p>
+
+                                    {/* Stars */}
+                                    <div style={{ color: "#ee7c2b", fontSize: 16, letterSpacing: 4, marginBottom: 18 }}>{"★".repeat(r.stars)}</div>
+
+                                    {/* Divider */}
+                                    <div style={{ height: 1, width: "100%", background: "linear-gradient(to right, rgba(238,124,43,0.2), transparent)", marginBottom: 18 }} />
+
+                                    {/* Avatar + Name + Google */}
+                                    <div style={{ display: "flex", alignItems: "center", gap: 10, width: "100%" }}>
+                                        <img src={r.avatar} alt={r.name} style={{ width: 46, height: 46, borderRadius: "50%", objectFit: "cover", border: "2px solid rgba(238,124,43,0.4)", flexShrink: 0 }} />
+                                        <div style={{ flex: 1 }}>
+                                            <p style={{ color: "#e8e0d8", fontWeight: 700, fontSize: 15, margin: 0 }}>{r.name}</p>
+                                            <p style={{ color: "#5a5050", fontSize: 12, margin: 0 }}>{r.date}</p>
+                                        </div>
+                                        <svg width="16" height="16" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, opacity: 0.8 }}>
+                                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+                                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+                                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </section>
 

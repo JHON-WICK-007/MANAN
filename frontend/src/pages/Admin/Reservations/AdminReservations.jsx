@@ -148,13 +148,13 @@ const AdminReservations = () => {
                         { value: "Completed", label: "Completed" },
                         { value: "Cancelled", label: "Cancelled" },
                     ]}
-                    style={{ minWidth: 160 }}
+                    style={{}}
                 />
                 <AdminDatePicker
                     value={dateFilter}
                     onChange={setDateFilter}
                     placeholder="DD-MM-YYYY"
-                    style={{ minWidth: 160 }}
+                    style={{}}
                 />
             </div>
 

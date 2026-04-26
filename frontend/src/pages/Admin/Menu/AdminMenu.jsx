@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, X, Search, UtensilsCrossed } from "lucide-react";
@@ -40,9 +40,9 @@ const Modal = ({ title, onClose, children }) => (
         <div className="hide-scrollbar" style={{ position: "absolute", inset: 0, overflowY: "auto" }}>
             <div style={{ padding: "60px 16px", minHeight: "100%", display: "flex", alignItems: "flex-start", justifyContent: "center" }} onClick={onClose}>
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.94, y: 16 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.94, y: 16 }}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 16 }}
                     onClick={e => e.stopPropagation()}
                     style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 32, width: "100%", maxWidth: 500, color: "#fff", position: "relative" }}
                 >
@@ -63,6 +63,7 @@ const emptyForm = { name: "", description: "", price: "", category: "Starters", 
 
 const AdminMenu = () => {
     const { token } = useAuth();
+    const descRef = useRef(null);
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [modal, setModal] = useState(false);
@@ -80,6 +81,14 @@ const AdminMenu = () => {
             .then(r => r.json())
             .then(d => { setItems(d.data || []); setLoading(false); });
     };
+
+    // Auto-resize description textarea whenever value changes
+    useEffect(() => {
+        if (descRef.current) {
+            descRef.current.style.height = "auto";
+            descRef.current.style.height = descRef.current.scrollHeight + "px";
+        }
+    }, [form.description]);
 
     useEffect(() => { load(); }, []);
 
@@ -137,7 +146,7 @@ const AdminMenu = () => {
                         </button>
                     ))}
                 </div>
-                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     <div className="admin-search-container" style={{ minWidth: 180, maxWidth: 260 }}>
                         <input
                             className="admin-search-input"
@@ -349,9 +358,10 @@ const AdminMenu = () => {
                         {/* Description */}
                         <div style={{ marginBottom: 16 }}>
                             <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>Description</label>
-                            <textarea className="hide-scrollbar" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                                placeholder="Describe the dish…" rows={3}
-                                style={{ ...inputStyle, resize: "vertical" }}
+                            <textarea ref={descRef} className="hide-scrollbar" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                                placeholder="Describe the dish…"
+                                rows={1}
+                                style={{ ...inputStyle, resize: "none", overflow: "hidden", minHeight: 42 }}
                                 onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.5)"}
                                 onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"} />
                         </div>

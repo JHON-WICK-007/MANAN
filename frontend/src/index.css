@@ -68,7 +68,11 @@
     }
 
     .input-dark {
-        @apply w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:ring-offset-0 focus:border-primary/60 focus:bg-white/5 focus:shadow-[0_0_0_3px_rgba(238,124,43,0.12)] text-white placeholder:text-stone-500 transition-all duration-300;
+        @apply w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus:ring-offset-0 focus:border-primary/60 focus:bg-white/5 text-white placeholder:text-stone-500 transition-all duration-300;
+    }
+
+    .input-dark:focus {
+        box-shadow: 0 0 0 3px rgba(238, 124, 43, 0.12);
     }
 
     /* Prevent browser autofill from ruining dark mode inputs */
@@ -80,40 +84,49 @@
         -webkit-text-fill-color: white !important;
     }
 
-    /* Global autofill override â€” covers ALL inputs (profile form, etc.) */
+    /* Global autofill override — covers ALL inputs */
     input:-webkit-autofill,
     input:-webkit-autofill:hover,
     input:-webkit-autofill:focus,
     input:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 1000px rgba(20, 12, 6, 0.95) inset !important;
-        box-shadow: 0 0 0 1000px rgba(20, 12, 6, 0.95) inset !important;
+        -webkit-box-shadow: 0 0 0 1000px #221810 inset !important;
+        box-shadow: 0 0 0 1000px #221810 inset !important;
         -webkit-text-fill-color: white !important;
         caret-color: white;
-        transition: background-color 5000s ease-in-out 0s;
+        transition: background-color 99999s ease-in-out 0s !important;
     }
 
-
-    /* Contact form — use exact page bg (#0e0906) so autofill shows no dark box */
-    #contact-name:-webkit-autofill, #contact-name:-webkit-autofill:hover,
-    #contact-name:-webkit-autofill:focus, #contact-name:-webkit-autofill:active,
-    #contact-email:-webkit-autofill, #contact-email:-webkit-autofill:hover,
-    #contact-email:-webkit-autofill:focus, #contact-email:-webkit-autofill:active,
-    #contact-phone:-webkit-autofill, #contact-phone:-webkit-autofill:hover,
-    #contact-phone:-webkit-autofill:focus, #contact-phone:-webkit-autofill:active {
-        -webkit-box-shadow: 0 0 0 1000px #181310 inset !important;
-        box-shadow: 0 0 0 1000px #181310 inset !important;
+    /* Contact form — NO inset shadow, transition-delay keeps bg transparent */
+    #contact-name:-webkit-autofill,
+    #contact-name:-webkit-autofill:hover,
+    #contact-name:-webkit-autofill:focus,
+    #contact-name:-webkit-autofill:active,
+    #contact-email:-webkit-autofill,
+    #contact-email:-webkit-autofill:hover,
+    #contact-email:-webkit-autofill:focus,
+    #contact-email:-webkit-autofill:active,
+    #contact-phone:-webkit-autofill,
+    #contact-phone:-webkit-autofill:hover,
+    #contact-phone:-webkit-autofill:focus,
+    #contact-phone:-webkit-autofill:active {
+        -webkit-box-shadow: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important;
         -webkit-text-fill-color: white !important;
+        transition: background-color 99999s ease-in-out 0s, color 99999s ease-in-out 0s !important;
     }
 
     /* Float label when contact field is autofilled */
-    #contact-name:-webkit-autofill ~ label,
-    #contact-email:-webkit-autofill ~ label,
-    #contact-phone:-webkit-autofill ~ label {
+    #contact-name:-webkit-autofill~label,
+    #contact-email:-webkit-autofill~label,
+    #contact-phone:-webkit-autofill~label {
         top: -2px !important;
         font-size: 13px !important;
         letter-spacing: 0.1em !important;
         color: rgba(238, 124, 43, 0.6) !important;
-    }    /* Profile form field inputs â€” zero-ghosting dark theme focus */
+    }
+
+    /* Profile form field inputs â€” zero-ghosting dark theme focus */
     .field-input {
         appearance: none !important;
         -webkit-appearance: none !important;
@@ -478,9 +491,15 @@ img {
     max-width: 100%;
     height: auto;
 }
+
 /* --- Admin Nav Hover --- */
-.admin-nav-item:hover span { color: #ccc !important; }
-.admin-nav-item:hover svg { color: #ee7c2b !important; }
+.admin-nav-item:hover span {
+    color: #ccc !important;
+}
+
+.admin-nav-item:hover svg {
+    color: #ee7c2b !important;
+}
 
 /* --- Admin Strict Search Bar --- */
 .admin-search-container {
@@ -529,8 +548,8 @@ img {
     box-shadow: 0 0 0 3px rgba(238, 124, 43, 0.12);
 }
 
-.admin-search-input:focus + .admin-search-icon,
-.admin-search-input:not(:placeholder-shown) + .admin-search-icon {
+.admin-search-input:focus+.admin-search-icon,
+.admin-search-input:not(:placeholder-shown)+.admin-search-icon {
     color: #ee7c2b;
     filter: drop-shadow(0 0 6px rgba(238, 124, 43, 0.6));
 }

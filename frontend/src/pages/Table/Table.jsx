@@ -3,27 +3,31 @@ import { useState, useRef, useEffect } from "react";
 const timeSlots = ["18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00"];
 const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-const TABLES = [
-    { id: "CT-01", view: "Kitchen View", capacity: 2 },
-    { id: "CT-02", view: "Chef Counter", capacity: 2 },
-    { id: "TR-08", view: "Terrace View", capacity: 2 },
-    { id: "WD-02", view: "Window View", capacity: 2 },
-    { id: "CF-09", view: "Romantic Booth", capacity: 2 },
-    { id: "T-12", view: "Corner View", capacity: 4 },
-    { id: "T-14", view: "Center Hall", capacity: 4 },
-    { id: "GD-03", view: "Garden View", capacity: 4 },
-    { id: "PD-05", view: "Private Dining", capacity: 6 },
-    { id: "GD-06", view: "Outdoor Garden", capacity: 6 },
-    { id: "FM-15", view: "Family Table", capacity: 6 },
-    { id: "PD-07", view: "VIP Room", capacity: 8 },
-    { id: "FM-18", view: "Large Group", capacity: 8 },
-];
+
 
 const Table = () => {
     const [guests, setGuests] = useState(null);
     const [selectedTable, setSelectedTable] = useState("");
     const [tableDropdownOpen, setTableDropdownOpen] = useState(false);
-    const filteredTables = guests ? TABLES.filter(t => t.capacity === guests) : [];
+    const [tablesList, setTablesList] = useState([]);
+    
+    useEffect(() => {
+        fetch("http://localhost:5000/api/tables")
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.data) {
+                    const mapped = data.data.map(t => ({
+                        id: t.tableId,
+                        view: t.type === "Center" ? "Center Hall" : t.type + " View",
+                        capacity: t.capacity
+                    }));
+                    setTablesList(mapped);
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
+
+    const filteredTables = guests ? tablesList.filter(t => t.capacity === guests) : [];
     const [selectedTime, setSelectedTime] = useState(null);
     const [selectedDate, setSelectedDate] = useState(null);
     const [bookingStep, setBookingStep] = useState(0); // 0 = nothing, 1 = date, 2 = time, 3 = guests
@@ -105,7 +109,7 @@ const Table = () => {
             setSelectedTable("");
             return;
         }
-        const exactMatch = TABLES.filter(t => t.capacity === guests);
+        const exactMatch = tablesList.filter(t => t.capacity === guests);
         if (exactMatch.length === 0) {
             // No exact-capacity table → assign Random Table automatically
             setSelectedTable("RANDOM");
@@ -154,7 +158,7 @@ const Table = () => {
 
         // Build the local reservation entry
         const isRandom = selectedTable === "RANDOM";
-        const tableInfo = isRandom ? null : TABLES.find(t => t.id === selectedTable);
+        const tableInfo = isRandom ? null : tablesList.find(t => t.id === selectedTable);
         const tableLabel = isRandom ? "Random Table" : `${selectedTable} (${tableInfo?.view || ''})`;
         const refId = 'RES-' + Math.floor(1000 + Math.random() * 9000);
         const localEntry = {
@@ -392,7 +396,7 @@ const Table = () => {
                                         {selectedTable === 'RANDOM'
                                             ? 'Random Table'
                                             : selectedTable
-                                                ? (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()
+                                                ? (() => { const t = tablesList.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()
                                                 : (!guests ? 'Select guests first' : `${filteredTables.length} tables available`)
                                         }
                                     </span>
@@ -596,7 +600,7 @@ const Table = () => {
                                     <div className="flex items-center gap-3">
                                         <span className="material-icons text-primary/70 text-base">{selectedTable === 'RANDOM' ? 'casino' : 'table_restaurant'}</span>
                                         <span className="text-stone-300 text-sm">
-                                            {selectedTable === 'RANDOM' ? 'Random Table Assignment' : (() => { const t = TABLES.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()}
+                                            {selectedTable === 'RANDOM' ? 'Random Table Assignment' : (() => { const t = tablesList.find(x => x.id === selectedTable); return t ? `${t.id} — ${t.view}` : selectedTable; })()}
                                         </span>
                                     </div>
                                 </div>
