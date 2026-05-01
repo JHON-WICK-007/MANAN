@@ -13,10 +13,16 @@ const Cart = () => {
 
     // Static promo codes — replace with API call in production
     const PROMO_CODES = {
-        SAVE20: { type: "percent", value: 20, label: "20% off" },
-        FLAT100: { type: "flat", value: 100, label: "₹100 off" },
-        WELCOME: { type: "percent", value: 10, label: "10% off" },
-        LUMIERE50: { type: "flat", value: 50, label: "₹50 off" },
+        SAVE20:     { type: "percent", value: 20,  label: "20% off" },
+        FLAT100:    { type: "flat",    value: 100,  label: "₹100 off" },
+        WELCOME:    { type: "percent", value: 10,  label: "10% off" },
+        LUMIERE50:  { type: "flat",    value: 50,   label: "₹50 off" },
+        FEAST15:    { type: "percent", value: 15,  label: "15% off" },
+        ROYAL200:   { type: "flat",    value: 200,  label: "₹200 off" },
+        FIRSTBITE:  { type: "percent", value: 25,  label: "25% off" },
+        DINE150:    { type: "flat",    value: 150,  label: "₹150 off" },
+        GOURMÉT5:   { type: "percent", value: 5,   label: "5% off" },
+        LUXE500:    { type: "flat",    value: 500,  label: "₹500 off" },
     };
 
     const handleApplyPromo = () => {
