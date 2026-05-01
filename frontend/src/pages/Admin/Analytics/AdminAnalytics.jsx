@@ -93,23 +93,6 @@ const StatusRow = ({ label, count, color }) => (
 const TICK = { fill: "#444", fontSize: 11, fontWeight: 500 };
 
 /* ─── Donut Pie Chart for Dishes ────────────────────────────────────── */
-const renderActiveShape = (props) => {
-    const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props;
-    return (
-        <g>
-            <Sector
-                cx={cx} cy={cy}
-                innerRadius={innerRadius}
-                outerRadius={outerRadius + 8}
-                startAngle={startAngle}
-                endAngle={endAngle}
-                fill={fill}
-                style={{ filter: `drop-shadow(0 4px 16px ${fill}80)`, transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", outline: "none" }}
-            />
-        </g>
-    );
-};
-
 const DishPieChart = ({ dishes, colors }) => {
     const [activeIndex, setActiveIndex] = useState(-1);
     const hovered = activeIndex >= 0 ? dishes[activeIndex] : null;
@@ -128,26 +111,31 @@ const DishPieChart = ({ dishes, colors }) => {
                             dataKey="count"
                             nameKey="name"
                             cx="50%" cy="50%"
-                            innerRadius={68}
-                            outerRadius={94}
+                            innerRadius={62}
+                            outerRadius={86}
                             paddingAngle={4}
                             strokeWidth={0}
-                            activeIndex={activeIndex}
-                            activeShape={renderActiveShape}
                             onMouseEnter={(_, i) => setActiveIndex(i)}
                             onMouseLeave={() => setActiveIndex(-1)}
                         >
-                            {dishes.map((d, i) => (
-                                <Cell
-                                    key={d.name}
-                                    fill={colors[i % 5]}
-                                    style={{ 
-                                        opacity: activeIndex === -1 || activeIndex === i ? 1 : 0.25,
-                                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                                        cursor: "pointer", outline: "none"
-                                    }}
-                                />
-                            ))}
+                            {dishes.map((d, i) => {
+                                const isActive = activeIndex === i;
+                                const isDimmed = activeIndex !== -1 && activeIndex !== i;
+                                return (
+                                    <Cell
+                                        key={d.name}
+                                        fill={colors[i % 5]}
+                                        style={{ 
+                                            opacity: isDimmed ? 0.25 : 1,
+                                            transform: isActive ? "scale(1.06)" : "scale(1)",
+                                            transformOrigin: "center center",
+                                            filter: isActive ? `drop-shadow(0 4px 12px ${colors[i % 5]}80)` : "none",
+                                            transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+                                            cursor: "pointer", outline: "none"
+                                        }}
+                                    />
+                                );
+                            })}
                         </Pie>
                     </PieChart>
                 </ResponsiveContainer>
@@ -185,8 +173,7 @@ const DishPieChart = ({ dishes, colors }) => {
                             style={{ 
                                 display: "flex", alignItems: "center", gap: 12, cursor: "pointer", 
                                 opacity: isOtherHovered ? 0.35 : 1,
-                                transform: isHovered ? "translateX(4px)" : "translateX(0)",
-                                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)" 
+                                transition: "all 0.4s ease" 
                             }}
                         >
                             <div style={{ 
@@ -196,7 +183,7 @@ const DishPieChart = ({ dishes, colors }) => {
                             }} />
                             <span style={{ 
                                 color: isHovered ? "#fff" : "#aaa", 
-                                fontSize: 13, fontWeight: isHovered ? 600 : 500, flex: 1, 
+                                fontSize: 13, fontWeight: 500, flex: 1, 
                                 overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                                 transition: "all 0.3s ease"
                             }}>
@@ -279,7 +266,7 @@ const AdminAnalytics = () => {
 
             {/* ── KPI Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
-                <KPICard title="Reservations" value={totalRes} sub="Upcoming" icon={Calendar} color="#ee7c2b" delay={0} />
+                <KPICard title="Reservations" value={totalRes} sub="On Going" icon={Calendar} color="#ee7c2b" delay={0} />
                 <KPICard title="Orders (7d)" value={totalOrd} sub="Last 7 days" icon={ShoppingBag} color="#3b82f6" delay={0.07} />
                 <KPICard title="Revenue (7d)" value={`₹${weekRev.toLocaleString("en-IN")}`} sub="Excl. Cancelled" icon={IndianRupee} color="#10b981" delay={0.14} />
                 <KPICard title="Top Dish" value={topDish} sub="All time" icon={Star} color="#a78bfa" delay={0.21} />
