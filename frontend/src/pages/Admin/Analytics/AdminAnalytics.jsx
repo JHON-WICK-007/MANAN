@@ -174,37 +174,67 @@ const AdminAnalytics = () => {
                 <KPICard title="Top Dish" value={topDish} sub="All time" icon={Star} color="#a78bfa" delay={0.21} />
             </div>
 
-            {/* ── Main Trend Chart ── */}
-            <Card title="Performance Overview — Last 7 Days" delay={0.28} right={
-                <div style={{ display: "flex", gap: 18 }}>
-                    {[["#ee7c2b", "Reservations"], ["#3b82f6", "Orders"], ["#10b981", "Revenue"]].map(([c, l]) => (
-                        <div key={l} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
-                            <span style={{ color: "#555", fontSize: 11, fontWeight: 600 }}>{l}</span>
-                        </div>
-                    ))}
-                </div>
-            }>
-                <ResponsiveContainer width="100%" height={280}>
-                    <AreaChart data={trendData} margin={{ top: 8, right: 0, left: -18, bottom: 0 }}>
-                        <defs>
-                            {[["res","#ee7c2b"],["ord","#3b82f6"],["rev","#10b981"]].map(([id, c]) => (
-                                <linearGradient key={id} id={`g${id}`} x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%"  stopColor={c} stopOpacity={0.2} />
-                                    <stop offset="100%" stopColor={c} stopOpacity={0} />
+            {/* ── Two Charts Side by Side ── */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
+
+                {/* Revenue Chart */}
+                <Card title="Revenue" delay={0.28} right={
+                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#10b981" }} />
+                        <span style={{ color: "#555", fontSize: 11, fontWeight: 600 }}>Last 7 Days</span>
+                    </div>
+                }>
+                    <ResponsiveContainer width="100%" height={260}>
+                        <AreaChart data={trendData} margin={{ top: 8, right: 0, left: -10, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="grev" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#10b981" stopOpacity={0.28} />
+                                    <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
                                 </linearGradient>
-                            ))}
-                        </defs>
-                        <CartesianGrid strokeDasharray="2 6" vertical={false} stroke="rgba(255,255,255,0.03)" />
-                        <XAxis dataKey="date" tick={TICK} axisLine={false} tickLine={false} dy={10} />
-                        <YAxis tick={TICK} axisLine={false} tickLine={false} allowDecimals={false} dx={-6} />
-                        <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(255,255,255,0.06)", strokeWidth: 1, strokeDasharray: "4 4" }} />
-                        <Area type="monotone" dataKey="Revenue"      stroke="#10b981" strokeWidth={2.5} fill="url(#grev)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-                        <Area type="monotone" dataKey="Orders"       stroke="#3b82f6" strokeWidth={2.5} fill="url(#gord)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-                        <Area type="monotone" dataKey="Reservations" stroke="#ee7c2b" strokeWidth={2.5} fill="url(#gres)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} />
-                    </AreaChart>
-                </ResponsiveContainer>
-            </Card>
+                            </defs>
+                            <CartesianGrid strokeDasharray="2 6" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                            <XAxis dataKey="date" tick={TICK} axisLine={false} tickLine={false} dy={10} />
+                            <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={v => `₹${v}`} dx={-6} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(16,185,129,0.12)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                            <Area type="monotone" dataKey="Revenue" stroke="#10b981" strokeWidth={2.5} fill="url(#grev)" dot={false} activeDot={{ r: 5, fill: "#10b981", strokeWidth: 0 }} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </Card>
+
+                {/* Orders + Reservations Chart */}
+                <Card title="Orders & Reservations" delay={0.35} right={
+                    <div style={{ display: "flex", gap: 16 }}>
+                        {[["#3b82f6", "Orders"], ["#ee7c2b", "Reservations"]].map(([c, l]) => (
+                            <div key={l} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <div style={{ width: 7, height: 7, borderRadius: "50%", background: c }} />
+                                <span style={{ color: "#555", fontSize: 11, fontWeight: 600 }}>{l}</span>
+                            </div>
+                        ))}
+                    </div>
+                }>
+                    <ResponsiveContainer width="100%" height={260}>
+                        <AreaChart data={trendData} margin={{ top: 8, right: 0, left: -20, bottom: 0 }}>
+                            <defs>
+                                <linearGradient id="gord" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.25} />
+                                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+                                </linearGradient>
+                                <linearGradient id="gres" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stopColor="#ee7c2b" stopOpacity={0.25} />
+                                    <stop offset="100%" stopColor="#ee7c2b" stopOpacity={0} />
+                                </linearGradient>
+                            </defs>
+                            <CartesianGrid strokeDasharray="2 6" vertical={false} stroke="rgba(255,255,255,0.03)" />
+                            <XAxis dataKey="date" tick={TICK} axisLine={false} tickLine={false} dy={10} />
+                            <YAxis tick={TICK} axisLine={false} tickLine={false} allowDecimals={false} dx={-6} />
+                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(255,255,255,0.06)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                            <Area type="monotone" dataKey="Orders"       stroke="#3b82f6" strokeWidth={2.5} fill="url(#gord)" dot={{ r: 3, fill: "#3b82f6", strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+                            <Area type="monotone" dataKey="Reservations" stroke="#ee7c2b" strokeWidth={2.5} fill="url(#gres)" dot={{ r: 3, fill: "#ee7c2b", strokeWidth: 0 }} activeDot={{ r: 5, strokeWidth: 0 }} />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                </Card>
+            </div>
+
 
             {/* ── Bottom Three Columns ── */}
             <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr", gap: 18 }}>
