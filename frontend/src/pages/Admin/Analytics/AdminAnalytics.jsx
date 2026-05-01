@@ -293,7 +293,7 @@ const AdminAnalytics = () => {
                             <CartesianGrid strokeDasharray="2 6" vertical={false} stroke="rgba(255,255,255,0.03)" />
                             <XAxis dataKey="date" tick={TICK} axisLine={false} tickLine={false} dy={10} />
                             <YAxis tick={TICK} axisLine={false} tickLine={false} tickFormatter={v => `₹${v}`} dx={-6} />
-                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(16,185,129,0.12)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                            <Tooltip content={<CustomTooltip />} position={{ y: 16 }} allowEscapeViewBox={{ x: false, y: false }} cursor={{ stroke: "rgba(16,185,129,0.12)", strokeWidth: 1, strokeDasharray: "4 4" }} />
                             <Area type="monotone" dataKey="Revenue" stroke="#10b981" strokeWidth={2.5} fill="url(#grev)" dot={false} activeDot={{ r: 5, fill: "#10b981", strokeWidth: 0 }} animationDuration={1800} animationBegin={500} animationEasing="ease-in-out" />
                         </AreaChart>
                     </ResponsiveContainer>
@@ -325,7 +325,7 @@ const AdminAnalytics = () => {
                             <CartesianGrid strokeDasharray="2 6" vertical={false} stroke="rgba(255,255,255,0.03)" />
                             <XAxis dataKey="date" tick={TICK} axisLine={false} tickLine={false} dy={10} />
                             <YAxis tick={TICK} axisLine={false} tickLine={false} allowDecimals={false} dx={-6} />
-                            <Tooltip content={<CustomTooltip />} cursor={{ stroke: "rgba(255,255,255,0.06)", strokeWidth: 1, strokeDasharray: "4 4" }} />
+                            <Tooltip content={<CustomTooltip />} position={{ y: 16 }} allowEscapeViewBox={{ x: false, y: false }} cursor={{ stroke: "rgba(255,255,255,0.08)", strokeWidth: 1, strokeDasharray: "4 4" }} />
                             <Area type="monotone" dataKey="Orders"       stroke="#3b82f6" strokeWidth={2.5} fill="url(#gord)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} animationDuration={1800} animationBegin={600} animationEasing="ease-in-out" />
                             <Area type="monotone" dataKey="Reservations" stroke="#ee7c2b" strokeWidth={2.5} fill="url(#gres)" dot={false} activeDot={{ r: 5, strokeWidth: 0 }} animationDuration={1800} animationBegin={600} animationEasing="ease-in-out" />
                         </AreaChart>
