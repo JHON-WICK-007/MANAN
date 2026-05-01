@@ -14,18 +14,9 @@ const ConfirmModal = ({
     icon: Icon = Trash2,
 }) => {
     useEffect(() => {
-        if (open) {
-            const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
-            document.body.style.overflow = "hidden";
-            document.body.style.paddingRight = `${scrollbarW}px`;
-        } else {
-            document.body.style.overflow = "";
-            document.body.style.paddingRight = "";
-        }
-        return () => {
-            document.body.style.overflow = "";
-            document.body.style.paddingRight = "";
-        };
+        if (open) document.body.style.overflow = "hidden";
+        else document.body.style.overflow = "";
+        return () => { document.body.style.overflow = ""; };
     }, [open]);
 
     const accentColor = danger ? "#ef4444" : "#f97316";
@@ -65,6 +56,9 @@ const ConfirmModal = ({
                             overflow: "hidden",
                             boxShadow: `0 0 0 1px rgba(255,255,255,0.07), 0 40px 80px rgba(0,0,0,0.7), 0 0 60px ${glowColor}`,
                             position: "relative",
+                            backfaceVisibility: "hidden",
+                            WebkitFontSmoothing: "antialiased",
+                            transform: "translateZ(0)",
                         }}
                     >
                         {/* Glowing top border */}
