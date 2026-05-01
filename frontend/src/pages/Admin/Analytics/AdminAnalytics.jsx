@@ -3,7 +3,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { motion } from "framer-motion";
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip,
-    ResponsiveContainer,
+    ResponsiveContainer, PieChart, Pie, Cell,
 } from "recharts";
 import { Calendar, ShoppingBag, IndianRupee, TrendingUp, LayoutGrid, RefreshCw, Star } from "lucide-react";
 
@@ -91,6 +91,79 @@ const StatusRow = ({ label, count, color }) => (
 );
 
 const TICK = { fill: "#444", fontSize: 11, fontWeight: 500 };
+
+/* ─── Donut Pie Chart for Dishes ────────────────────────────────────── */
+const DishPieChart = ({ dishes, colors }) => {
+    const [hovered, setHovered] = useState(null);
+    const total = dishes.reduce((s, d) => s + d.count, 0);
+    const centerLabel = hovered ? hovered.name : null;
+    const centerValue = hovered ? hovered.count : total;
+    const centerSub   = hovered ? "orders" : "Total";
+    const centerColor = hovered ? colors[dishes.indexOf(hovered) % 5] : "#fff";
+
+    return (
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
+            <div style={{ position: "relative", width: "100%", height: 210 }}>
+                <ResponsiveContainer width="100%" height={210}>
+                    <PieChart>
+                        <Pie
+                            data={dishes}
+                            dataKey="count"
+                            nameKey="name"
+                            cx="50%" cy="50%"
+                            innerRadius={66}
+                            outerRadius={92}
+                            paddingAngle={3}
+                            strokeWidth={0}
+                            onMouseEnter={(_, i) => setHovered(dishes[i])}
+                            onMouseLeave={() => setHovered(null)}
+                        >
+                            {dishes.map((d, i) => (
+                                <Cell
+                                    key={d.name}
+                                    fill={colors[i % 5]}
+                                    opacity={hovered && hovered !== d ? 0.35 : 1}
+                                    style={{ cursor: "pointer", transition: "opacity 0.2s" }}
+                                />
+                            ))}
+                        </Pie>
+                    </PieChart>
+                </ResponsiveContainer>
+                {/* Center label — pure HTML, no Recharts tooltip conflict */}
+                <div style={{
+                    position: "absolute", top: "50%", left: "50%",
+                    transform: "translate(-50%, -50%)",
+                    textAlign: "center", pointerEvents: "none", width: 110,
+                }}>
+                    {centerLabel && (
+                        <div style={{ color: "#888", fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {centerLabel}
+                        </div>
+                    )}
+                    <div style={{ color: centerColor, fontSize: 26, fontWeight: 800, fontFamily: "'Playfair Display', serif", lineHeight: 1, transition: "color 0.2s" }}>{centerValue}</div>
+                    <div style={{ color: "#555", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 4 }}>{centerSub}</div>
+                </div>
+            </div>
+            {/* Legend */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 8 }}>
+                {dishes.map((d, i) => {
+                    const pct = Math.round((d.count / total) * 100);
+                    return (
+                        <div key={d.name}
+                            onMouseEnter={() => setHovered(d)}
+                            onMouseLeave={() => setHovered(null)}
+                            style={{ display: "flex", alignItems: "center", gap: 10, cursor: "default", opacity: hovered && hovered !== d ? 0.4 : 1, transition: "opacity 0.2s" }}
+                        >
+                            <div style={{ width: 8, height: 8, borderRadius: "50%", background: colors[i % 5], flexShrink: 0, boxShadow: `0 0 6px ${colors[i % 5]}` }} />
+                            <span style={{ color: "#aaa", fontSize: 12, fontWeight: 500, flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.name}</span>
+                            <span style={{ color: colors[i % 5], fontSize: 12, fontWeight: 700, flexShrink: 0 }}>{d.count} <span style={{ color: "#555", fontWeight: 500 }}>({pct}%)</span></span>
+                        </div>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
 
 /* ─────────────────────────────────────────────────────────────────── */
 const AdminAnalytics = () => {
@@ -239,30 +312,14 @@ const AdminAnalytics = () => {
             {/* ── Bottom Three Columns ── */}
             <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr", gap: 18 }}>
 
-                {/* Popular Dishes */}
+                {/* Popular Dishes — Donut Pie Chart */}
                 <Card title="Most Popular Dishes" delay={0.35} right={<TrendingUp size={15} />}>
                     {dishes.length === 0 ? (
                         <div style={{ textAlign: "center", padding: "48px 0" }}>
                             <ShoppingBag size={34} color="#2a2a2a" />
                             <div style={{ color: "#444", fontSize: 12, marginTop: 12 }}>No orders recorded yet</div>
                         </div>
-                    ) : dishes.map((d, i) => (
-                        <div key={d.name} style={{ marginBottom: 18 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-                                <span style={{ color: "#aaa", fontSize: 12, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "72%" }}>
-                                    <span style={{ color: "#555", marginRight: 6 }}>{i + 1}.</span>{d.name}
-                                </span>
-                                <span style={{ color: COLORS.dish[i % 5], fontSize: 13, fontWeight: 800, flexShrink: 0 }}>{d.count}</span>
-                            </div>
-                            <div style={{ height: 4, background: "rgba(255,255,255,0.04)", borderRadius: 4, overflow: "hidden" }}>
-                                <motion.div
-                                    initial={{ width: 0 }} animate={{ width: `${(d.count / dishMax) * 100}%` }}
-                                    transition={{ delay: 0.5 + i * 0.08, duration: 0.9, ease: "easeOut" }}
-                                    style={{ height: "100%", background: `linear-gradient(90deg, ${COLORS.dish[i % 5]}, ${COLORS.dish[i % 5]}aa)`, borderRadius: 4, boxShadow: `0 0 8px ${COLORS.dish[i % 5]}60` }}
-                                />
-                            </div>
-                        </div>
-                    ))}
+                    ) : <DishPieChart dishes={dishes} colors={COLORS.dish} />}
                 </Card>
 
                 {/* Table Status */}
