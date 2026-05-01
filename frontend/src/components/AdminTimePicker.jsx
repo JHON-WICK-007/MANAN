@@ -54,7 +54,10 @@ export default function AdminTimePicker({ value, onChange, placeholder = "HH:MM"
     const openPicker = () => {
         if (wrapRef.current) {
             const rect = wrapRef.current.getBoundingClientRect();
-            setCoords({ top: rect.bottom + 6, left: rect.left, width: 160 });
+            const panelH = 260; // estimated panel height
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const top = spaceBelow < panelH + 8 ? rect.top - panelH - 6 : rect.bottom + 6;
+            setCoords({ top, left: rect.left });
         }
         setOpen(o => !o);
     };
@@ -101,10 +104,13 @@ export default function AdminTimePicker({ value, onChange, placeholder = "HH:MM"
 
             {open && createPortal(
                 <div className="admin-time-panel" style={{
-                    position: "absolute", top: coords.top, left: coords.left, width: 230,
-                    background: panelBg, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12,
-                    padding: 16, zIndex: 99999, boxShadow: "0 10px 30px rgba(0,0,0,0.8)",
-                    display: "flex", flexDirection: "column", gap: 16
+                    position: "fixed", top: coords.top, left: coords.left, width: 232,
+                    background: "linear-gradient(160deg,#141414 0%,#0a0a0a 100%)",
+                    border: "1px solid rgba(255,255,255,0.1)", borderRadius: 14,
+                    padding: 16, zIndex: 99999, boxShadow: "0 16px 40px rgba(0,0,0,0.85)",
+                    display: "flex", flexDirection: "column", gap: 14,
+                    overflowY: "auto", maxHeight: "90vh",
+                    scrollbarWidth: "none", msOverflowStyle: "none"
                 }}>
                     {/* Hours Grid */}
                     <div>

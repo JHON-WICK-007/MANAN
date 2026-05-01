@@ -14,9 +14,18 @@ const ConfirmModal = ({
     icon: Icon = Trash2,
 }) => {
     useEffect(() => {
-        if (open) document.body.style.overflow = "hidden";
-        else document.body.style.overflow = "";
-        return () => { document.body.style.overflow = ""; };
+        if (open) {
+            const scrollbarW = window.innerWidth - document.documentElement.clientWidth;
+            document.body.style.overflow = "hidden";
+            document.body.style.paddingRight = `${scrollbarW}px`;
+        } else {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+            document.body.style.paddingRight = "";
+        };
     }, [open]);
 
     const accentColor = danger ? "#ef4444" : "#f97316";

@@ -63,7 +63,7 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
     }, [open]);
 
     return (
-        <div ref={triggerRef} style={{ position: "relative", ...style }}>
+        <div ref={triggerRef} style={{ position: "relative", display: "inline-block", ...style }}>
             {/* Trigger button */}
             <button
                 type="button"
