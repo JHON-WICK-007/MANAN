@@ -32,6 +32,15 @@ const Profile = () => {
     const navigate = useNavigate();
     const fileInputRef = useRef(null);
 
+    // Danger zone state
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [passwordForm, setPasswordForm] = useState({ current: "", new: "", confirm: "" });
+    const [passwordError, setPasswordError] = useState("");
+    const [passwordSuccess, setPasswordSuccess] = useState(false);
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState("");
+    const [deleteError, setDeleteError] = useState("");
+
     const [reservations, setReservations] = useState([]);
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -219,6 +228,56 @@ const Profile = () => {
 
     const handleCancelEdit = () => {
         setIsEditing(false);
+    };
+
+    const handleChangePasswordSubmit = async (e) => {
+        e.preventDefault();
+        setPasswordError("");
+        setPasswordSuccess(false);
+        if (passwordForm.new !== passwordForm.confirm) {
+            return setPasswordError("New passwords do not match.");
+        }
+        try {
+            const res = await fetch("/api/auth/password", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify({ currentPassword: passwordForm.current, newPassword: passwordForm.new })
+            });
+            const data = await res.json();
+            if (data.success) {
+                setPasswordSuccess(true);
+                setTimeout(() => {
+                    setIsChangingPassword(false);
+                    setPasswordSuccess(false);
+                    setPasswordForm({ current: "", new: "", confirm: "" });
+                    logout(); // Force re-login
+                }, 2000);
+            } else {
+                setPasswordError(data.message || "Failed to change password.");
+            }
+        } catch (err) {
+            setPasswordError("An error occurred. Please try again.");
+        }
+    };
+
+    const handleDeleteAccountSubmit = async () => {
+        if (deleteConfirmText.toLowerCase() !== "delete my account") {
+            return setDeleteError("Please type 'delete my account' to confirm.");
+        }
+        try {
+            const res = await fetch("/api/auth/account", {
+                method: "DELETE",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                logout();
+            } else {
+                setDeleteError(data.message || "Failed to delete account.");
+            }
+        } catch (err) {
+            setDeleteError("An error occurred. Please try again.");
+        }
     };
 
     if (!user) return null;
@@ -653,17 +712,80 @@ const Profile = () => {
                             </div>
                             <div className="flex flex-col sm:flex-row gap-5 shrink-0">
                                 <button
+                                    onClick={() => setIsChangingPassword(true)}
                                     className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 border border-white/20 text-white/90 hover:bg-white/10 hover:border-white/40 hover:text-white active:scale-95 backdrop-blur-sm [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
                                 >
                                     Change Password
                                 </button>
                                 <button
+                                    onClick={() => setIsDeletingAccount(true)}
                                     className="px-8 py-3.5 rounded-xl text-[11px] font-bold uppercase tracking-[0.2em] transition-all duration-300 bg-red-600 border border-transparent hover:bg-red-500 text-white shadow-[0_4px_20px_rgba(220,38,38,0.3)] hover:shadow-[0_4px_30px_rgba(239,68,68,0.45)] active:scale-95 [backface-visibility:hidden] [transform:translateZ(0)] antialiased will-change-[transform,box-shadow,background-color]"
                                 >
                                     Delete Account
                                 </button>
                             </div>
                         </div>
+
+                        {/* Password Change Form */}
+                        {isChangingPassword && (
+                            <div className="mt-8 p-6 bg-black/40 rounded-2xl border border-white/10 animate-fade-in">
+                                <h4 className="text-white font-bold mb-4">Change Password</h4>
+                                {passwordError && <p className="text-red-400 text-xs mb-4">{passwordError}</p>}
+                                {passwordSuccess && <p className="text-green-400 text-xs mb-4">Password changed! Logging out...</p>}
+                                <form onSubmit={handleChangePasswordSubmit} className="space-y-4">
+                                    <input 
+                                        type="password" 
+                                        placeholder="Current Password" 
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary"
+                                        value={passwordForm.current}
+                                        onChange={(e) => setPasswordForm({...passwordForm, current: e.target.value})}
+                                    />
+                                    <input 
+                                        type="password" 
+                                        placeholder="New Password" 
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary"
+                                        value={passwordForm.new}
+                                        onChange={(e) => setPasswordForm({...passwordForm, new: e.target.value})}
+                                    />
+                                    <input 
+                                        type="password" 
+                                        placeholder="Confirm New Password" 
+                                        required
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-primary"
+                                        value={passwordForm.confirm}
+                                        onChange={(e) => setPasswordForm({...passwordForm, confirm: e.target.value})}
+                                    />
+                                    <div className="flex gap-3 pt-2">
+                                        <button type="button" onClick={() => setIsChangingPassword(false)} className="px-5 py-2 rounded-lg text-xs font-bold text-stone-400 hover:text-white transition-colors">Cancel</button>
+                                        <button type="submit" className="px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg text-xs font-bold transition-colors">Update Password</button>
+                                    </div>
+                                </form>
+                            </div>
+                        )}
+
+                        {/* Delete Account Confirmation */}
+                        {isDeletingAccount && (
+                            <div className="mt-8 p-6 bg-red-900/20 rounded-2xl border border-red-500/30 animate-fade-in">
+                                <h4 className="text-red-500 font-bold mb-2 flex items-center gap-2"><span className="material-icons text-sm">warning</span> Delete Account</h4>
+                                <p className="text-xs text-stone-300 mb-4">This action cannot be undone. All your reservations, orders, and profile data will be permanently deleted.</p>
+                                {deleteError && <p className="text-red-400 text-xs mb-4">{deleteError}</p>}
+                                <div className="space-y-4">
+                                    <input 
+                                        type="text" 
+                                        placeholder="Type 'delete my account' to confirm" 
+                                        className="w-full bg-black/40 border border-red-500/50 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-red-500"
+                                        value={deleteConfirmText}
+                                        onChange={(e) => setDeleteConfirmText(e.target.value)}
+                                    />
+                                    <div className="flex gap-3 pt-2">
+                                        <button type="button" onClick={() => setIsDeletingAccount(false)} className="px-5 py-2 rounded-lg text-xs font-bold text-stone-400 hover:text-white transition-colors">Cancel</button>
+                                        <button onClick={handleDeleteAccountSubmit} className="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition-colors shadow-lg shadow-red-900/50">Permanently Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </section>
             )}

@@ -95,3 +95,54 @@ exports.getMe = async (req, res, next) => {
         next(error);
     }
 };
+
+// @desc    Change user password
+// @route   PUT /api/auth/password
+// @access  Private
+exports.changePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: "Please provide current and new password" });
+        }
+
+        const user = await User.findById(req.user._id).select("+password");
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        const isMatch = await user.matchPassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: "Current password is incorrect" });
+        }
+
+        user.password = newPassword;
+        await user.save();
+
+        res.json({ success: true, message: "Password changed successfully" });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Delete user account and related data
+// @route   DELETE /api/auth/account
+// @access  Private
+exports.deleteAccount = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        // We can also delete related models here (Profile, Orders, Reservations) if needed.
+        // For now, deleting the user is the core action.
+        const Profile = require("../models/Profile");
+        await Profile.findOneAndDelete({ user: req.user._id });
+        await User.findByIdAndDelete(req.user._id);
+
+        res.json({ success: true, message: "Account deleted successfully" });
+    } catch (error) {
+        next(error);
+    }
+};

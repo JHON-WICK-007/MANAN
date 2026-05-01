@@ -2,15 +2,35 @@ import { useState } from "react";
 
 const statuses = ["Pending", "Preparing", "Ready", "Delivered"];
 
-const DUMMY_ORDER = {
-    _id: "ord123456",
-    status: "Preparing",
-    items: [
-        { name: "Truffle Bruschetta", quantity: 2, price: 140 },
-        { name: "Wagyu Beef Burger", quantity: 1, price: 350 },
-        { name: "Molten Cacao Core", quantity: 1, price: 180 },
-    ],
-    totalAmount: 810,
+const DUMMY_ORDERS = {
+    "ord123": {
+        _id: "ord123",
+        status: "Pending",
+        items: [{ name: "Truffle Bruschetta", quantity: 1, price: 140 }],
+        totalAmount: 140,
+    },
+    "ord456": {
+        _id: "ord456",
+        status: "Preparing",
+        items: [
+            { name: "Truffle Bruschetta", quantity: 2, price: 140 },
+            { name: "Wagyu Beef Burger", quantity: 1, price: 350 },
+            { name: "Molten Cacao Core", quantity: 1, price: 180 },
+        ],
+        totalAmount: 810,
+    },
+    "ord789": {
+        _id: "ord789",
+        status: "Ready",
+        items: [{ name: "Wagyu Beef Burger", quantity: 2, price: 350 }],
+        totalAmount: 700,
+    },
+    "ord999": {
+        _id: "ord999",
+        status: "Delivered",
+        items: [{ name: "Molten Cacao Core", quantity: 3, price: 180 }],
+        totalAmount: 540,
+    }
 };
 
 const OrderStatus = () => {
@@ -21,16 +41,25 @@ const OrderStatus = () => {
     const trackOrder = async () => {
         if (!orderId.trim()) return;
         setError("");
+        
         try {
             const token = localStorage.getItem("token");
             const res = await fetch(`/api/orders/${orderId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await res.json();
-            if (data.success) setOrder(data.data);
-            else { setOrder(DUMMY_ORDER); }
+            
+            if (data.success) {
+                setOrder(data.data);
+            } else {
+                const dummy = DUMMY_ORDERS[orderId.trim()];
+                if (dummy) setOrder(dummy);
+                else { setOrder(null); setError("Order not found. Try ord123, ord456, ord789, or ord999 for testing."); }
+            }
         } catch {
-            setOrder(DUMMY_ORDER);
+            const dummy = DUMMY_ORDERS[orderId.trim()];
+            if (dummy) setOrder(dummy);
+            else { setOrder(null); setError("Order not found. Try ord123, ord456, ord789, or ord999 for testing."); }
         }
     };
 
