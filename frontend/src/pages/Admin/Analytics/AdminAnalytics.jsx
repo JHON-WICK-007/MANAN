@@ -98,22 +98,24 @@ const DishPieChart = ({ dishes, colors }) => {
     const hovered = activeIndex >= 0 ? dishes[activeIndex] : null;
     const total = dishes.reduce((s, d) => s + d.count, 0);
     const centerValue = hovered ? hovered.count : total;
-    const centerSub   = hovered ? "orders" : "Total";
     const centerColor = hovered ? colors[activeIndex % 5] : "#fff";
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 28, width: "100%" }}>
-            <div style={{ position: "relative", width: "100%", height: 220 }}>
-                <ResponsiveContainer width="100%" height={220}>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24, width: "100%" }}>
+
+            {/* Chart */}
+            <div style={{ position: "relative", width: "100%", height: 240 }}>
+                <ResponsiveContainer width="100%" height={240}>
                     <PieChart>
                         <Pie
                             data={dishes}
                             dataKey="count"
                             nameKey="name"
                             cx="50%" cy="50%"
-                            innerRadius={62}
-                            outerRadius={86}
+                            innerRadius={60}
+                            outerRadius={84}
                             paddingAngle={4}
+                            cornerRadius={6}
                             strokeWidth={0}
                             onMouseEnter={(_, i) => setActiveIndex(i)}
                             onMouseLeave={() => setActiveIndex(-1)}
@@ -125,12 +127,12 @@ const DishPieChart = ({ dishes, colors }) => {
                                     <Cell
                                         key={d.name}
                                         fill={colors[i % 5]}
-                                        style={{ 
-                                            opacity: isDimmed ? 0.25 : 1,
+                                        style={{
+                                            opacity: isDimmed ? 0.2 : 1,
                                             transform: isActive ? "scale(1.06)" : "scale(1)",
                                             transformOrigin: "center center",
-                                            filter: isActive ? `drop-shadow(0 4px 12px ${colors[i % 5]}80)` : "none",
-                                            transition: "all 0.4s cubic-bezier(0.25, 1, 0.5, 1)",
+                                            filter: isActive ? `drop-shadow(0 0 6px ${colors[i % 5]}55)` : "none",
+                                            transition: "all 0.7s cubic-bezier(0.25, 1, 0.5, 1)",
                                             cursor: "pointer", outline: "none"
                                         }}
                                     />
@@ -139,63 +141,82 @@ const DishPieChart = ({ dishes, colors }) => {
                         </Pie>
                     </PieChart>
                 </ResponsiveContainer>
-                
+
                 {/* Center label */}
                 <div style={{
                     position: "absolute", top: "50%", left: "50%",
                     transform: "translate(-50%, -50%)",
-                    textAlign: "center", pointerEvents: "none", width: 110,
+                    textAlign: "center", pointerEvents: "none", width: 120,
                 }}>
-                    <motion.div 
+                    <motion.div
                         key={centerValue}
-                        initial={{ opacity: 0.5, scale: 0.95 }}
+                        initial={{ opacity: 0.4, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.2 }}
-                        style={{ color: centerColor, fontSize: 32, fontWeight: 800, fontFamily: "'Playfair Display', serif", lineHeight: 1, transition: "color 0.3s ease" }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
                     >
-                        {centerValue}
+                        <div style={{ color: centerColor, fontSize: 38, fontWeight: 800, fontFamily: "'Playfair Display', serif", lineHeight: 1, transition: "color 0.4s ease" }}>
+                            {centerValue}
+                        </div>
+                        <div style={{ color: "#444", fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", marginTop: 6 }}>
+                            ORDERS
+                        </div>
                     </motion.div>
-                    <div style={{ color: "#666", fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 6, transition: "color 0.3s ease" }}>{centerSub}</div>
                 </div>
             </div>
 
-            {/* Legend */}
-            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 12, padding: "0 12px" }}>
+            {/* Legend — bar style */}
+            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10, padding: "0 4px" }}>
                 {dishes.map((d, i) => {
                     const pct = Math.round((d.count / total) * 100);
                     const isHovered = activeIndex === i;
-                    const isOtherHovered = activeIndex !== -1 && activeIndex !== i;
-                    
+                    const isDimmed  = activeIndex !== -1 && activeIndex !== i;
                     return (
                         <div key={d.name}
                             onMouseEnter={() => setActiveIndex(i)}
                             onMouseLeave={() => setActiveIndex(-1)}
-                            style={{ 
-                                display: "flex", alignItems: "center", gap: 12, cursor: "pointer", 
-                                opacity: isOtherHovered ? 0.35 : 1,
-                                transition: "all 0.4s ease" 
+                            style={{
+                                cursor: "pointer",
+                                opacity: isDimmed ? 0.3 : 1,
+                                transition: "opacity 0.4s ease",
                             }}
                         >
-                            <div style={{ 
-                                width: 10, height: 10, borderRadius: "50%", background: colors[i % 5], flexShrink: 0, 
-                                boxShadow: isHovered ? `0 0 10px ${colors[i % 5]}` : `0 0 0px transparent`,
-                                transition: "all 0.3s ease"
-                            }} />
-                            <span style={{ 
-                                color: isHovered ? "#fff" : "#aaa", 
-                                fontSize: 13, fontWeight: 500, flex: 1, 
-                                overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                transition: "all 0.3s ease"
-                            }}>
-                                {d.name}
-                            </span>
-                            <span style={{ 
-                                color: isHovered ? colors[i % 5] : "#888", 
-                                fontSize: 13, fontWeight: 800, flexShrink: 0,
-                                transition: "all 0.3s ease"
-                            }}>
-                                {d.count} <span style={{ color: isHovered ? "#fff" : "#555", fontWeight: 500, fontSize: 12, marginLeft: 2, transition: "color 0.3s ease" }}>({pct}%)</span>
-                            </span>
+                            {/* Row */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                                <div style={{
+                                    width: 8, height: 8, borderRadius: "50%",
+                                    background: colors[i % 5], flexShrink: 0,
+                                    boxShadow: isHovered ? `0 0 8px ${colors[i % 5]}` : "none",
+                                    transition: "all 0.4s ease",
+                                }} />
+                                <span style={{
+                                    flex: 1, color: isHovered ? "#fff" : "#999",
+                                    fontSize: 12, fontWeight: 500,
+                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                                    transition: "color 0.4s ease",
+                                }}>
+                                    {d.name}
+                                </span>
+                                <span style={{
+                                    color: isHovered ? colors[i % 5] : "#666",
+                                    fontSize: 12, fontWeight: 700, flexShrink: 0,
+                                    transition: "color 0.4s ease",
+                                }}>
+                                    {d.count} <span style={{ fontWeight: 400, color: "#444", fontSize: 11 }}>({pct}%)</span>
+                                </span>
+                            </div>
+                            {/* Progress bar */}
+                            <div style={{ height: 3, borderRadius: 99, background: "rgba(255,255,255,0.05)", overflow: "hidden" }}>
+                                <div style={{
+                                    height: "100%",
+                                    width: `${pct}%`,
+                                    borderRadius: 99,
+                                    background: isHovered
+                                        ? `linear-gradient(90deg, ${colors[i % 5]}, ${colors[i % 5]}88)`
+                                        : `${colors[i % 5]}44`,
+                                    boxShadow: "none",
+                                    transition: "all 0.4s ease",
+                                }} />
+                            </div>
                         </div>
                     );
                 })}
