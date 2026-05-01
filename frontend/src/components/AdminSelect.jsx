@@ -17,6 +17,9 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
         typeof o === "string" ? { value: o, label: o } : o
     );
     const selected = normalized.find(o => o.value === value);
+    const longestText = normalized.reduce((longest, curr) =>
+        (curr.label || "").length > longest.length ? curr.label : longest
+    , placeholder || "");
 
     // Calculate panel position from trigger's screen coords
     const openDropdown = () => {
@@ -87,10 +90,10 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
                     whiteSpace: "nowrap",
                 }}
             >
-                {/* Ghost span locks width to placeholder, visible span shows actual value */}
+                {/* Ghost span locks width to longest option, visible span shows actual value */}
                 <span style={{ display: "grid", overflow: "hidden", flex: 1 }}>
                     <span style={{ gridArea: "1/1", visibility: "hidden", whiteSpace: "nowrap", fontSize: 13 }}>
-                        {placeholder}
+                        {longestText}
                     </span>
                     <span style={{ gridArea: "1/1", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {selected ? selected.label : placeholder}
@@ -116,7 +119,8 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
                         zIndex: 9999,
                         top: coords.top,
                         left: coords.left,
-                        width: coords.width,
+                        minWidth: coords.width,
+                        width: "max-content",
                         background: panelBg,
                         border: "1px solid rgba(238,124,43,0.1)",
                         borderRadius: 12,

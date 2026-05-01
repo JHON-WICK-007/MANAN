@@ -89,8 +89,8 @@ const AdminOrders = () => {
                     </colgroup>
                     <thead>
                         <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                            {["Order ID", "Customer", "Items", "Total", "Status", "Time", "Change Status"].map(h => (
-                                <th key={h} style={{ padding: "14px 12px", textAlign: "left", color: "#555", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>{h}</th>
+                            {["Order ID", "Customer", "Items", "Total", "Status", "Time", "Change Status"].map((h, index) => (
+                                <th key={h} style={{ padding: "14px 12px", paddingLeft: index === 0 ? 32 : 12, textAlign: "left", color: "#555", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>{h}</th>
                             ))}
                         </tr>
                     </thead>
@@ -111,7 +111,7 @@ const AdminOrders = () => {
                                 style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.2s" }}
                                 onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
                                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
-                                <td style={{ padding: "14px 12px", overflow: "hidden" }}>
+                                <td style={{ padding: "14px 12px", paddingLeft: 32, overflow: "hidden" }}>
                                     <span style={{ display: "block", color: "#ee7c2b", fontSize: 11, fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={o.orderId}>{o.orderId}</span>
                                 </td>
                                 <td style={{ padding: "14px 12px", color: "#e0e0e0", fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{o.user?.name || "—"}</td>

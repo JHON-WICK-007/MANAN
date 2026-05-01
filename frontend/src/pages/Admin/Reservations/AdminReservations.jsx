@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Check, X, Search, Filter, CalendarX } from "lucid
 import AdminSelect from "../../../components/AdminSelect";
 import ConfirmModal from "../../../components/ConfirmModal";
 import AdminDatePicker from "../../../components/AdminDatePicker";
+import AdminTimePicker from "../../../components/AdminTimePicker";
 
 const API = "http://localhost:5000/api";
 
@@ -164,8 +165,8 @@ const AdminReservations = () => {
                     </colgroup>
                     <thead>
                         <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-                            {["Booking ID", "Customer", "Guests", "Table", "Date", "Time", "Status", "Actions"].map(h => (
-                                <th key={h} style={{ padding: "14px 12px", textAlign: "left", color: "#555", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>{h}</th>
+                            {["Booking ID", "Customer", "Guests", "Table", "Date", "Time", "Status", "Actions"].map((h, index) => (
+                                <th key={h} style={{ padding: "14px 12px", paddingLeft: index === 0 ? 32 : 12, textAlign: "left", color: "#555", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", whiteSpace: "nowrap" }}>{h}</th>
                             ))}
                         </tr>
                     </thead>
@@ -187,7 +188,7 @@ const AdminReservations = () => {
                                     onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
                                     onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                                     {/* Booking ID — truncated */}
-                                    <td style={{ padding: "14px 12px", overflow: "hidden" }}>
+                                    <td style={{ padding: "14px 12px", paddingLeft: 32, overflow: "hidden" }}>
                                         <span style={{ display: "block", color: "#ee7c2b", fontSize: 11, fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={r.bookingId}>
                                             {r.bookingId}
                                         </span>
@@ -245,14 +246,11 @@ const AdminReservations = () => {
                         ))}
                         <div style={{ marginBottom: 16 }}>
                             <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>Date <span style={{ color: "#888" }}>*</span></label>
-                            <AdminDatePicker value={editForm.date || ""} onChange={v => setEditForm(f => ({ ...f, date: v }))} placeholder="DD-MM-YYYY" bg="#000000" />
+                            <AdminDatePicker value={editForm.date || ""} onChange={v => setEditForm(f => ({ ...f, date: v }))} placeholder="DD-MM-YYYY" bg="#000000" style={{ width: "fit-content" }} />
                         </div>
                         <div style={{ marginBottom: 28 }}>
                             <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>Time <span style={{ color: "#888" }}>*</span></label>
-                            <input type="time" value={editForm.time || ""} onChange={e => setEditForm(f => ({ ...f, time: e.target.value }))}
-                                onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.5)"}
-                                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
-                                style={{ ...inputStyle, colorScheme: "dark" }} />
+                            <AdminTimePicker value={editForm.time || ""} onChange={v => setEditForm(f => ({ ...f, time: v }))} placeholder="HH:MM" bg="#000000" style={{ width: "fit-content" }} />
                         </div>
                         <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
                             <button onClick={() => setEditTarget(null)} style={{ padding: "10px 22px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#888", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
