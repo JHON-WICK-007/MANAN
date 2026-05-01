@@ -69,7 +69,7 @@ const AdminSelect = ({ value, onChange, options = [], placeholder = "Select…",
                 type="button"
                 onClick={openDropdown}
                 style={{
-                    width: "fit-content",
+                    width: "100%",
                     height: 42,
                     boxSizing: "border-box",
                     display: "inline-flex",
