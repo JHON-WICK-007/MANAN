@@ -126,7 +126,6 @@ const AdminOrders = () => {
                                         value={o.status}
                                         onChange={val => updateStatus(o._id, val)}
                                         options={["Pending", "Processing", "Delivered", "Cancelled"]}
-                                        style={{ minWidth: 140 }}
                                     />
                                 </td>
                             </motion.tr>
