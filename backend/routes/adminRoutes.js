@@ -282,12 +282,9 @@ router.get("/analytics", async (req, res) => {
             const dayEnd = new Date(dateStr);
             dayEnd.setDate(dayEnd.getDate() + 1);
 
-            // Reservations use DD-MM-YYYY string format
-            const [yr, mo, day] = dateStr.split("-");
-            const resDayStr = `${day}-${mo}-${yr}`;
-
             const [rCount, dayOrders] = await Promise.all([
-                Reservation.countDocuments({ date: resDayStr }),
+                // Count reservations by when they were BOOKED (createdAt), not the dining date
+                Reservation.countDocuments({ createdAt: { $gte: dayStart, $lt: dayEnd } }),
                 Order.find({ createdAt: { $gte: dayStart, $lt: dayEnd } }).lean(),
             ]);
             const revenue = dayOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
@@ -341,6 +338,12 @@ router.get("/analytics", async (req, res) => {
         ]);
         const weekRevenue = weekRevenueAgg[0]?.total || 0;
 
+        // Upcoming reservations (Pending + Confirmed, booked for today or future)
+        const todayStr = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        const upcomingReservations = await Reservation.countDocuments({
+            status: { $in: ["Pending", "Confirmed"] }
+        });
+
         res.json({
             success: true,
             data: {
@@ -348,6 +351,7 @@ router.get("/analytics", async (req, res) => {
                 popularDishes, tableBreakdown, resBreakdown,
                 totalRevenue: parseFloat(totalRevenue.toFixed(2)),
                 weekRevenue: parseFloat(weekRevenue.toFixed(2)),
+                upcomingReservations,
             }
         });
     } catch (err) {

@@ -128,10 +128,10 @@ const AdminAnalytics = () => {
     );
 
     /* derived */
-    const totalRes = data?.reservationCounts?.reduce((a, b) => a + b, 0) ?? 0;
-    const totalOrd = data?.orderCounts?.reduce((a, b) => a + b, 0) ?? 0;
-    const weekRev  = data?.weekRevenue ?? 0;
-    const topDish  = data?.popularDishes?.[0]?.name ?? "—";
+    const totalRes  = data?.upcomingReservations ?? 0;
+    const totalOrd  = data?.orderCounts?.reduce((a, b) => a + b, 0) ?? 0;
+    const weekRev   = data?.weekRevenue ?? 0;
+    const topDish   = data?.popularDishes?.[0]?.name ?? "—";
 
     const trendData = (data?.labels || []).map((l, i) => ({
         date: l.slice(5),
@@ -168,7 +168,7 @@ const AdminAnalytics = () => {
 
             {/* ── KPI Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
-                <KPICard title="Reservations (7d)" value={totalRes} sub="Last 7 days" icon={Calendar} color="#ee7c2b" delay={0} />
+                <KPICard title="Reservations" value={totalRes} sub="Upcoming" icon={Calendar} color="#ee7c2b" delay={0} />
                 <KPICard title="Orders (7d)" value={totalOrd} sub="Last 7 days" icon={ShoppingBag} color="#3b82f6" delay={0.07} />
                 <KPICard title="Revenue (7d)" value={`₹${weekRev.toLocaleString("en-IN")}`} sub="Excl. Cancelled" icon={IndianRupee} color="#10b981" delay={0.14} />
                 <KPICard title="Top Dish" value={topDish} sub="All time" icon={Star} color="#a78bfa" delay={0.21} />
