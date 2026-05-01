@@ -273,23 +273,9 @@ const AdminAnalytics = () => {
     const COLORS = { dish: ["#ee7c2b","#3b82f6","#10b981","#a78bfa","#f59e0b"] };
     const TABLE_C = { Available: "#10b981", Occupied: "#ef4444", Reserved: "#f59e0b", Disabled: "#6b7280" };
     const RES_C   = { Confirmed: "#10b981", Pending: "#f59e0b", Cancelled: "#ef4444", Completed: "#3b82f6" };
-    const timeStr  = lastUpdated?.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) ?? "";
 
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: 22, paddingBottom: 48 }}>
-
-            {/* ── Refresh bar ── */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 12 }}>
-                {timeStr && <span style={{ color: "#444", fontSize: 11, letterSpacing: "0.04em" }}>Last updated {timeStr}</span>}
-                <button onClick={() => load(true)} disabled={refreshing}
-                    style={{ display: "flex", alignItems: "center", gap: 6, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 10, padding: "7px 16px", color: "#666", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.02em" }}
-                    onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.07)"; e.currentTarget.style.color = "#aaa"; }}
-                    onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.03)"; e.currentTarget.style.color = "#666"; }}
-                >
-                    <RefreshCw size={12} style={{ animation: refreshing ? "spin 0.8s linear infinite" : "none" }} />
-                    Refresh
-                </button>
-            </div>
 
             {/* ── KPI Cards ── */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
