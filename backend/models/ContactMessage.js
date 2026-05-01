@@ -23,6 +23,12 @@ const contactMessageSchema = new mongoose.Schema(
             enum: ["Unread", "Read"],
             default: "Unread",
         },
+        rating: {
+            type: Number,
+            min: 0,
+            max: 5,
+            default: 0,
+        },
     },
     { timestamps: true }
 );

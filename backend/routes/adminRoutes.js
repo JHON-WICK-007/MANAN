@@ -177,17 +177,33 @@ router.put("/orders/:id", async (req, res) => {
 // ─── CUSTOMERS ───────────────────────────────────────────────────────────────
 router.get("/customers", async (req, res) => {
     try {
+        const Profile = require("../models/Profile");
         const users = await User.find({ role: "user" }).sort({ createdAt: -1 }).lean();
+        
+        const userIds = users.map(u => u._id);
 
-        const enriched = await Promise.all(
-            users.map(async (u) => {
-                const [reservationCount, orderCount] = await Promise.all([
-                    Reservation.countDocuments({ user: u._id }),
-                    Order.countDocuments({ user: u._id }),
-                ]);
-                return { ...u, reservationCount, orderCount };
-            })
-        );
+        const [reservations, orders, profiles] = await Promise.all([
+            Reservation.aggregate([
+                { $match: { user: { $in: userIds } } },
+                { $group: { _id: "$user", count: { $sum: 1 } } }
+            ]),
+            Order.aggregate([
+                { $match: { user: { $in: userIds } } },
+                { $group: { _id: "$user", count: { $sum: 1 } } }
+            ]),
+            Profile.find({ user: { $in: userIds } }).lean()
+        ]);
+
+        const resMap = new Map(reservations.map(r => [r._id.toString(), r.count]));
+        const ordMap = new Map(orders.map(o => [o._id.toString(), o.count]));
+        const profMap = new Map(profiles.map(p => [p.user.toString(), p.profileImage]));
+
+        const enriched = users.map(u => ({
+            ...u,
+            reservationCount: resMap.get(u._id.toString()) || 0,
+            orderCount: ordMap.get(u._id.toString()) || 0,
+            profileImage: profMap.get(u._id.toString()) || null
+        }));
 
         res.json({ success: true, data: enriched });
     } catch (err) {

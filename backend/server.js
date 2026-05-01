@@ -40,11 +40,11 @@ app.use("/api/admin", adminRoutes);
 const ContactMessage = require("./models/ContactMessage");
 app.post("/api/contact", async (req, res) => {
     try {
-        const { name, email, phone, message } = req.body;
+        const { name, email, phone, message, rating } = req.body;
         if (!name || !email || !message) {
             return res.status(400).json({ success: false, message: "Name, email and message are required." });
         }
-        const msg = await ContactMessage.create({ name, email, phone, message });
+        const msg = await ContactMessage.create({ name, email, phone, message, rating: rating || 0 });
         res.status(201).json({ success: true, data: msg });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });

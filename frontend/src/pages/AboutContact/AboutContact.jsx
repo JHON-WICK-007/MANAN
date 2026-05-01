@@ -135,14 +135,14 @@ const AboutContact = () => {
 
             {/* ══════════════════ 2. RESTAURANT STORY ══════════════════ */}
             <Section className="py-24 overflow-hidden">
-                <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 items-center">
+                <div className="max-w-7xl mx-auto px-4 md:px-8 grid md:grid-cols-2 gap-16 md:items-stretch items-center">
                     {/* Image */}
-                    <M variants={fadeUp} className="relative order-2 md:order-1">
-                        <div className="relative z-10 rounded-2xl overflow-hidden">
+                    <M variants={fadeUp} className="relative order-2 md:order-1 h-[400px] md:h-auto">
+                        <div className="relative z-10 rounded-2xl overflow-hidden h-full">
                             <img
                                 src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?w=800&q=80"
                                 alt="Chef preparing dish"
-                                className="w-full h-[520px] object-cover"
+                                className="w-full h-full object-cover"
                             />
                         </div>
                         <div className="absolute -top-6 -left-6 w-32 h-32 border-l-2 border-t-2 border-primary/40 rounded-tl-2xl" />
@@ -150,25 +150,27 @@ const AboutContact = () => {
                     </M>
 
                     {/* Text */}
-                    <div className="order-1 md:order-2">
+                    <div className="order-1 md:order-2 flex flex-col justify-center">
                         <M variants={fadeUp}>
                             <h2 className="section-label">Our Heritage</h2>
                         </M>
                         <M variants={fadeUp} custom={1}>
                             <h3 className="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-8">
-                                Crafting Memories<br />Since <span className="text-primary">1984</span>
+                                Defining Excellence<br />Since <span className="text-primary">1984</span>
                             </h3>
                         </M>
                         <M variants={fadeUp} custom={2}>
                             <p className="text-lg text-stone-400 font-light leading-relaxed mb-6">
-                                Born from a passion for authentic flavors and the warmth of shared moments, Lumière has redefined
-                                fine dining for four decades. Every plate is a narrative told through textures, aromas, and visual artistry.
+                                Forged from an uncompromising pursuit of culinary perfection, Lumière has set the gold standard 
+                                in fine dining for four decades. Every plate is an evocative masterpiece, woven together with 
+                                exquisite textures, intoxicating aromas, and visionary artistry.
                             </p>
                         </M>
                         <M variants={fadeUp} custom={3}>
                             <p className="text-lg text-stone-400 font-light leading-relaxed mb-10">
-                                Our ingredients are sourced from local artisans who share our commitment to quality, ensuring
-                                that every dish is a testament to the richness of our terroir and tradition.
+                                We partner exclusively with local artisans and sustainable purveyors who share our rigorous 
+                                standards. This ensures every creation we serve is a profound celebration of our rich terroir 
+                                and enduring legacy.
                             </p>
                         </M>
                         <M variants={fadeUp} custom={4}>
@@ -226,7 +228,6 @@ const AboutContact = () => {
                                         backdropFilter: "blur(20px)",
                                         WebkitBackdropFilter: "blur(20px)",
                                         border: "1px solid rgba(255,255,255,0.06)",
-                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
                                         backfaceVisibility: "hidden"
                                     }}
                                     onMouseEnter={(e) => {
@@ -286,7 +287,6 @@ const AboutContact = () => {
                                         backdropFilter: "blur(20px)",
                                         WebkitBackdropFilter: "blur(20px)",
                                         border: "1px solid rgba(255,255,255,0.06)",
-                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
                                         backfaceVisibility: "hidden"
                                     }}
                                     onMouseEnter={(e) => {
@@ -357,7 +357,6 @@ const AboutContact = () => {
                                         backdropFilter: "blur(20px)",
                                         WebkitBackdropFilter: "blur(20px)",
                                         border: "1px solid rgba(255,255,255,0.06)",
-                                        boxShadow: "inset 0 1px 1px rgba(255,255,255,0.05)",
                                         backfaceVisibility: "hidden"
                                     }}
                                     onMouseEnter={(e) => {
@@ -528,17 +527,22 @@ const AboutContact = () => {
                                 </div>
 
                                 {/* Submit Button */}
-                                <div className="flex justify-center pt-2">
+                                <div className="flex justify-center pt-4">
                                     <motion.button
                                         type="submit"
                                         disabled={status === "sending"}
-                                        whileHover={{ y: -2, boxShadow: "0 10px 28px -6px rgba(238,124,43,0.3)" }}
+                                        whileHover={{ y: -3, boxShadow: "0 20px 50px -10px rgba(238,124,43,0.5)" }}
                                         whileTap={{ scale: 0.97 }}
-                                        className="py-3.5 px-12 bg-gradient-to-r from-primary to-[#eb711e] disabled:opacity-50 text-white font-['Inter',sans-serif] font-medium text-[12px] uppercase tracking-[0.18em] rounded-full shadow-[0_4px_20px_rgba(238,124,43,0.15)] transition-all duration-300 flex items-center gap-2.5"
+                                        transition={{ duration: 0.1 }}
+                                        className="relative overflow-hidden group py-4 px-16 disabled:opacity-50 text-white font-['Inter',sans-serif] font-semibold text-[11px] uppercase tracking-[0.25em] rounded-full transition-all duration-100 flex items-center gap-3"
+                                        style={{
+                                            background: "linear-gradient(135deg, #ee7c2b 0%, #d4601a 100%)",
+                                            boxShadow: "0 8px 32px rgba(238,124,43,0.25), inset 0 1px 0 rgba(255,255,255,0.15)",
+                                        }}
                                     >
                                         {status === "sending" ? (
                                             <>
-                                                <span className="material-icons animate-spin text-[16px]">autorenew</span>
+                                                <span className="material-icons animate-spin text-[18px]">autorenew</span>
                                                 Sending…
                                             </>
                                         ) : (
@@ -590,12 +594,12 @@ const AboutContact = () => {
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.215573291394!2d-73.98784368459395!3d40.74844097932847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259a9b3117469%3A0xd134e199a405a163!2sEmpire%20State%20Building!5e0!3m2!1sen!2sus!4v1650000000000!5m2!1sen!2sus"
                                 width="100%"
                                 height="650"
-                                style={{ 
-                                    border: 0, 
-                                    outline: "none", 
-                                    display: "block", 
+                                style={{
+                                    border: 0,
+                                    outline: "none",
+                                    display: "block",
                                     backgroundColor: "#fff",
-                                    filter: "invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1)" 
+                                    filter: "invert(90%) hue-rotate(180deg) brightness(0.9) contrast(1.1)"
                                 }}
                                 allowFullScreen
                                 loading="lazy"

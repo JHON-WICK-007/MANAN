@@ -29,14 +29,16 @@ const glassCard = {
 };
 
 const inputStyle = {
-    background: "rgba(34,24,16,0.85)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "#000000",
+    border: "1px solid rgba(255,255,255,0.12)",
     borderRadius: 12,
     color: "#d6d3d1",
-    padding: "10px 14px",
-    fontSize: 13,
+    padding: "11px 14px",
+    fontSize: 14,
     outline: "none",
     width: "100%",
+    transition: "border-color 0.2s",
+    boxSizing: "border-box",
 };
 
 const selectStyle = {
@@ -54,23 +56,12 @@ const selectStyle = {
 };
 
 const Modal = ({ title, onClose, children }) => (
-    <div style={{
-        position: "fixed", inset: 0, zIndex: 100,
-        background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
-        display: "flex", alignItems: "center", justifyContent: "center",
-    }} onClick={onClose}>
-        <motion.div
-            initial={{ opacity: 0, scale: 0.93 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.93 }}
+    <div style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)", display: "flex", alignItems: "center", justifyContent: "center" }} onClick={onClose}>
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 16 }}
             onClick={e => e.stopPropagation()}
-            style={{
-                background: "#141414", border: "1px solid rgba(255,255,255,0.1)",
-                borderRadius: 20, padding: 32, width: "100%", maxWidth: 480, color: "#fff",
-            }}
-        >
+            style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 20, padding: 32, width: "100%", maxWidth: 460, color: "#fff" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700 }}>{title}</h2>
+                <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, fontFamily: "'Playfair Display', serif", textTransform: "uppercase", color: "#ee7c2b", letterSpacing: "0.05em" }}>{title}</h2>
                 <button onClick={onClose} style={{ background: "none", border: "none", color: "#888", cursor: "pointer" }}><X size={18} /></button>
             </div>
             {children}
@@ -245,23 +236,27 @@ const AdminReservations = () => {
                     <Modal title="Edit Reservation" onClose={() => setEditTarget(null)}>
                         {[["Name", "userName", "text"], ["Guests", "guests", "number"], ["Table", "table", "text"]].map(([label, key, type]) => (
                             <div key={key} style={{ marginBottom: 16 }}>
-                                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>{label}</label>
+                                <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>{label} <span style={{ color: "#888" }}>*</span></label>
                                 <input type={type} value={editForm[key] || ""} onChange={e => setEditForm(f => ({ ...f, [key]: e.target.value }))}
+                                    onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.5)"}
+                                    onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
                                     style={{ ...inputStyle, colorScheme: "dark" }} />
                             </div>
                         ))}
                         <div style={{ marginBottom: 16 }}>
-                            <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>Date</label>
-                            <AdminDatePicker value={editForm.date || ""} onChange={v => setEditForm(f => ({ ...f, date: v }))} placeholder="Select date" style={{ width: "100%" }} />
+                            <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>Date <span style={{ color: "#888" }}>*</span></label>
+                            <AdminDatePicker value={editForm.date || ""} onChange={v => setEditForm(f => ({ ...f, date: v }))} placeholder="DD-MM-YYYY" bg="#000000" />
                         </div>
-                        <div style={{ marginBottom: 16 }}>
-                            <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>Time</label>
+                        <div style={{ marginBottom: 28 }}>
+                            <label style={{ display: "block", color: "#888", fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 7 }}>Time <span style={{ color: "#888" }}>*</span></label>
                             <input type="time" value={editForm.time || ""} onChange={e => setEditForm(f => ({ ...f, time: e.target.value }))}
+                                onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.5)"}
+                                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.12)"}
                                 style={{ ...inputStyle, colorScheme: "dark" }} />
                         </div>
-                        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 8 }}>
-                            <button onClick={() => setEditTarget(null)} style={{ padding: "10px 20px", borderRadius: 8, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#888", cursor: "pointer" }}>Cancel</button>
-                            <button onClick={saveEdit} style={{ padding: "10px 20px", borderRadius: 8, background: "linear-gradient(135deg,#ee7c2b,#d46a1f)", border: "none", color: "#fff", fontWeight: 600, cursor: "pointer" }}>Save</button>
+                        <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+                            <button onClick={() => setEditTarget(null)} style={{ padding: "10px 22px", borderRadius: 10, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "#888", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
+                            <button onClick={saveEdit} style={{ padding: "10px 22px", borderRadius: 10, background: "linear-gradient(135deg,#ee7c2b,#d46a1f)", border: "none", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", boxShadow: "0 4px 16px rgba(238,124,43,0.35)" }}>Save</button>
                         </div>
                     </Modal>
                 )}

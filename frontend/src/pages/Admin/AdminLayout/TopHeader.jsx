@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { LogOut, User } from "lucide-react";
+import ConfirmModal from "../../../components/ConfirmModal";
 
 const breadcrumbMap = {
     "/admin/dashboard":    ["Admin", "Dashboard"],
@@ -17,11 +19,13 @@ const breadcrumbMap = {
 const TopHeader = () => {
     const { user, logout } = useAuth();
     const location = useLocation();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
     const crumbs = breadcrumbMap[location.pathname] || ["Admin"];
     const pageTitle = crumbs[crumbs.length - 1];
 
     return (
-        <header style={{
+        <>
+            <header style={{
             position: "sticky",
             top: 0,
             height: 72,
@@ -77,7 +81,7 @@ const TopHeader = () => {
                 </div>
 
                 <button
-                    onClick={logout}
+                    onClick={() => setShowLogoutModal(true)}
                     style={{
                         display: "flex", alignItems: "center", gap: 8,
                         padding: "8px 16px",
@@ -101,6 +105,19 @@ const TopHeader = () => {
                 </button>
             </div>
         </header>
+
+            {/* Logout Confirmation Modal */}
+            <ConfirmModal
+                open={showLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
+                onConfirm={logout}
+                title="Confirm Logout"
+                message="Are you sure you want to securely log out of the admin dashboard?"
+                confirmLabel="Logout Now"
+                danger={true}
+                icon={LogOut}
+            />
+        </>
     );
 };
 

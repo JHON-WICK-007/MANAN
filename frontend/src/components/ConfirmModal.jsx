@@ -11,6 +11,7 @@ const ConfirmModal = ({
     message = "Are you sure? This action cannot be undone.",
     confirmLabel = "Confirm",
     danger = true,
+    icon: Icon = Trash2,
 }) => {
     useEffect(() => {
         if (open) document.body.style.overflow = "hidden";
@@ -101,7 +102,7 @@ const ConfirmModal = ({
                                 marginBottom: 20,
                                 boxShadow: `0 0 24px ${glowColor}`,
                             }}>
-                                <Trash2 size={22} color={accentColor} />
+                                <Icon size={22} color={accentColor} />
                             </div>
 
                             {/* Title */}

@@ -65,14 +65,33 @@ const AdminCustomers = () => {
                                 </div>
                             </td></tr>
                         ) : filtered.map((c, i) => (
-                            <motion.tr key={c._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
+                            <motion.tr key={c._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}
                                 style={{ borderBottom: "1px solid rgba(255,255,255,0.04)", transition: "background 0.2s" }}
                                 onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.02)"}
                                 onMouseLeave={e => e.currentTarget.style.background = "transparent"}>
                                 <td style={{ padding: "14px 12px", overflow: "hidden" }}>
                                     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                        <div style={{ width: 30, height: 30, borderRadius: "50%", background: "linear-gradient(135deg,#ee7c2b,#d46a1f)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                                            <User size={13} color="#fff" />
+                                        <div style={{
+                                            width: 34, height: 34, borderRadius: "50%",
+                                            background: "linear-gradient(135deg,#ee7c2b,#d46a1f)",
+                                            display: "flex", alignItems: "center", justifyContent: "center",
+                                            flexShrink: 0, overflow: "hidden",
+                                            boxShadow: "0 2px 8px rgba(238,124,43,0.3)",
+                                            fontSize: 13, fontWeight: 700, color: "#fff",
+                                        }}>
+                                            {c.profileImage ? (
+                                                <img
+                                                    src={c.profileImage}
+                                                    alt={c.name}
+                                                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                                    onError={e => {
+                                                        e.currentTarget.style.display = "none";
+                                                        e.currentTarget.parentElement.innerText = c.name?.[0]?.toUpperCase() || "U";
+                                                    }}
+                                                />
+                                            ) : (
+                                                c.name?.[0]?.toUpperCase() || "U"
+                                            )}
                                         </div>
                                         <span style={{ color: "#e0e0e0", fontSize: 13, fontWeight: 500, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</span>
                                     </div>
