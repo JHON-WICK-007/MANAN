@@ -266,30 +266,37 @@ router.delete("/messages/:id", async (req, res) => {
 // ─── ANALYTICS ───────────────────────────────────────────────────────────────
 router.get("/analytics", async (req, res) => {
     try {
-        // Last 7 days
         const days = 7;
         const labels = [];
         const reservationCounts = [];
         const orderCounts = [];
+        const revenueCounts = [];
 
         for (let i = days - 1; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
             const dateStr = d.toISOString().split("T")[0];
             labels.push(dateStr);
-            const [rCount, oCount] = await Promise.all([
+
+            const dayStart = new Date(dateStr);
+            const dayEnd = new Date(dateStr);
+            dayEnd.setDate(dayEnd.getDate() + 1);
+
+            const [rCount, dayOrders] = await Promise.all([
                 Reservation.countDocuments({ date: dateStr }),
-                Order.countDocuments({ createdAt: { $gte: new Date(dateStr), $lt: new Date(d.setDate(d.getDate() + 1)) } }),
+                Order.find({ createdAt: { $gte: dayStart, $lt: dayEnd } }).lean(),
             ]);
+            const revenue = dayOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
             reservationCounts.push(rCount);
-            orderCounts.push(oCount);
+            orderCounts.push(dayOrders.length);
+            revenueCounts.push(parseFloat(revenue.toFixed(2)));
         }
 
         // Popular dishes — top 5 by order frequency
         const allOrders = await Order.find().lean();
         const dishCount = {};
         allOrders.forEach((o) => {
-            o.items.forEach((item) => {
+            (o.items || []).forEach((item) => {
                 dishCount[item.name] = (dishCount[item.name] || 0) + item.quantity;
             });
         });
@@ -298,7 +305,47 @@ router.get("/analytics", async (req, res) => {
             .slice(0, 5)
             .map(([name, count]) => ({ name, count }));
 
-        res.json({ success: true, data: { labels, reservationCounts, orderCounts, popularDishes } });
+        // Table status breakdown
+        const tableStatuses = await RestaurantTable.aggregate([
+            { $group: { _id: "$status", count: { $sum: 1 } } }
+        ]);
+        const tableBreakdown = { Available: 0, Occupied: 0, Reserved: 0, Disabled: 0 };
+        tableStatuses.forEach(t => { tableBreakdown[t._id] = t.count; });
+
+        // Reservation status breakdown (last 30 days)
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const resStatuses = await Reservation.aggregate([
+            { $group: { _id: "$status", count: { $sum: 1 } } }
+        ]);
+        const resBreakdown = { Confirmed: 0, Pending: 0, Cancelled: 0, Completed: 0 };
+        resStatuses.forEach(r => { resBreakdown[r._id] = r.count; });
+
+        // Total revenue all time
+        const revenueAgg = await Order.aggregate([
+            { $match: { status: { $ne: "Cancelled" } } },
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+        ]);
+        const totalRevenue = revenueAgg[0]?.total || 0;
+
+        // Revenue last 7 days
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - 7);
+        const weekRevenueAgg = await Order.aggregate([
+            { $match: { createdAt: { $gte: weekStart }, status: { $ne: "Cancelled" } } },
+            { $group: { _id: null, total: { $sum: "$totalAmount" } } }
+        ]);
+        const weekRevenue = weekRevenueAgg[0]?.total || 0;
+
+        res.json({
+            success: true,
+            data: {
+                labels, reservationCounts, orderCounts, revenueCounts,
+                popularDishes, tableBreakdown, resBreakdown,
+                totalRevenue: parseFloat(totalRevenue.toFixed(2)),
+                weekRevenue: parseFloat(weekRevenue.toFixed(2)),
+            }
+        });
     } catch (err) {
         res.status(500).json({ success: false, message: err.message });
     }
