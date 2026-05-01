@@ -1,5 +1,8 @@
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
+const { OAuth2Client } = require("google-auth-library");
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -72,6 +75,65 @@ exports.login = async (req, res, next) => {
         });
     } catch (error) {
         next(error);
+    }
+};
+
+// @desc    Login/Register via Google
+// @route   POST /api/auth/google
+// @access  Public
+exports.googleAuth = async (req, res, next) => {
+    try {
+        const { credential } = req.body; // This is the access_token from the frontend
+        
+        // Fetch user info from Google using the access token
+        const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+            headers: { Authorization: `Bearer ${credential}` }
+        });
+        
+        if (!response.ok) {
+            throw new Error("Failed to fetch user info from Google");
+        }
+        
+        const { email, name, picture } = await response.json();
+        
+        // Find existing user
+        let user = await User.findOne({ email });
+        
+        if (!user) {
+            // Create user if they don't exist
+            // Generate a random password since they use Google
+            const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
+            user = await User.create({
+                name,
+                email,
+                password: randomPassword,
+                role: "user"
+            });
+            
+            // Optionally, create a Profile with the picture
+            const Profile = require("../models/Profile");
+            await Profile.create({
+                user: user._id,
+                profileImage: picture
+            });
+        }
+        
+        const token = generateToken(user._id);
+        
+        res.status(200).json({
+            success: true,
+            token,
+            user: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                profileImage: picture
+            }
+        });
+    } catch (error) {
+        console.error("Google Auth Error:", error);
+        res.status(401).json({ success: false, message: "Google authentication failed" });
     }
 };
 
