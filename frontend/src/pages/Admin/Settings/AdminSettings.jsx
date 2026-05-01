@@ -6,15 +6,27 @@ import { Save, Check } from "lucide-react";
 const API = "http://localhost:5000/api";
 
 const inputStyle = {
-    background: "rgba(255,255,255,0.05)",
-    border: "1px solid rgba(255,255,255,0.1)",
+    background: "#111",
+    border: "1px solid rgba(255,255,255,0.08)",
     borderRadius: 10,
     color: "#fff",
-    padding: "12px 16px",
+    padding: "14px 16px",
     fontSize: 14,
     outline: "none",
     width: "100%",
-    transition: "border-color 0.2s",
+    boxSizing: "border-box",
+    transition: "border-color 0.25s ease",
+    fontFamily: "inherit",
+};
+
+const labelStyle = {
+    display: "block",
+    color: "#888",
+    fontSize: 11,
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: "0.08em",
+    marginBottom: 8,
 };
 
 const FIELDS = [
@@ -45,70 +57,93 @@ const AdminSettings = () => {
     };
 
     return (
-        <div style={{ maxWidth: 620 }}>
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{
-                    background: "rgba(255,255,255,0.03)",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                    borderRadius: 20,
-                    padding: 36,
-                }}
-            >
-                <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, margin: "0 0 8px", fontFamily: "'Playfair Display', serif" }}>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            style={{ maxWidth: 640 }}
+        >
+            {/* Header */}
+            <div style={{ marginBottom: 32 }}>
+                <h2 style={{
+                    margin: 0,
+                    fontSize: 20,
+                    fontWeight: 800,
+                    fontFamily: "'Playfair Display', serif",
+                    textTransform: "uppercase",
+                    color: "#ee7c2b",
+                    letterSpacing: "0.05em",
+                    marginBottom: 6,
+                }}>
                     Restaurant Settings
                 </h2>
-                <p style={{ color: "#555", fontSize: 13, margin: "0 0 32px" }}>
+                <p style={{ color: "#555", fontSize: 13, margin: 0 }}>
                     Manage your restaurant's public-facing information.
                 </p>
+            </div>
 
-                {loading ? (
-                    <div style={{ textAlign: "center", padding: 40, color: "#555" }}>Loading…</div>
-                ) : (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                        {FIELDS.map(({ key, label, type }) => (
-                            <div key={key}>
-                                <label style={{ display: "block", color: "#888", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                                    {label}
-                                </label>
-                                <input
-                                    type={type}
-                                    value={form[key] || ""}
-                                    onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                                    style={inputStyle}
-                                    onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.5)"}
-                                    onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
-                                />
-                            </div>
-                        ))}
-
-                        <div style={{ marginTop: 8 }}>
-                            <button
-                                onClick={save}
-                                style={{
-                                    display: "flex", alignItems: "center", gap: 8,
-                                    padding: "12px 28px",
-                                    background: saved
-                                        ? "linear-gradient(135deg,#10b981,#059669)"
-                                        : "linear-gradient(135deg,#ee7c2b,#d46a1f)",
-                                    border: "none", borderRadius: 12,
-                                    color: "#fff", fontWeight: 700, fontSize: 14,
-                                    cursor: "pointer",
-                                    boxShadow: saved
-                                        ? "0 4px 16px rgba(16,185,129,0.3)"
-                                        : "0 4px 16px rgba(238,124,43,0.3)",
-                                    transition: "all 0.3s",
-                                }}
-                            >
-                                {saved ? <Check size={16} /> : <Save size={16} />}
-                                {saved ? "Saved!" : "Save Settings"}
-                            </button>
+            {loading ? (
+                <div style={{ textAlign: "center", padding: 40, color: "#555" }}>Loading…</div>
+            ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+                    {FIELDS.map(({ key, label, type }) => (
+                        <div key={key}>
+                            <label style={labelStyle}>{label}</label>
+                            <input
+                                type={type}
+                                value={form[key] || ""}
+                                placeholder={label}
+                                onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                                style={inputStyle}
+                                onFocus={e => e.target.style.borderColor = "rgba(238,124,43,0.6)"}
+                                onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.08)"}
+                            />
                         </div>
+                    ))}
+
+                    <div style={{ marginTop: 16 }}>
+                        <button
+                            onClick={save}
+                            style={{
+                                display: "inline-flex", alignItems: "center", gap: 10,
+                                padding: "14px 36px",
+                                background: saved
+                                    ? "linear-gradient(135deg, #10b981, #059669)"
+                                    : "linear-gradient(135deg, #ee7c2b, #c55e1a)",
+                                border: "none",
+                                borderRadius: 50,
+                                color: "#fff",
+                                fontWeight: 700,
+                                fontSize: 14,
+                                letterSpacing: "0.06em",
+                                textTransform: "uppercase",
+                                cursor: "pointer",
+                                boxShadow: saved
+                                    ? "0 6px 28px rgba(16,185,129,0.4), 0 0 0 1px rgba(16,185,129,0.15)"
+                                    : "0 6px 28px rgba(238,124,43,0.4), 0 0 0 1px rgba(238,124,43,0.15)",
+                                transition: "all 0.35s cubic-bezier(0.25, 1, 0.5, 1)",
+                                fontFamily: "inherit",
+                            }}
+                            onMouseEnter={e => {
+                                e.currentTarget.style.transform = "translateY(-3px)";
+                                e.currentTarget.style.boxShadow = saved
+                                    ? "0 12px 36px rgba(16,185,129,0.5), 0 0 0 1px rgba(16,185,129,0.2)"
+                                    : "0 12px 36px rgba(238,124,43,0.5), 0 0 0 1px rgba(238,124,43,0.2)";
+                            }}
+                            onMouseLeave={e => {
+                                e.currentTarget.style.transform = "translateY(0)";
+                                e.currentTarget.style.boxShadow = saved
+                                    ? "0 6px 28px rgba(16,185,129,0.4), 0 0 0 1px rgba(16,185,129,0.15)"
+                                    : "0 6px 28px rgba(238,124,43,0.4), 0 0 0 1px rgba(238,124,43,0.15)";
+                            }}
+                        >
+                            {saved ? <Check size={15} strokeWidth={3} /> : <Save size={15} strokeWidth={2.5} />}
+                            {saved ? "Saved!" : "Save Settings"}
+                        </button>
                     </div>
-                )}
-            </motion.div>
-        </div>
+                </div>
+            )}
+        </motion.div>
     );
 };
 
