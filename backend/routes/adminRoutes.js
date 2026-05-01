@@ -282,8 +282,12 @@ router.get("/analytics", async (req, res) => {
             const dayEnd = new Date(dateStr);
             dayEnd.setDate(dayEnd.getDate() + 1);
 
+            // Reservations use DD-MM-YYYY string format
+            const [yr, mo, day] = dateStr.split("-");
+            const resDayStr = `${day}-${mo}-${yr}`;
+
             const [rCount, dayOrders] = await Promise.all([
-                Reservation.countDocuments({ date: dateStr }),
+                Reservation.countDocuments({ date: resDayStr }),
                 Order.find({ createdAt: { $gte: dayStart, $lt: dayEnd } }).lean(),
             ]);
             const revenue = dayOrders.reduce((s, o) => s + (o.totalAmount || 0), 0);
